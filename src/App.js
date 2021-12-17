@@ -1,23 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect } from "react";
+import CurriculumTable from './components/curriculumTable';
+import CourseSelectionMenu from './components/courseSelectionMenu';
 
 function App() {
+
+  const [userSelectedCourses, setUserSelectedCourses] = useState([])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='row  mt-5'>
+        <div className='col'>
+          <CurriculumTable courses={userSelectedCourses}/>
+        </div>
+        <div className='col'>
+          <CourseSelectionMenu setCourseSelected={setUserSelectedCourses} userSelectedCourses={userSelectedCourses} />
+        </div>
+      </div>
     </div>
   );
 }

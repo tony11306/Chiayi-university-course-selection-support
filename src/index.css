@@ -1,13 +1,144 @@
-body {
+html, body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #EEEEEE;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.custom-scrollbar {
+  position: relative;
+  height: 100vh;
+  overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+display: block;
+}
+
+.min-height-30 {
+  min-height: 30%;
+}
+
+.min-height-70 {
+  min-height: 70%;
+}
+
+details[open] summary ~ * {
+  animation: open 0.3s ease-in-out;
+}
+
+@keyframes open {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary {
+  width: 100%;
+  padding: 0.5rem 0;
+  position: relative;
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 300;
+  list-style: none;
+}
+
+details summary:after {
+  content: "+";
+  color: black;
+  position: absolute;
+  font-size: 1.75rem;
+  line-height: 0;
+  margin-top: 0.75rem;
+  right: 0;
+  font-weight: 200;
+  transform-origin: center;
+  transition: 200ms linear;
+}
+details[open] summary:after {
+  transform: rotate(45deg);
+  font-size: 2rem;
+}
+details summary {
+  outline: 0;
+}
+
+div::-webkit-scrollbar {
+  width: 12px;               /* width of the entire scrollbar */
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: rgb(121, 121, 121);    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid rgb(231, 231, 231);  /* creates padding around scroll thumb */
+}
+
+footer {
+  min-height: 10vh;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.dropdown-menu {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+  width: 9px;               /* width of the entire scrollbar */
+}
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: rgb(121, 121, 121);    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid rgb(231, 231, 231);  /* creates padding around scroll thumb */
+}
+
+.curriculum-table {
+  opacity: 0.8;
+  padding: 5px;
+  border-spacing: 4px;
+  border-radius: 5px;
+  background-color: rgb(221, 215, 215);
+  border-collapse: separate;
+  
+}
+
+.curriculum-table tbody tr td {
+  width: 50px;
+  border-radius: 5px;
+  opacity: 0.9;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+}
+
+.curriculum-table tr:nth-child(even) td:first-child {
+  background-color: rgb(113, 113, 113);
+}
+
+.curriculum-table tr:nth-child(odd) td:first-child {
+  background-color: rgb(198, 184, 184);
+}
+
+.curriculum-table th {
+  border-bottom: solid 1px;
+  text-align: center;
+}
+
+.course-td {
+  background-color: rgb(199, 241, 208) !important;
 }
