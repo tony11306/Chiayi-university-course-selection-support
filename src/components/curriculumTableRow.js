@@ -1,10 +1,12 @@
 function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
+    const eduType = course['上課學制']
     const campus = course['校區']
-    const courseName = course['課程名稱']
+    const courseName = '【' + eduType + '】' + course['課程名稱']
     const teacher = course['授課老師']
     const departmentTake = course['上課系所']
     const courseOutlineURL = course['教學大綱']
     const courseTime = course['上課時間']
+    const credit = course['學分數']
 
     const courseNameWithOutline = (
         <a href={courseOutlineURL} target="_blank" style={{textDecoration: "none"}}>
@@ -37,6 +39,7 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
             <td>{departmentTake.length != 1 ? departmentTake : "不限"}</td>
             <td>{courseOutlineURL.length !== 0 ? courseNameWithOutline : courseName}</td>
             <td>{teacher}</td>
+            <td>{credit}</td>
             <td>{courseTime.map(courseTimeMap)}</td>
             <td>
                 <input className="form-check-input" type="checkbox" value="" onChange={() => onUserSelect(course)} disabled={isDisabled}/>

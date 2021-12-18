@@ -23,6 +23,7 @@ function SelectedCoursesPanel({ userSelectedCourses, onDeleteCourse }) {
                             <th>上課系所</th>
                             <th>課程名稱</th>
                             <th>老師</th>
+                            <th>學分數</th>
                             <th>上課時間</th>
                             <th>移除</th>
                         </tr>

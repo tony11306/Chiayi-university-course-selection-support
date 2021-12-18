@@ -37,8 +37,10 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     )
 
     const toCourseKeywords = (course) => {
-        return course['課程名稱'] + course['上課系所'] + course['授課老師'] + course['選課類別']
+        return course['上課學制'] + course['課程名稱'] + course['上課系所'] + course['授課老師'] + course['選課類別']
     }
+
+    const creditTotal = userSelectedCourses.reduce((prev, current) => prev + parseInt(current['學分數'], 10), 0)
 
     useEffect(() => {
         const toCourseId = (course) => {
@@ -125,6 +127,9 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
             <button className="btn btn-secondary float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
                 已選課程
                 <span className="badge bg-primary">{userSelectedCourses.length}</span>
+                <br/>
+                總學分
+                <span className="badge bg-primary">{creditTotal}</span>
             </button>
             <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setCourseSelected}/>
             <SearchComponent onFilterChange={setQueryString} onKeywordChange={setKeyword} setShowConflitedCheckValue={setIsShowedConflictedCourse} semesterYear={semesterYear} />
@@ -136,6 +141,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
                             <th>上課系所</th>
                             <th>課程名稱</th>
                             <th>老師</th>
+                            <th>學分數</th>
                             <th>上課時間</th>
                             <th>選擇</th>
                         </tr>

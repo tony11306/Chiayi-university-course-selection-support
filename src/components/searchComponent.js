@@ -176,7 +176,7 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
 
 
             <div className="mb-1">
-                <input className="rounded-pill border-1 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授" style={{ textIndent: '20px', height: '40px' }}></input>
+                <input className="rounded-pill border-1 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制" style={{ textIndent: '20px', height: '40px' }}></input>
                 <details>
 
                     <summary>
