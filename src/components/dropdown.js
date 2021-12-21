@@ -19,7 +19,7 @@ function Dropdown({ dropdownName, dropdownItems, onItemClick, defaultValue }) {
                 {currentItem}
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                { dropdownItems.map((dropdownItem, index) => { return <li key={index} onClick={ () => changeCurrentItem(dropdownItem) }><a className="dropdown-item" href="#">{ dropdownItem }</a></li> }) }
+                { dropdownItems.map((dropdownItem, index) => { return <li key={index} onClick={ () => changeCurrentItem(dropdownItem) }><a className="dropdown-item">{ dropdownItem }</a></li> }) }
             </ul>
         </div>
     )
