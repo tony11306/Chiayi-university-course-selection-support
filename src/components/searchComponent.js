@@ -136,7 +136,7 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         '獸醫臨床碩',
         '管院碩專班',
     ]
-    const [campusFilter, setCampusFilter] = useState('不限')
+    const [campusFilter, setCampusFilter] = useState('蘭潭校區')
     const [dayFilter, setDayFilter] = useState('不限')
     const [startClassFilter, setStartClassFilter] = useState('不限')
     const [endClassFilter, setEndClassFilter] = useState('不限')
