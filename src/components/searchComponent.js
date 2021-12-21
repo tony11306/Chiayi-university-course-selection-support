@@ -3,7 +3,7 @@ import Dropdown from "./dropdown"
 
 function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedCheckValue, semesterYear }) {
 
-    const CAMPUS = ['蘭潭校區', '民雄校區', '新民校區', '林森校區']
+    const CAMPUS = ['不限' ,'蘭潭校區', '民雄校區', '新民校區', '林森校區']
     const DAY = ['不限', '一', '二', '三', '四', '五', '六', '日']
     const CLASS_TIME = ['不限', '1', '2', '3', '4', 'F', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D']
     const GRADE = ['不限', '1', '2', '3', '4', '5']
@@ -136,16 +136,16 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         '獸醫臨床碩',
         '管院碩專班',
     ]
-    const [campusFilter, setCampusFilter] = useState('蘭潭校區')
+    const [campusFilter, setCampusFilter] = useState('不限')
     const [dayFilter, setDayFilter] = useState('不限')
     const [startClassFilter, setStartClassFilter] = useState('不限')
     const [endClassFilter, setEndClassFilter] = useState('不限')
     const [gradeFilter, setGradeFilter] = useState('不限')
-    const [courseTypeFilter, setCourseTypeFilter] = useState('專業必修課程')
+    const [courseTypeFilter, setCourseTypeFilter] = useState('不限')
     const [keyword, setKeyword] = useState('')
     const [departmentFilter, setDepartmentFilter] = useState('不限')
     const [isShowConflictedCoursesCheck, setIsShowConflictedCoursesCheck] = useState(false)
-
+    
     useEffect(() => {
         onKeywordChange(keyword)
     }, [keyword])
@@ -176,14 +176,14 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
 
 
             <div className="mb-1">
-                <input className="rounded-pill border-1 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制" style={{ textIndent: '20px', height: '40px' }}></input>
+                <input className="search-bar rounded-pill border-1 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
                 <details>
 
                     <summary>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-funnel-fill" viewBox="0 0 16 16">
                             <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z" />
                         </svg>
-                        篩選器
+                        篩選器(建議使用)
                     </summary>
                     <div className="row">
                         

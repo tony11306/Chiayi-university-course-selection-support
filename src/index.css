@@ -138,6 +138,15 @@ footer {
   text-align: center;
 }
 
-.course-td {
+.used-course-td {
   background-color: rgb(199, 241, 208) !important;
+}
+
+.unused-course-td {
+  background-color: rgb(221, 215, 215) !important;
+}
+
+.search-bar {
+  text-indent: 20px; 
+  height: 40px;
 }

@@ -8,22 +8,6 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
     const courseTime = course['上課時間']
     const credit = course['學分數']
 
-    const courseNameWithOutline = (
-        <a href={courseOutlineURL} target="_blank" style={{textDecoration: "none"}}>
-            {courseName}
-        </a>
-    )
-
-    const courseTimeMap = (singleCourseTime, index) => {
-        return (
-            
-            <div key={"badge " + index} className="badge bg-primary">
-                {singleCourseTime['星期'] + " " + singleCourseTime['開始節次'] + '~' + singleCourseTime['結束節次']}
-            </div>
-        )
-        
-    }
-
     return (
         <tr className={isDisabled ? "bg-warning" : ""}>
             <td>
@@ -37,12 +21,22 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
                 </div>
             </td>
             <td>{departmentTake.length != 1 ? departmentTake : "不限"}</td>
-            <td>{courseOutlineURL.length !== 0 ? courseNameWithOutline : courseName}</td>
+            <td>{courseOutlineURL.length !== 0 ?
+                <a className="text-decoration-none" href={courseOutlineURL} target="_blank">
+                    {courseName}
+                </a>
+                : courseName}</td>
             <td>{teacher}</td>
             <td>{credit}</td>
-            <td>{courseTime.map(courseTimeMap)}</td>
+            <td>{courseTime.map((singleCourseTime, index) => {
+                return (
+                    <div key={"badge " + index} className="badge bg-primary">
+                        {singleCourseTime['星期'] + " " + singleCourseTime['開始節次'] + '~' + singleCourseTime['結束節次']}
+                    </div>
+                )
+            })}</td>
             <td>
-                <input className="form-check-input" type="checkbox" value="" onChange={() => onUserSelect(course)} disabled={isDisabled}/>
+                <input className="form-check-input" type="checkbox" value="" onChange={() => onUserSelect(course)} disabled={isDisabled} />
             </td>
         </tr>
     )

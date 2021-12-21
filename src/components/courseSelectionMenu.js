@@ -17,25 +17,6 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
 
     const COURSE_SELECTION_API = 'https://chayi-university-system-api.herokuapp.com/course_selection'
 
-    const LOADING_SPINNER = (
-        <div>
-            <div className="spinner-grow" role="status">
-                <span className="visually-hidden">正在載入資料...</span>
-            </div>
-            <span className="fs-3 ms-3">載入中...</span>
-            <br/>
-            <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
-        </div>
-    )
-
-    const ERROR_MESSAGE = (
-        <span className="fs-3">發生錯誤</span>
-    )
-
-    const NO_RESULT_MESSAGE = (
-        <span className="fs-3">查無結果</span>
-    )
-
     const toCourseKeywords = (course) => {
         return course['上課學制'] + course['課程名稱'] + course['上課系所'] + course['授課老師'] + course['選課類別']
     }
@@ -49,7 +30,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
         let userSelectCourseIds = userSelectedCourses.map(course => toCourseId(course))
         let newShowedCourses = currentCourses.filter(course => !userSelectCourseIds.includes(toCourseId(course)))
         newShowedCourses = newShowedCourses.filter(course => toCourseKeywords(course).toLowerCase().includes(keyword.toLowerCase()))
-        if(!isShowedConflictedCourse) {
+        if (!isShowedConflictedCourse) {
             newShowedCourses = newShowedCourses.filter(course => !isOverlapWithUserSelectedCourses(course))
         }
         setShowedCourses(newShowedCourses)
@@ -77,7 +58,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     }, [queryString])
 
     const isOverlap = (course1, course2) => {
-        
+
         const CLASS_MAP = {
             '1': 1,
             '2': 2,
@@ -94,10 +75,10 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
             'C': 13,
             'D': 14
         }
-        for(let i = 0; i < course1['上課時間'].length; ++i) {
-            for(let j = 0; j < course2['上課時間'].length; ++j) {
-                if(course1['上課時間'][i]['星期'] === course2['上課時間'][j]['星期']) {
-                    if(CLASS_MAP[course1['上課時間'][i]['開始節次']] <= CLASS_MAP[course2['上課時間'][j]['結束節次']] && CLASS_MAP[course2['上課時間'][j]['開始節次']] <= CLASS_MAP[course1['上課時間'][i]['結束節次']]) {
+        for (let i = 0; i < course1['上課時間'].length; ++i) {
+            for (let j = 0; j < course2['上課時間'].length; ++j) {
+                if (course1['上課時間'][i]['星期'] === course2['上課時間'][j]['星期']) {
+                    if (CLASS_MAP[course1['上課時間'][i]['開始節次']] <= CLASS_MAP[course2['上課時間'][j]['結束節次']] && CLASS_MAP[course2['上課時間'][j]['開始節次']] <= CLASS_MAP[course1['上課時間'][i]['結束節次']]) {
                         return true
                     }
                 }
@@ -108,8 +89,8 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     }
 
     const isOverlapWithUserSelectedCourses = (course) => {
-        for(let i = 0; i < userSelectedCourses.length; ++i) {
-            if(isOverlap(course, userSelectedCourses[i])) {
+        for (let i = 0; i < userSelectedCourses.length; ++i) {
+            if (isOverlap(course, userSelectedCourses[i])) {
                 return true
             }
         }
@@ -127,11 +108,11 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
             <button className="btn btn-secondary float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
                 已選課程
                 <span className="badge bg-primary">{userSelectedCourses.length}</span>
-                <br/>
+                <br />
                 總學分
                 <span className="badge bg-primary">{creditTotal}</span>
             </button>
-            <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setCourseSelected}/>
+            <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setCourseSelected} />
             <SearchComponent onFilterChange={setQueryString} onKeywordChange={setKeyword} setShowConflitedCheckValue={setIsShowedConflictedCourse} semesterYear={semesterYear} />
             <div className=" table-wrapper-scroll-y custom-scrollbar">
                 <table className="table table-striped">
@@ -149,9 +130,18 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
 
                     </tbody>
                 </table>
-                {isLoading ? LOADING_SPINNER : ""}
-                {isError ? ERROR_MESSAGE : ""}
-                {!isError && !isLoading && showedCourses.length === 0 ? NO_RESULT_MESSAGE : ""}
+                {isLoading ? 
+                <div>
+                    <div className="spinner-grow" role="status">
+                        <span className="visually-hidden">正在載入資料...</span>
+                    </div>
+                    <span className="fs-3 ms-3">載入中...</span>
+                    <br />
+                    <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
+                </div> 
+                : ""}
+                {isError ? <span className="fs-3">發生錯誤</span> : ""}
+                {!isError && !isLoading && showedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
             </div>
 
         </div>
