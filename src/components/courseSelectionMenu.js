@@ -106,7 +106,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     return (
         <div className="border rounded">
             <button className="btn btn-secondary float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-                已選課程
+                查看已選課程
                 <span className="badge bg-primary">{userSelectedCourses.length}</span>
                 <br />
                 總學分
