@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import CurriculumTable from './components/curriculumTable';
 import CourseSelectionMenu from './components/courseSelectionMenu';
 import Cookies from 'js-cookie';
+import Announcement from './components/announcement';
 
 function App() {
 
@@ -14,9 +15,10 @@ function App() {
 
   return (
     <div className="App">
+      <Announcement/>
       <div className='row  mt-5'>
         <div className='col'>
-          <CurriculumTable courses={userSelectedCourses}/>
+          <CurriculumTable courses={userSelectedCourses} />
         </div>
         <div className='col'>
           <CourseSelectionMenu setCourseSelected={setUserSelectedCourses} userSelectedCourses={userSelectedCourses} />

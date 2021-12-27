@@ -150,3 +150,7 @@ footer {
   text-indent: 20px; 
   height: 40px;
 }
+
+.float-left {
+  float: left;
+}
