@@ -31,8 +31,8 @@ function CurriculumTable({ courses }) {
 
     const downloadURI = (uri, fileName) => {
         let link = document.createElement("a")
+        link.href = uri.replace('image/png', 'image/octet-stream')
         link.download = fileName
-        link.href = uri
         link.click()
     }
 
@@ -45,7 +45,7 @@ function CurriculumTable({ courses }) {
 
         html2canvas(table).then(canvas => {
             const img = canvas.toDataURL('image/png')
-            downloadURI("data:" + img, "選課結果.png")
+            downloadURI(img, "選課結果.png")
         })
     }
 
