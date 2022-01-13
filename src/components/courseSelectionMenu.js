@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import CurriculumTableRow from "./curriculumTableRow"
 import SearchComponent from "./searchComponent"
 import SelectedCoursesPanel from "./selectedCoursesPanel"
@@ -22,11 +22,11 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     }
 
     const creditTotal = userSelectedCourses.reduce((prev, current) => prev + parseInt(current['學分數'], 10), 0)
-
+    const toCourseId = (course) => {
+        return course['開課系號'] + course['開課序號'] + course['永久課號']
+    }
+    
     useEffect(() => {
-        const toCourseId = (course) => {
-            return course['開課系號'] + course['開課序號'] + course['永久課號']
-        }
         let userSelectCourseIds = userSelectedCourses.map(course => toCourseId(course))
         let newShowedCourses = currentCourses.filter(course => !userSelectCourseIds.includes(toCourseId(course)))
         newShowedCourses = newShowedCourses.filter(course => toCourseKeywords(course).toLowerCase().includes(keyword.toLowerCase()))
@@ -126,20 +126,24 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
                             <th>上課時間</th>
                             <th>選擇</th>
                         </tr>
-                        {showedCourses.map((course) => <CurriculumTableRow key={course['開課系號'] + course['開課序號'] + course['永久課號']} course={course} onUserSelect={handleAddSelectedCourse} isDisabled={isOverlapWithUserSelectedCourses(course)} />)}
+                        {
+                            showedCourses.map((course) =>
+                                    <CurriculumTableRow key={course['開課系號'] + course['開課序號'] + course['永久課號']} course={course} onUserSelect={handleAddSelectedCourse} isDisabled={isOverlapWithUserSelectedCourses(course)} />
+                            )
+                        }
 
                     </tbody>
                 </table>
-                {isLoading ? 
-                <div>
-                    <div className="spinner-grow" role="status">
-                        <span className="visually-hidden">正在載入資料...</span>
+                {isLoading ?
+                    <div>
+                        <div className="spinner-grow" role="status">
+                            <span className="visually-hidden">正在載入資料...</span>
+                        </div>
+                        <span className="fs-3 ms-3">載入中...</span>
+                        <br />
+                        <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
                     </div>
-                    <span className="fs-3 ms-3">載入中...</span>
-                    <br />
-                    <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
-                </div> 
-                : ""}
+                    : ""}
                 {isError ? <span className="fs-3">發生錯誤</span> : ""}
                 {!isError && !isLoading && showedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
             </div>

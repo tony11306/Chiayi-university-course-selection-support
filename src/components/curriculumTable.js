@@ -1,6 +1,9 @@
 import html2canvas from 'html2canvas'
 import { useState } from 'react'
 function CurriculumTable({ courses }) {
+
+    const [isShowTeacherButtonOn, setIsShowTeacherButtonOn] = useState(false)
+
     const CLASSES_COUNT = 14
     const DAYS = 6
     const CHINESE_WORD_TO_NUMBER = {
@@ -28,6 +31,22 @@ function CurriculumTable({ courses }) {
         'C': 13,
         'D': 14
     }
+    const tableRowsConst = [
+        { 'nThClassText': '第 1 節', 'classTime': '08:10 ~ 09:00' },
+        { 'nThClassText': '第 2 節', 'classTime': '09:10 ~ 10:00' },
+        { 'nThClassText': '第 3 節', 'classTime': '10:10 ~ 11:00' },
+        { 'nThClassText': '第 4 節', 'classTime': '11:10 ~ 12:00' },
+        { 'nThClassText': '第 F 節', 'classTime': '12:10 ~ 13:00' },
+        { 'nThClassText': '第 5 節', 'classTime': '13:20 ~ 14:10' },
+        { 'nThClassText': '第 6 節', 'classTime': '14:20 ~ 15:10' },
+        { 'nThClassText': '第 7 節', 'classTime': '15:20 ~ 16:10' },
+        { 'nThClassText': '第 8 節', 'classTime': '16:20 ~ 17:10' },
+        { 'nThClassText': '第 9 節', 'classTime': '17:20 ~ 18:10' },
+        { 'nThClassText': '第 A 節', 'classTime': '18:30 ~ 19:15' },
+        { 'nThClassText': '第 B 節', 'classTime': '19:20 ~ 20:05' },
+        { 'nThClassText': '第 C 節', 'classTime': '20:10 ~ 21:55' },
+        { 'nThClassText': '第 D 節', 'classTime': '21:00 ~ 21:45' },
+    ]
 
     const downloadURI = (uri, fileName) => {
         let link = document.createElement("a")
@@ -38,7 +57,7 @@ function CurriculumTable({ courses }) {
 
     const onExportButtonClick = () => {
         const isConfirm = window.confirm('確定下載「選課結果.png」？(可能需要等待幾秒)')
-        if(!isConfirm) {
+        if (!isConfirm) {
             return
         }
         const table = document.getElementById('rendered-table')
@@ -57,13 +76,17 @@ function CurriculumTable({ courses }) {
             const start = CLASS_MAP[classTime['開始節次']] - 1
             const end = CLASS_MAP[classTime['結束節次']] - 1
             for (let i = start; i <= end; ++i) {
-                courseTdValues[i][day] = course['課程名稱']
+                courseTdValues[i][day] = course
             }
         })
     })
 
     return (
         <div className="table-responsive shadow-sm  curriculum-table">
+            <div className="form-check form-switch float-start">
+                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onChange={()=>setIsShowTeacherButtonOn(!isShowTeacherButtonOn)}/>
+                    <label className="form-check-label" for="flexSwitchCheckDefault" >顯示授課老師</label>
+            </div>
             <button type="button" className="btn btn-success float-end" onClick={onExportButtonClick}>輸出為 png 圖片</button>
             <table className="table fs-6 table-bordered table-borderless" id='rendered-table'>
                 <tbody>
@@ -76,62 +99,22 @@ function CurriculumTable({ courses }) {
                         <th>星期五</th>
                         <th>星期六</th>
                     </tr>
-                    <tr>
-                        <td>第 1 節<br />08:10 ~ 09:00</td>
-                        {courseTdValues[0].map((courseTdValue, index) => <td key={'row0' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 2 節<br />09:10 ~ 10:00</td>
-                        {courseTdValues[1].map((courseTdValue, index) => <td key={'row1' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 3 節<br />10:10 ~ 11:00</td>
-                        {courseTdValues[2].map((courseTdValue, index) => <td key={'row2' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 4 節<br />11:10 ~ 12:00</td>
-                        {courseTdValues[3].map((courseTdValue, index) => <td key={'row3' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 F 節<br />12:10 ~ 13:00</td>
-                        {courseTdValues[4].map((courseTdValue, index) => <td key={'row4' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 5 節<br />13:20 ~ 14:10</td>
-                        {courseTdValues[5].map((courseTdValue, index) => <td key={'row5' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 6 節<br />14:20 ~ 15:10</td>
-                        {courseTdValues[6].map((courseTdValue, index) => <td key={'row6' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 7 節<br />15:20 ~ 16:10</td>
-                        {courseTdValues[7].map((courseTdValue, index) => <td key={'row7' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 8 節<br />16:20 ~ 17:10</td>
-                        {courseTdValues[8].map((courseTdValue, index) => <td key={'row8' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 9 節<br />17:20 ~ 18:10</td>
-                        {courseTdValues[9].map((courseTdValue, index) => <td key={'row9' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 A 節<br />18:30 ~ 19:15</td>
-                        {courseTdValues[10].map((courseTdValue, index) => <td key={'rowA' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 B 節<br />19:20 ~ 20:05</td>
-                        {courseTdValues[11].map((courseTdValue, index) => <td key={'rowB' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 C 節<br />20:10 ~ 21:55</td>
-                        {courseTdValues[12].map((courseTdValue, index) => <td key={'rowC' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
-                    <tr>
-                        <td>第 D 節<br />21:00 ~ 21:45</td>
-                        {courseTdValues[13].map((courseTdValue, index) => <td key={'rowD' + index} className={courseTdValue ? "used-course-td" : "unused-course-td"}>{courseTdValue}</td>)}
-                    </tr>
+                    {
+                        tableRowsConst.map((row, index) =>
+                            <tr >
+                                <td>{row['nThClassText']}<br />{row['classTime']}</td>
+                                {
+                                    courseTdValues[index].map((courseTdValue, index2) =>
+                                        <td key={'col0' + index2} className={courseTdValue ? "used-course-td" : "unused-course-td"}>
+                                            {courseTdValue ? "【" + courseTdValue['課程名稱'] + "】" : ""}
+                                            <br />
+                                            {isShowTeacherButtonOn ? courseTdValue['授課老師'] : ""}
+                                        </td>
+                                    )
+                                }
+                            </tr>
+                        )
+                    }
                 </tbody>
             </table>
         </div>
