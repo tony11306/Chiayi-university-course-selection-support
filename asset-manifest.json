@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/Chiayi-university-course-selection-support/static/css/main.84bfd1de.chunk.css",
-    "main.js": "/Chiayi-university-course-selection-support/static/js/main.1021c8a6.chunk.js",
-    "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.1021c8a6.chunk.js.map",
+    "main.css": "/Chiayi-university-course-selection-support/static/css/main.22dcfe8c.chunk.css",
+    "main.js": "/Chiayi-university-course-selection-support/static/js/main.ffc159a4.chunk.js",
+    "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.ffc159a4.chunk.js.map",
     "runtime-main.js": "/Chiayi-university-course-selection-support/static/js/runtime-main.c4a102dc.js",
     "runtime-main.js.map": "/Chiayi-university-course-selection-support/static/js/runtime-main.c4a102dc.js.map",
     "static/js/2.1ce755c2.chunk.js": "/Chiayi-university-course-selection-support/static/js/2.1ce755c2.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.1c08b99f.chunk.js": "/Chiayi-university-course-selection-support/static/js/3.1c08b99f.chunk.js",
     "static/js/3.1c08b99f.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/3.1c08b99f.chunk.js.map",
     "index.html": "/Chiayi-university-course-selection-support/index.html",
-    "static/css/main.84bfd1de.chunk.css.map": "/Chiayi-university-course-selection-support/static/css/main.84bfd1de.chunk.css.map",
+    "static/css/main.22dcfe8c.chunk.css.map": "/Chiayi-university-course-selection-support/static/css/main.22dcfe8c.chunk.css.map",
     "static/js/2.1ce755c2.chunk.js.LICENSE.txt": "/Chiayi-university-course-selection-support/static/js/2.1ce755c2.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.c4a102dc.js",
     "static/js/2.1ce755c2.chunk.js",
-    "static/css/main.84bfd1de.chunk.css",
-    "static/js/main.1021c8a6.chunk.js"
+    "static/css/main.22dcfe8c.chunk.css",
+    "static/js/main.ffc159a4.chunk.js"
   ]
 }
