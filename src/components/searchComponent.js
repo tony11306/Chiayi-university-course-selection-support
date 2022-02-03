@@ -190,20 +190,20 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
                     </summary>
                     <div className="row">
                         
-                        <div className="btn-group btn-group-sm" role="group">
+                        <div className="btn-group btn-group-sm flex-wrap" role="group">
                             <Dropdown key="campus" dropdownName="校區" defaultValue={campusFilter} dropdownItems={CAMPUS} onItemClick={setCampusFilter} />
                             <Dropdown key="education_level" dropdownName="上課學制" defaultValue={educationLevelFilter} dropdownItems={EDUCATION_LEVEL} onItemClick={setEducationLevelFilter}/>
                             <Dropdown key="grade" dropdownName="適用年級" defaultValue={gradeFilter} dropdownItems={GRADE} onItemClick={setGradeFilter} />
                             <Dropdown key="course_type" dropdownName="課程類別" defaultValue={courseTypeFilter} dropdownItems={COURSE_TYPE} onItemClick={setCourseTypeFilter} />
                         </div>
-                        <div className="btn-group btn-group-sm">
+                        <div className="btn-group btn-group-sm flex-wrap">
                             <Dropdown key="department" dropdownName="上課系所" defaultValue={departmentFilter} dropdownItems={DEPARTMENTS} onItemClick={setDepartmentFilter} />
                             <Dropdown key="day" dropdownName="星期" defaultValue={dayFilter} dropdownItems={DAY} onItemClick={setDayFilter} />
                             <Dropdown key="start_class" dropdownName="開始節次" defaultValue={startClassFilter} dropdownItems={CLASS_TIME} onItemClick={setStartClassFilter} />
                             <Dropdown key="end_class" dropdownName="結束節次" defaultValue={endClassFilter} dropdownItems={CLASS_TIME} onItemClick={setEndClassFilter} />
 
                         </div>
-                        <div className="btn-group btn-group-sm  form-inline">
+                        <div className="btn-group btn-group-sm  form-inline flex-wrap">
                             <div className="form-check form-switch offset-md-9 ">
                                 <label className="form-check-label fs-5" htmlFor="flexSwitchCheckChecked">是否隱藏衝堂</label>
                                 <input className="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onChange={onShowConflictedCheckChange} />
