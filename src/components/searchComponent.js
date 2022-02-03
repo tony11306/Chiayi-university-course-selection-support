@@ -136,7 +136,9 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         '獸醫臨床碩',
         '管院碩專班',
     ]
+    const EDUCATION_LEVEL = ['博士班', '大學部', '碩士班', '碩專班', '進學班']
     const [campusFilter, setCampusFilter] = useState('蘭潭校區')
+    const [educationLevelFilter, setEducationLevelFilter] = useState('大學部')
     const [dayFilter, setDayFilter] = useState('不限')
     const [startClassFilter, setStartClassFilter] = useState('不限')
     const [endClassFilter, setEndClassFilter] = useState('不限')
@@ -160,9 +162,10 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         queryString += (gradeFilter !== defaultOption ? ('適用年級=' + gradeFilter + '&') : "")
         queryString += (courseTypeFilter !== defaultOption ? ('課程類別=' + courseTypeFilter + '&') : "")
         queryString += (departmentFilter !== defaultOption ? ('上課系所=' + departmentFilter + '&') : "")
+        queryString += (educationLevelFilter !== defaultOption ? ('上課學制=' + educationLevelFilter + '&') : "")
         onFilterChange(queryString)
 
-    }, [campusFilter, dayFilter, startClassFilter, endClassFilter, gradeFilter, courseTypeFilter, departmentFilter])
+    }, [campusFilter, dayFilter, startClassFilter, endClassFilter, gradeFilter, courseTypeFilter, departmentFilter, educationLevelFilter])
 
     const onShowConflictedCheckChange = () => {
         setIsShowConflictedCoursesCheck(!isShowConflictedCoursesCheck)
@@ -176,7 +179,7 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
 
 
             <div className="mb-1">
-                <input className="search-bar rounded-pill border-1 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
+                <input className="search-bar rounded-pill border-0 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
                 <details>
 
                     <summary>
@@ -189,6 +192,7 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
                         
                         <div className="btn-group btn-group-sm" role="group">
                             <Dropdown key="campus" dropdownName="校區" defaultValue={campusFilter} dropdownItems={CAMPUS} onItemClick={setCampusFilter} />
+                            <Dropdown key="education_level" dropdownName="上課學制" defaultValue={educationLevelFilter} dropdownItems={EDUCATION_LEVEL} onItemClick={setEducationLevelFilter}/>
                             <Dropdown key="grade" dropdownName="適用年級" defaultValue={gradeFilter} dropdownItems={GRADE} onItemClick={setGradeFilter} />
                             <Dropdown key="course_type" dropdownName="課程類別" defaultValue={courseTypeFilter} dropdownItems={COURSE_TYPE} onItemClick={setCourseTypeFilter} />
                         </div>

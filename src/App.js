@@ -5,6 +5,8 @@ import CourseSelectionMenu from './components/courseSelectionMenu';
 import Cookies from 'js-cookie';
 import Announcement from './components/announcement';
 
+import SelectedCoursesPanel from "./components/selectedCoursesPanel"
+
 function App() {
 
   const [userSelectedCourses, setUserSelectedCourses] = useState(localStorage.getItem('userSelectedCourses') === null ? [] : JSON.parse(localStorage.getItem('userSelectedCourses')))
@@ -15,15 +17,16 @@ function App() {
 
   return (
     <div className="App">
-      <Announcement/>
+      <Announcement />
       <div className='row  mt-5'>
-        <div className='col'>
+        <div className='col mb-2'>
           <CurriculumTable courses={userSelectedCourses} />
         </div>
         <div className='col'>
           <CourseSelectionMenu setCourseSelected={setUserSelectedCourses} userSelectedCourses={userSelectedCourses} />
         </div>
       </div>
+      <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setUserSelectedCourses} />
     </div>
   );
 }

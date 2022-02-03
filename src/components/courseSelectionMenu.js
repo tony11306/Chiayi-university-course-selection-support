@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import CurriculumTableRow from "./curriculumTableRow"
 import SearchComponent from "./searchComponent"
-import SelectedCoursesPanel from "./selectedCoursesPanel"
 
 function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
 
@@ -21,7 +20,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
         return course['上課學制'] + course['課程名稱'] + course['上課系所'] + course['授課老師'] + course['選課類別']
     }
 
-    const creditTotal = userSelectedCourses.reduce((prev, current) => prev + parseInt(current['學分數'], 10), 0)
+    
     const toCourseId = (course) => {
         return course['開課系號'] + course['開課序號'] + course['永久課號']
     }
@@ -104,18 +103,10 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     }
 
     return (
-        <div className="border rounded">
-            <button className="btn btn-secondary float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-                查看已選課程
-                <span className="badge bg-primary">{userSelectedCourses.length}</span>
-                <br />
-                總學分
-                <span className="badge bg-primary">{creditTotal}</span>
-            </button>
-            <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setCourseSelected} />
+        <div className="rounded course-selection-menu shadow-sm">
             <SearchComponent onFilterChange={setQueryString} onKeywordChange={setKeyword} setShowConflitedCheckValue={setIsShowedConflictedCourse} semesterYear={semesterYear} />
-            <div className=" table-wrapper-scroll-y custom-scrollbar">
-                <table className="table table-striped">
+            <div className="table-wrapper-scroll-y custom-scrollbar">
+                <table className="table table-striped rounded non-border">
                     <tbody>
                         <tr>
                             <th>校區</th>

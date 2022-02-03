@@ -15,7 +15,7 @@ function Dropdown({ dropdownName, dropdownItems, onItemClick, defaultValue }) {
         <div className="dropdown m-2">
             <label className="me-1 text-muted">{dropdownName} </label>
                 
-            <button className="btn dropdown-toggle btn-outline-dark" type="button" data-bs-toggle="dropdown">
+            <button className="btn dropdown-toggle btn-outline-dark shadow-none" type="button" data-bs-toggle="dropdown">
                 {currentItem}
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">

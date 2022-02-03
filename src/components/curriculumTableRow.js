@@ -12,7 +12,7 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
 
     return (
         <React.Fragment>
-            <tr className={(isDisabled ? "bg-warning" : "")}>
+            <tr className={(isDisabled ? "conflict-warning" : "")}>
                 <td>
                     <div className={
                         campus === "蘭潭校區" ? "badge rounded-pill bg-primary" :
