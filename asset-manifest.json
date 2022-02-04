@@ -5,17 +5,17 @@
     "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.a30db4d7.chunk.js.map",
     "runtime-main.js": "/Chiayi-university-course-selection-support/static/js/runtime-main.700b1929.js",
     "runtime-main.js.map": "/Chiayi-university-course-selection-support/static/js/runtime-main.700b1929.js.map",
-    "static/js/2.fc02a9e9.chunk.js": "/Chiayi-university-course-selection-support/static/js/2.fc02a9e9.chunk.js",
-    "static/js/2.fc02a9e9.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/2.fc02a9e9.chunk.js.map",
+    "static/js/2.8fb98f05.chunk.js": "/Chiayi-university-course-selection-support/static/js/2.8fb98f05.chunk.js",
+    "static/js/2.8fb98f05.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/2.8fb98f05.chunk.js.map",
     "static/js/3.4f0351ac.chunk.js": "/Chiayi-university-course-selection-support/static/js/3.4f0351ac.chunk.js",
     "static/js/3.4f0351ac.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/3.4f0351ac.chunk.js.map",
     "index.html": "/Chiayi-university-course-selection-support/index.html",
     "static/css/main.d2d7a82d.chunk.css.map": "/Chiayi-university-course-selection-support/static/css/main.d2d7a82d.chunk.css.map",
-    "static/js/2.fc02a9e9.chunk.js.LICENSE.txt": "/Chiayi-university-course-selection-support/static/js/2.fc02a9e9.chunk.js.LICENSE.txt"
+    "static/js/2.8fb98f05.chunk.js.LICENSE.txt": "/Chiayi-university-course-selection-support/static/js/2.8fb98f05.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.700b1929.js",
-    "static/js/2.fc02a9e9.chunk.js",
+    "static/js/2.8fb98f05.chunk.js",
     "static/css/main.d2d7a82d.chunk.css",
     "static/js/main.a30db4d7.chunk.js"
   ]
