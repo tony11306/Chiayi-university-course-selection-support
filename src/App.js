@@ -2,9 +2,7 @@ import './App.css';
 import { useState, useEffect } from "react";
 import CurriculumTable from './components/curriculumTable';
 import CourseSelectionMenu from './components/courseSelectionMenu';
-import Cookies from 'js-cookie';
 import Announcement from './components/announcement';
-
 import SelectedCoursesPanel from "./components/selectedCoursesPanel"
 
 function App() {
