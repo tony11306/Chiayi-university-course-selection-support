@@ -1,3 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow:
+Sitemap: https://tony11306.github.io/Chiayi-university-course-selection-support/sitemap.xml
