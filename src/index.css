@@ -123,6 +123,10 @@ footer {
   padding: 15px;
 }
 
+.table-first-row-white tr:first-child {
+  background-color: rgba(230, 230, 230, 0.938);
+}
+
 .curriculum-table {
   opacity: 0.8;
   padding: 5px;

@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 
-function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
+function CourseDataRow({ course, onUserSelect, isDisabled }) {
     const eduType = course['上課學制']
     const campus = course['校區']
     const courseName = '【' + eduType + '】' + course['課程名稱']
@@ -9,6 +9,11 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
     const courseOutlineURL = course['教學大綱']
     const courseTime = course['上課時間']
     const credit = course['學分數']
+    const grade = course['適用年級'] == 1 ? '一' :
+    course['適用年級'] == 2 ? '二' :
+    course['適用年級'] == 3 ? '三' :
+    course['適用年級'] == 4 ? '四' :
+    '五'
 
     return (
         <React.Fragment>
@@ -23,6 +28,7 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
                         {campus}
                     </div>
                 </td>
+                <td>{grade}</td>
                 <td>{departmentTake.length != 1 ? departmentTake : "不限"}</td>
                 <td>{courseOutlineURL.length !== 0 ?
                     <a className="text-decoration-none" href={courseOutlineURL} target="_blank">
@@ -47,4 +53,4 @@ function CurriculumTableRow({ course, onUserSelect, isDisabled }) {
     )
 }
 
-export default CurriculumTableRow
+export default CourseDataRow

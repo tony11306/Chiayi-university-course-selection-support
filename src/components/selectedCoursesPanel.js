@@ -1,5 +1,5 @@
 import React from "react"
-import CurriculumTableRow from "./curriculumTableRow"
+import CourseDataRow from "./curriculumTableRow"
 
 function SelectedCoursesPanel({ userSelectedCourses, onDeleteCourse }) {
 
@@ -55,10 +55,11 @@ function SelectedCoursesPanel({ userSelectedCourses, onDeleteCourse }) {
                         </div>
 
                         <div className="table-wrapper-scroll-y custom-scrollbar">
-                            <table className="table table-striped">
+                            <table className="table table-striped non-border align-middle table-first-row-white">
                                 <tbody>
-                                    <tr>
+                                    <tr className="position-sticky top-0 blur-background">
                                         <th>校區</th>
+                                        <th>年級</th>
                                         <th>上課系所</th>
                                         <th>課程名稱</th>
                                         <th>老師</th>
@@ -66,7 +67,7 @@ function SelectedCoursesPanel({ userSelectedCourses, onDeleteCourse }) {
                                         <th>上課時間</th>
                                         <th>移除</th>
                                     </tr>
-                                    {userSelectedCourses.map(course => <CurriculumTableRow key={course['開課系號'] + course['開課序號'] + course['永久課號'] + '2'} course={course} onUserSelect={handleDeleteCourse} isDisabled={false} />)}
+                                    {userSelectedCourses.map(course => <CourseDataRow key={course['開課系號'] + course['開課序號'] + course['永久課號'] + '2'} course={course} onUserSelect={handleDeleteCourse} isDisabled={false} />)}
 
                                 </tbody>
                             </table>
