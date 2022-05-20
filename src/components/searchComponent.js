@@ -3,7 +3,7 @@ import Dropdown from "./dropdown"
 
 function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedCheckValue, semesterYear }) {
 
-    const CAMPUS = ['不限' ,'蘭潭校區', '民雄校區', '新民校區', '林森校區']
+    const CAMPUS = ['不限' ,'蘭潭校區', '民雄校區', '新民校區', '林森校區', 'ecourse 線上']
     const DAY = ['不限', '一', '二', '三', '四', '五', '六', '日']
     const CLASS_TIME = ['不限', '1', '2', '3', '4', 'F', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D']
     const GRADE = ['不限', '1', '2', '3', '4', '5']
@@ -24,6 +24,7 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         '教育學程必修科目：教育方法課程',
         '教育學程必修科目：專門課程',
         '教育學程必修科目：教育基礎課程',
+        '通識教育選修選項：通識網路課程',
     ]
 
     const DEPARTMENTS = [

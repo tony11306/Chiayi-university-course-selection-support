@@ -23,7 +23,8 @@ function CourseDataRow({ course, onUserSelect, isDisabled }) {
                         campus === "蘭潭校區" ? "badge rounded-pill bg-primary" :
                             campus === "民雄校區" ? "badge rounded-pill bg-secondary" :
                                 campus === "新民校區" ? "badge rounded-pill bg-success" :
-                                    campus === "林森校區" ? "badge rounded-pill bg-warning" : ""
+                                    campus === "林森校區" ? "badge rounded-pill bg-warning" : 
+                                        campus === "ecourse 線上" ? "badge rounded-pill badge bg-dark" : ""
                     }>
                         {campus}
                     </div>
