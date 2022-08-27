@@ -4,7 +4,6 @@ import SearchComponent from "./searchComponent"
 
 function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
 
-
     const [currentCourses, setCurrentCourses] = useState([]) // 當前篩選器的結果
     const [showedCourses, setShowedCourses] = useState([]) // 顯示被 keyword 和 用戶選擇過的 過濾掉的結果
     const [isLoading, setIsLoading] = useState(true)
@@ -14,7 +13,7 @@ function CourseSelectionMenu({ setCourseSelected, userSelectedCourses }) {
     const [isShowedConflictedCourse, setIsShowedConflictedCourse] = useState('true')
     const [semesterYear, setSemesterYear] = useState('')
 
-    const COURSE_SELECTION_API = 'https://chayi-university-system-api.herokuapp.com/course_selection'
+    const COURSE_SELECTION_API = 'https://ncyu-courseapi.azurewebsites.net/course_selection'
 
     const toCourseKeywords = (course) => {
         return course['上課學制'] + course['課程名稱'] + course['上課系所'] + course['授課老師'] + course['選課類別']

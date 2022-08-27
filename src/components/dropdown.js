@@ -9,8 +9,6 @@ function Dropdown({ dropdownName, dropdownItems, onItemClick, defaultValue }) {
         onItemClick(newItem)
     }
 
-    
-
     return (
         <div className="dropdown m-2">
             <label className="me-1 text-muted">{dropdownName} </label>
