@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Chiayi-university-course-selection-support/static/css/main.f534431f.chunk.css",
-    "main.js": "/Chiayi-university-course-selection-support/static/js/main.5df90301.chunk.js",
-    "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.5df90301.chunk.js.map",
+    "main.js": "/Chiayi-university-course-selection-support/static/js/main.2c8f7186.chunk.js",
+    "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.2c8f7186.chunk.js.map",
     "runtime-main.js": "/Chiayi-university-course-selection-support/static/js/runtime-main.700b1929.js",
     "runtime-main.js.map": "/Chiayi-university-course-selection-support/static/js/runtime-main.700b1929.js.map",
     "static/js/2.8fb98f05.chunk.js": "/Chiayi-university-course-selection-support/static/js/2.8fb98f05.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.700b1929.js",
     "static/js/2.8fb98f05.chunk.js",
     "static/css/main.f534431f.chunk.css",
-    "static/js/main.5df90301.chunk.js"
+    "static/js/main.2c8f7186.chunk.js"
   ]
 }
