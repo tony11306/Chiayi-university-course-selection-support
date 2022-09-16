@@ -98,12 +98,12 @@ function CurriculumTable({ courses }) {
     return (
         <div className="table-responsive shadow-sm  curriculum-table rounded" id='rendered-table'>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckDefault" onChange={() => setIsShowTeacherButtonOn(!isShowTeacherButtonOn)} />
-                <label className="form-check-label" htmlFor="flexSwitchCheckDefault" >顯示授課老師</label>
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setIsShowTeacherButtonOn(!isShowTeacherButtonOn)} />
+                <label className="form-check-label" htmlFor="flexSwitchCheckTeacher" >顯示授課老師</label>
             </div>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckDefault" onChange={() => setIsShowClassroomButtonOn(!isShowClassroomButtonOn)} />
-                <label className="form-check-label" htmlFor="flexSwitchCheckDefault" >顯示課堂教室</label>
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setIsShowClassroomButtonOn(!isShowClassroomButtonOn)} />
+                <label className="form-check-label" htmlFor="flexSwitchCheckClassroom" >顯示課堂教室</label>
             </div>
             <button type="button" className=" btn-icon-circle float-end border-0 shadow-none me-2" title="下載課表" onClick={onExportButtonClick}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-filetype-png" viewBox="0 0 16 16">
