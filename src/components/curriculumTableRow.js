@@ -9,10 +9,10 @@ function CourseDataRow({ course, onUserSelect, isDisabled }) {
     const courseOutlineURL = course['教學大綱']
     const courseTime = course['上課時間']
     const credit = course['學分數']
-    const grade = course['適用年級'] === 1 ? '一' :
-    course['適用年級'] === 2 ? '二' :
-    course['適用年級'] === 3 ? '三' :
-    course['適用年級'] === 4 ? '四' :
+    const grade = course['適用年級'] === '1' ? '一' :
+    course['適用年級'] === '2' ? '二' :
+    course['適用年級'] === '3' ? '三' :
+    course['適用年級'] === '4' ? '四' :
     '五'
 
     return (
