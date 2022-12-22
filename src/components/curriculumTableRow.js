@@ -36,7 +36,11 @@ function CourseDataRow({ course, onUserSelect, isDisabled }) {
                         {courseName}
                     </a>
                     : courseName}</td>
-                <td>{teacher}</td>
+                <td>
+                    <a className="text-decoration-none" href={"https://www.google.com/search?q="+teacher+"+嘉義大學+dcard+%7C+ptt"} target="_blank">
+                        {teacher}
+                    </a>
+                </td>
                 <td>{credit}</td>
                 <td>{courseTime.map((singleCourseTime, index) => {
                     return (
