@@ -1,9 +1,31 @@
 import html2canvas from 'html2canvas'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 function CurriculumTable({ courses }) {
 
     const [isShowTeacherButtonOn, setIsShowTeacherButtonOn] = useState(false)
     const [isShowClassroomButtonOn, setIsShowClassroomButtonOn] = useState(false)
+
+    useEffect(() => {
+        // get cookie
+        const cookies = document.cookie.split('; ')
+        cookies.forEach(cookie => {
+            const [key, value] = cookie.split('=')
+
+            if (key === 'isShowTeacherButtonOn') {
+                setIsShowTeacherButtonOn(value === 'true')
+            }
+            if (key === 'isShowClassroomButtonOn') {
+                setIsShowClassroomButtonOn(value === 'true')
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        // set cookie
+        console.log(isShowClassroomButtonOn, isShowTeacherButtonOn)
+        document.cookie = `isShowTeacherButtonOn=${isShowTeacherButtonOn.toString()}`
+        document.cookie = `isShowClassroomButtonOn=${isShowClassroomButtonOn.toString()}`
+    }, [isShowClassroomButtonOn, isShowTeacherButtonOn])
 
     const CLASSES_COUNT = 14
     const DAYS = 6
@@ -98,11 +120,11 @@ function CurriculumTable({ courses }) {
     return (
         <div className="table-responsive shadow-sm  curriculum-table rounded" id='rendered-table'>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setIsShowTeacherButtonOn(!isShowTeacherButtonOn)} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setIsShowTeacherButtonOn(!isShowTeacherButtonOn)} checked={isShowTeacherButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckTeacher" >顯示授課老師</label>
             </div>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setIsShowClassroomButtonOn(!isShowClassroomButtonOn)} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setIsShowClassroomButtonOn(!isShowClassroomButtonOn)} checked={isShowClassroomButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckClassroom" >顯示課堂教室</label>
             </div>
             <button type="button" className=" btn-icon-circle float-end border-0 shadow-none me-2" title="下載課表" onClick={onExportButtonClick}>
