@@ -7,7 +7,7 @@ function CurriculumTable({ courses }) {
 
     useEffect(() => {
         // get cookie
-        const cookies = document.cookie.split('; ')
+        const cookies = document.cookie.split(';')
         cookies.forEach(cookie => {
             const [key, value] = cookie.split('=')
 
