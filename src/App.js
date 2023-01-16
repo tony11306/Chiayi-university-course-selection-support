@@ -1,8 +1,8 @@
 import './App.css';
-import Announcement from "./newcomponents/announcement";
-import CourseSelectionMenu from "./newcomponents/courseSelectionMenu";
-import TimeTable from "./newcomponents/timeTable";
-import SelectedCoursesPanel from './newcomponents/selectedCoursesPanel';
+import Announcement from "./components/announcement";
+import CourseSelectionMenu from "./components/courseSelectionMenu";
+import TimeTable from "./components/timeTable";
+import SelectedCoursesPanel from './components/selectedCoursesPanel';
 import { GlobalDataProvider } from './hooks/useGlobalData';
 
 export default function App() {
