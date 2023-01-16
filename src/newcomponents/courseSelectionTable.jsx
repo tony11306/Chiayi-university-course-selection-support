@@ -127,7 +127,7 @@ function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
                 {courseData.上課系所.length !== 1 ? courseData.上課系所 : "不限"}
             </td>
             <td>
-                {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{courseData.課程名稱}</a> : courseData.課程名稱}
+                {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{"【" + courseData.上課學制 + "】" + courseData.課程名稱}</a> : "【" + courseData.上課學制 + "】" + courseData.課程名稱}
             </td>
             <td>
                 <a className="text-decoration-none" href={"https://www.google.com/search?q="+courseData.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank" rel="noreferrer">

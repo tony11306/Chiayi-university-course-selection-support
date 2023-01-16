@@ -6,11 +6,9 @@ import { useState } from "react";
 export default function CourseSelectionMenu() {
     const {semesterYear} = useGlobalData();
     const [displaySettings, setDisplaySettings] = useState({
-        isShowedConflictedCourses: false,
+        isShowedConflictedCourses: true,
         keyword: '',
     });
-
-    console.log(displaySettings.isShowedConflictedCourses)
 
     return (
         <div className="rounded course-selection-menu shadow-sm">
