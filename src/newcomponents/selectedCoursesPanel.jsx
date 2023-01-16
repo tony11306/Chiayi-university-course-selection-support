@@ -89,10 +89,10 @@ export default function SelectedCoursesPanel() {
                                                 {course.上課系所.length !== 1 ? course.上課系所 : "不限"}
                                             </td>
                                             <td>
-                                                {course.教學大綱.length !== 0 ? <a className="text-decoration-none" href={course.教學大綱} target="_blank">{course.課程名稱}</a> : course.課程名稱}
+                                                {course.教學大綱.length !== 0 ? <a className="text-decoration-none" href={course.教學大綱} target="_blank" rel="noreferrer">{course.課程名稱}</a> : course.課程名稱}
                                             </td>
                                             <td>
-                                                <a className="text-decoration-none" href={"https://www.google.com/search?q="+course.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank">
+                                                <a className="text-decoration-none" href={"https://www.google.com/search?q="+course.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank" rel="noreferrer">
                                                     {course.授課老師}
                                                 </a>
                                             </td>
