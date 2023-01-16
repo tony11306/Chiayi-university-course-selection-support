@@ -1,31 +1,72 @@
-import html2canvas from 'html2canvas'
-import { useEffect, useState } from 'react'
-function CurriculumTable({ courses }) {
+import html2canvas from "html2canvas";
+import { useEffect, useState } from "react";
+import { useGlobalData } from "../hooks/useGlobalData";
 
-    const [isShowTeacherButtonOn, setIsShowTeacherButtonOn] = useState(false)
-    const [isShowClassroomButtonOn, setIsShowClassroomButtonOn] = useState(false)
+export default function TimeTable() {
+    const { userSelectedCourses } = useGlobalData();
+    const [displaySettings, setDisplaySettings] = useState({
+        isShowTeacherButtonOn: false,
+        isShowClassroomButtonOn: false,
+    });
 
     useEffect(() => {
         // get cookie
-        const cookies = document.cookie.split(';')
+        const cookies = document.cookie.split('; ')
+        let isShowTeacherButtonOn = false
+        let isShowClassroomButtonOn = false
         cookies.forEach(cookie => {
             const [key, value] = cookie.split('=')
-
+            console.log(key, value)
             if (key === 'isShowTeacherButtonOn') {
-                setIsShowTeacherButtonOn(value === 'true')
+                isShowTeacherButtonOn = value === 'true'
             }
             if (key === 'isShowClassroomButtonOn') {
-                setIsShowClassroomButtonOn(value === 'true')
+                isShowClassroomButtonOn = value === 'true'
             }
+        })
+        setDisplaySettings({
+            isShowTeacherButtonOn: isShowTeacherButtonOn,
+            isShowClassroomButtonOn: isShowClassroomButtonOn,
         })
     }, [])
 
     useEffect(() => {
-        // set cookie
-        console.log(isShowClassroomButtonOn, isShowTeacherButtonOn)
-        document.cookie = `isShowTeacherButtonOn=${isShowTeacherButtonOn.toString()}`
-        document.cookie = `isShowClassroomButtonOn=${isShowClassroomButtonOn.toString()}`
-    }, [isShowClassroomButtonOn, isShowTeacherButtonOn])
+        document.cookie = `isShowTeacherButtonOn=${displaySettings.isShowTeacherButtonOn}`
+        document.cookie = `isShowClassroomButtonOn=${displaySettings.isShowClassroomButtonOn}`
+    }, [displaySettings])
+
+    function downloadURI(uri, fileName) {
+        const link = document.createElement("a")
+        link.href = uri.replace('image/png', 'image/octet-stream')
+        link.download = fileName
+        link.click()
+    }
+
+    function onExportButtonClick() {
+        const isConfirm = window.confirm('確定下載「選課結果.png」？(可能需要等待幾秒)')
+        if (!isConfirm) {
+            return
+        }
+        const table = document.getElementById('rendered-table')
+        const originalBackgroundImage = table.style.backgroundImage
+        const originalBorderRadius = table.style.borderRadius
+        const originalBackgroundColor = table.style.backgroundColor
+        const originalWidth = table.style.width
+
+        table.style.backgroundImage = "linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))"
+        table.style.backgroundColor = "rgba(255,255,255, 0.3)"
+        table.style.borderRadius = "30px"
+        table.style.width = "800px"
+
+        html2canvas(table, {backgroundColor: null}).then(canvas => {
+            const img = canvas.toDataURL('image/png')
+            downloadURI(img, "選課結果.png")
+        })
+        table.style.backgroundImage = originalBackgroundImage
+        table.style.borderRadius = originalBorderRadius
+        table.style.backgroundColor = originalBackgroundColor
+        table.style.width = originalWidth
+    }
 
     const CLASSES_COUNT = 14
     const DAYS = 6
@@ -71,42 +112,9 @@ function CurriculumTable({ courses }) {
         { 'nThClassText': '第 D 節', 'classTime': '21:00 ~ 21:45' },
     ]
 
-    const downloadURI = (uri, fileName) => {
-        let link = document.createElement("a")
-        link.href = uri.replace('image/png', 'image/octet-stream')
-        link.download = fileName
-        link.click()
-    }
-
-    const onExportButtonClick = () => {
-        const isConfirm = window.confirm('確定下載「選課結果.png」？(可能需要等待幾秒)')
-        if (!isConfirm) {
-            return
-        }
-        const table = document.getElementById('rendered-table')
-        const originalBackgroundImage = table.style.backgroundImage
-        const originalBorderRadius = table.style.borderRadius
-        const originalBackgroundColor = table.style.backgroundColor
-        const originalWidth = table.style.width
-
-        table.style.backgroundImage = "linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))"
-        table.style.backgroundColor = "rgba(255,255,255, 0.3)"
-        table.style.borderRadius = "30px"
-        table.style.width = "800px"
-
-        html2canvas(table, {backgroundColor: null}).then(canvas => {
-            const img = canvas.toDataURL('image/png')
-            downloadURI(img, "選課結果.png")
-        })
-        table.style.backgroundImage = originalBackgroundImage
-        table.style.borderRadius = originalBorderRadius
-        table.style.backgroundColor = originalBackgroundColor
-        table.style.width = originalWidth
-    }
-
     const courseTdValues = new Array(CLASSES_COUNT).fill(0).map(() => new Array(DAYS).fill(''))
 
-    courses.forEach(course => {
+    userSelectedCourses.forEach(course => {
         course['上課時間'].forEach(classTime => {
             const day = CHINESE_WORD_TO_NUMBER[classTime['星期']] - 1
             const start = CLASS_MAP[classTime['開始節次']] - 1
@@ -120,11 +128,11 @@ function CurriculumTable({ courses }) {
     return (
         <div className="table-responsive shadow-sm  curriculum-table rounded" id='rendered-table'>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setIsShowTeacherButtonOn(!isShowTeacherButtonOn)} checked={isShowTeacherButtonOn} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setDisplaySettings({ ...displaySettings, isShowTeacherButtonOn: !displaySettings.isShowTeacherButtonOn })} checked={displaySettings.isShowTeacherButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckTeacher" >顯示授課老師</label>
             </div>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setIsShowClassroomButtonOn(!isShowClassroomButtonOn)} checked={isShowClassroomButtonOn} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setDisplaySettings({ ...displaySettings, isShowClassroomButtonOn: !displaySettings.isShowClassroomButtonOn })} checked={displaySettings.isShowClassroomButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckClassroom" >顯示課堂教室</label>
             </div>
             <button type="button" className=" btn-icon-circle float-end border-0 shadow-none me-2" title="下載課表" onClick={onExportButtonClick}>
@@ -154,10 +162,10 @@ function CurriculumTable({ courses }) {
                                             {courseTdValue ? "【" + courseTdValue['課程名稱'] + "】" : ""}
                                             <br />
 
-                                            {isShowTeacherButtonOn ? <br/> : ""}
-                                            {isShowTeacherButtonOn ? courseTdValue['授課老師'] : ""}
-                                            {isShowClassroomButtonOn ? <br/> : ""}
-                                            {isShowClassroomButtonOn ? courseTdValue['上課教室'] : ""}
+                                            {displaySettings.isShowTeacherButtonOn ? <br/> : ""}
+                                            {displaySettings.isShowTeacherButtonOn ? courseTdValue['授課老師'] : ""}
+                                            {displaySettings.isShowClassroomButtonOn ? <br/> : ""}
+                                            {displaySettings.isShowClassroomButtonOn ? courseTdValue['上課教室'] : ""}
                                         </td>
                                     )
                                 }
@@ -168,6 +176,5 @@ function CurriculumTable({ courses }) {
             </table>
         </div>
     )
-}
 
-export default CurriculumTable
+}

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react"
 import Dropdown from "./dropdown"
+import { useGlobalData } from "../hooks/useGlobalData"
 
-function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedCheckValue, semesterYear }) {
+export default function SearchComponent({ displaySettings, setDisplaySettings }) {
+    const { filters, setFilters, } = useGlobalData();
 
     const CAMPUS = ['不限' ,'蘭潭校區', '民雄校區', '新民校區', '林森校區', 'ecourse 線上']
     const DAY = ['不限', '一', '二', '三', '四', '五', '六', '日']
@@ -138,49 +139,53 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
         '管院碩專班',
     ]
     const EDUCATION_LEVEL = ['博士班', '大學部', '碩士班', '碩專班', '進學班']
-    const [campusFilter, setCampusFilter] = useState('蘭潭校區')
-    const [educationLevelFilter, setEducationLevelFilter] = useState('大學部')
-    const [dayFilter, setDayFilter] = useState('不限')
-    const [startClassFilter, setStartClassFilter] = useState('不限')
-    const [endClassFilter, setEndClassFilter] = useState('不限')
-    const [gradeFilter, setGradeFilter] = useState('不限')
-    const [courseTypeFilter, setCourseTypeFilter] = useState('不限')
-    const [keyword, setKeyword] = useState('')
-    const [departmentFilter, setDepartmentFilter] = useState('不限')
-    const [isShowConflictedCoursesCheck, setIsShowConflictedCoursesCheck] = useState(false)
-    
-    useEffect(() => {
-        onKeywordChange(keyword)
-    }, [keyword])
 
-    useEffect(() => {
-        let queryString = '?'
-        const defaultOption = '不限'
-        queryString += (campusFilter !== defaultOption ? ('校區=' + campusFilter + '&') : "")
-        queryString += (dayFilter !== defaultOption ? ('星期=' + dayFilter + '&') : "")
-        queryString += (startClassFilter !== defaultOption ? ('開始節次=' + startClassFilter + '&') : "")
-        queryString += (endClassFilter !== defaultOption ? ('結束節次=' + endClassFilter + '&') : "")
-        queryString += (gradeFilter !== defaultOption ? ('適用年級=' + gradeFilter + '&') : "")
-        queryString += (courseTypeFilter !== defaultOption ? ('課程類別=' + courseTypeFilter + '&') : "")
-        queryString += (departmentFilter !== defaultOption ? ('上課系所=' + departmentFilter + '&') : "")
-        queryString += (educationLevelFilter !== defaultOption ? ('上課學制=' + educationLevelFilter + '&') : "")
-        onFilterChange(queryString)
-
-    }, [campusFilter, dayFilter, startClassFilter, endClassFilter, gradeFilter, courseTypeFilter, departmentFilter, educationLevelFilter])
-
-    const onShowConflictedCheckChange = () => {
-        setIsShowConflictedCoursesCheck(!isShowConflictedCoursesCheck)
-        setShowConflitedCheckValue(isShowConflictedCoursesCheck)
+    function onCampusSelected(value) {
+        setFilters({ ...filters, campus: value })
     }
+
+    function onDepartmentSelected(value) {
+        setFilters({ ...filters, department: value })
+    }
+
+    function onEducationLevelSelected(value) {
+        setFilters({ ...filters, educationLevel: value })
+    }
+
+    function onGradeSelected(value) {
+        setFilters({ ...filters, grade: value })
+    }
+
+    function onCourseTypeSelected(value) {
+        setFilters({ ...filters, courseType: value })
+    }
+
+    function onDaySelected(value) {
+        setFilters({ ...filters, day: value })
+    }
+
+    function onStartClassSelected(value) {
+        setFilters({ ...filters, startClass: value })
+    }
+
+    function onEndClassSelected(value) {
+        setFilters({ ...filters, endClass: value })
+    }
+
+    function onKeywordChanged(value) {
+        setDisplaySettings({ ...displaySettings, keyword: value })
+    }
+
+    function onShowConflictedCheckChange(value) {
+        setDisplaySettings({ ...displaySettings, isShowedConflictedCourses: value })
+    }
+
 
     return (
         <div>
 
-            <span className="fs-4">{semesterYear} 課程清單</span>
-
-
             <div className="mb-1">
-                <input className="search-bar rounded-pill border-0 shadow-sm mt-3 w-75 ml-3" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
+                <input className="search-bar rounded-pill border-0 shadow-sm mt-3 w-75 ml-3" value={displaySettings.keyword} onChange={e => onKeywordChanged(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
                 <details>
 
                     <summary>
@@ -192,22 +197,22 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
                     <div className="row">
                         
                         <div className="btn-group btn-group-sm flex-wrap" role="group">
-                            <Dropdown key="campus" dropdownName="校區" defaultValue={campusFilter} dropdownItems={CAMPUS} onItemClick={setCampusFilter} />
-                            <Dropdown key="education_level" dropdownName="上課學制" defaultValue={educationLevelFilter} dropdownItems={EDUCATION_LEVEL} onItemClick={setEducationLevelFilter}/>
-                            <Dropdown key="grade" dropdownName="適用年級" defaultValue={gradeFilter} dropdownItems={GRADE} onItemClick={setGradeFilter} />
-                            <Dropdown key="course_type" dropdownName="課程類別" defaultValue={courseTypeFilter} dropdownItems={COURSE_TYPE} onItemClick={setCourseTypeFilter} />
+                            <Dropdown key="campus" dropdownName="校區" defaultValue={filters.campus} dropdownItems={CAMPUS} onSelected={onCampusSelected} />
+                            <Dropdown key="education_level" dropdownName="上課學制" defaultValue={filters.educationLevel} dropdownItems={EDUCATION_LEVEL} onSelected={onEducationLevelSelected}/>
+                            <Dropdown key="grade" dropdownName="適用年級" defaultValue={filters.grade} dropdownItems={GRADE} onSelected={onGradeSelected} />
+                            <Dropdown key="course_type" dropdownName="課程類別" defaultValue={filters.courseType} dropdownItems={COURSE_TYPE} onSelected={onCourseTypeSelected} />
                         </div>
                         <div className="btn-group btn-group-sm flex-wrap">
-                            <Dropdown key="department" dropdownName="上課系所" defaultValue={departmentFilter} dropdownItems={DEPARTMENTS} onItemClick={setDepartmentFilter} />
-                            <Dropdown key="day" dropdownName="星期" defaultValue={dayFilter} dropdownItems={DAY} onItemClick={setDayFilter} />
-                            <Dropdown key="start_class" dropdownName="開始節次" defaultValue={startClassFilter} dropdownItems={CLASS_TIME} onItemClick={setStartClassFilter} />
-                            <Dropdown key="end_class" dropdownName="結束節次" defaultValue={endClassFilter} dropdownItems={CLASS_TIME} onItemClick={setEndClassFilter} />
+                            <Dropdown key="department" dropdownName="上課系所" defaultValue={filters.department} dropdownItems={DEPARTMENTS} onSelected={onDepartmentSelected} />
+                            <Dropdown key="day" dropdownName="星期" defaultValue={filters.day} dropdownItems={DAY} onSelected={onDaySelected} />
+                            <Dropdown key="start_class" dropdownName="開始節次" defaultValue={filters.startClass} dropdownItems={CLASS_TIME} onSelected={onStartClassSelected} />
+                            <Dropdown key="end_class" dropdownName="結束節次" defaultValue={filters.endClass} dropdownItems={CLASS_TIME} onSelected={onEndClassSelected} />
 
                         </div>
                         <div className="btn-group btn-group-sm  form-inline flex-wrap">
                             <div className="form-check form-switch offset-md-9 ">
                                 <label className="form-check-label fs-5" htmlFor="flexSwitchCheckChecked">是否隱藏衝堂</label>
-                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onChange={onShowConflictedCheckChange} />
+                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked={!displaySettings.isShowedConflictedCourses} onChange={() => onShowConflictedCheckChange(!displaySettings.isShowedConflictedCourses)} />
                             </div>
                         </div>
                     </div>
@@ -216,6 +221,5 @@ function SearchComponent({ onFilterChange, onKeywordChange, setShowConflitedChec
             </div>
         </div>
     )
-}
 
-export default SearchComponent
+}

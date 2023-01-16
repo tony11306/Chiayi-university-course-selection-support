@@ -1,12 +1,13 @@
 import { useState } from "react"
 
-function Dropdown({ dropdownName, dropdownItems, onItemClick, defaultValue }) {
+function Dropdown({ dropdownName, dropdownItems, onSelected, defaultValue }) {
 
     const [currentItem, setCurrentItem] = useState(defaultValue)
 
     const changeCurrentItem = (newItem) => {
+        if (newItem === currentItem) return
         setCurrentItem(newItem)
-        onItemClick(newItem)
+        onSelected(newItem)
     }
 
     return (

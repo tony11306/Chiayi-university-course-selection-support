@@ -1,32 +1,25 @@
 import './App.css';
-import { useState, useEffect } from "react";
-import CurriculumTable from './components/curriculumTable';
-import CourseSelectionMenu from './components/courseSelectionMenu';
-import Announcement from './components/announcement';
-import SelectedCoursesPanel from "./components/selectedCoursesPanel"
+import Announcement from "./newcomponents/announcement";
+import CourseSelectionMenu from "./newcomponents/courseSelectionMenu";
+import TimeTable from "./newcomponents/timeTable";
+import SelectedCoursesPanel from './newcomponents/selectedCoursesPanel';
+import { GlobalDataProvider } from './hooks/useGlobalData';
 
-function App() {
-
-  const [userSelectedCourses, setUserSelectedCourses] = useState(localStorage.getItem('userSelectedCourses') === null ? [] : JSON.parse(localStorage.getItem('userSelectedCourses')))
-
-  useEffect(() => {
-    localStorage.setItem('userSelectedCourses', JSON.stringify(userSelectedCourses))
-  }, [userSelectedCourses])
-
+export default function App() {
   return (
     <div className="App">
       <Announcement />
-      <div className='row  mt-5'>
-        <div className='col mb-2'>
-          <CurriculumTable courses={userSelectedCourses} />
+      <GlobalDataProvider>
+        <div className='row  mt-5'>
+          <div className='col mb-2'>
+            <TimeTable />
+          </div>
+          <div className='col'>
+            <CourseSelectionMenu />
+          </div>
         </div>
-        <div className='col'>
-          <CourseSelectionMenu setCourseSelected={setUserSelectedCourses} userSelectedCourses={userSelectedCourses} />
-        </div>
-      </div>
-      <SelectedCoursesPanel userSelectedCourses={userSelectedCourses} onDeleteCourse={setUserSelectedCourses} />
+        <SelectedCoursesPanel />
+      </GlobalDataProvider>
     </div>
   );
 }
-
-export default App;
