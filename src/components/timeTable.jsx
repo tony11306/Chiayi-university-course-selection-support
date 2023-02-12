@@ -16,7 +16,6 @@ export default function TimeTable() {
         let isShowClassroomButtonOn = false
         cookies.forEach(cookie => {
             const [key, value] = cookie.split('=')
-            console.log(key, value)
             if (key === 'isShowTeacherButtonOn') {
                 isShowTeacherButtonOn = value === 'true'
             }

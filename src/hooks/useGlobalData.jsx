@@ -76,7 +76,6 @@ export function GlobalDataProvider({ children }) {
         setLoading(true);
         courseApi.getCourseDatas(toAPIFormat(filters))
             .then((courseDatas) => {
-                console.log(courseDatas)
                 setCourseDatas(courseDatas.data.result);
                 setSemesterYear(courseDatas.data.semester)
                 setLoading(false);
