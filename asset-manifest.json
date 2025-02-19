@@ -1,22 +1,15 @@
 {
   "files": {
-    "main.css": "/Chiayi-university-course-selection-support/static/css/main.f534431f.chunk.css",
-    "main.js": "/Chiayi-university-course-selection-support/static/js/main.7c47e77b.chunk.js",
-    "main.js.map": "/Chiayi-university-course-selection-support/static/js/main.7c47e77b.chunk.js.map",
-    "runtime-main.js": "/Chiayi-university-course-selection-support/static/js/runtime-main.490e50bd.js",
-    "runtime-main.js.map": "/Chiayi-university-course-selection-support/static/js/runtime-main.490e50bd.js.map",
-    "static/js/2.77f2967a.chunk.js": "/Chiayi-university-course-selection-support/static/js/2.77f2967a.chunk.js",
-    "static/js/2.77f2967a.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/2.77f2967a.chunk.js.map",
-    "static/js/3.c8c2a4e3.chunk.js": "/Chiayi-university-course-selection-support/static/js/3.c8c2a4e3.chunk.js",
-    "static/js/3.c8c2a4e3.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/3.c8c2a4e3.chunk.js.map",
+    "main.css": "/Chiayi-university-course-selection-support/static/css/main.98f18d48.css",
+    "main.js": "/Chiayi-university-course-selection-support/static/js/main.c20ebed6.js",
+    "static/js/453.dd4c597d.chunk.js": "/Chiayi-university-course-selection-support/static/js/453.dd4c597d.chunk.js",
     "index.html": "/Chiayi-university-course-selection-support/index.html",
-    "static/css/main.f534431f.chunk.css.map": "/Chiayi-university-course-selection-support/static/css/main.f534431f.chunk.css.map",
-    "static/js/2.77f2967a.chunk.js.LICENSE.txt": "/Chiayi-university-course-selection-support/static/js/2.77f2967a.chunk.js.LICENSE.txt"
+    "main.98f18d48.css.map": "/Chiayi-university-course-selection-support/static/css/main.98f18d48.css.map",
+    "main.c20ebed6.js.map": "/Chiayi-university-course-selection-support/static/js/main.c20ebed6.js.map",
+    "453.dd4c597d.chunk.js.map": "/Chiayi-university-course-selection-support/static/js/453.dd4c597d.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.490e50bd.js",
-    "static/js/2.77f2967a.chunk.js",
-    "static/css/main.f534431f.chunk.css",
-    "static/js/main.7c47e77b.chunk.js"
+    "static/css/main.98f18d48.css",
+    "static/js/main.c20ebed6.js"
   ]
 }
