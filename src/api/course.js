@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'https://ncyu-api.onrender.com'
+const BASE_URL = 'https://ncyu-api-879634933469.us-central1.run.app'
 
 export async function getCourseDatas({campus, day, educationLevel, startClass, endClass, grade, department, courseType}) {
     return axios.get(BASE_URL + '/course_selection', {
