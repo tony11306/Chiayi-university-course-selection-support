@@ -60,7 +60,7 @@ export default function MobileApp() {
                 )}
                 {activeTab === TABS.SEARCH && <CourseSelectionMenu />}
                 {activeTab === TABS.SELECTED && (
-                    <section className="selected-panel" aria-label="已選擇的課程">
+                    <section aria-label="已選擇的課程">
                         <h2 className="fs-4 mb-2">已選擇的課程</h2>
                         <SelectedCoursesList />
                     </section>

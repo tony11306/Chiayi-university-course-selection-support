@@ -43,7 +43,7 @@ export default function TimeTable() {
 
     return (
         <>
-        <section className="timetable-panel rounded shadow-sm">
+        <section>
             <div className="timetable-controls">
                 <div className="form-check form-switch">
                     <input

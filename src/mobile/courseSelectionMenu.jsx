@@ -12,7 +12,7 @@ export default function CourseSelectionMenu() {
     const semesterYear = data?.semester ?? '';
 
     return (
-        <section className="rounded course-selection-menu shadow-sm">
+        <section>
             <h2 className="fs-4 mb-2">{semesterYear} 課程清單</h2>
 
             <SearchComponent displaySettings={displaySettings} setDisplaySettings={setDisplaySettings} />

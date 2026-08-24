@@ -27,22 +27,6 @@
   color: var(--ink-2);
 }
 
-/* 大面板共用：半透明卡片，讓底層的橘藍漸層透出來。
-   刻意不加 backdrop-filter —— 面板會跟著捲動，模糊看不出來，
-   又會讓裡面搜尋框的毛玻璃取樣不到底層漸層。 */
-.view-mobile .timetable-panel,
-.view-mobile .course-selection-menu,
-.view-mobile .selected-panel {
-  background-color: rgba(255, 255, 255, 0.36);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(29, 36, 41, 0.05);
-}
-
-.view-mobile .timetable-panel {
-  padding: 12px;
-}
-
 .view-mobile .timetable-controls {
   display: flex;
   flex-wrap: wrap;
@@ -245,10 +229,6 @@
 .view-mobile .agenda-empty-title {
   font-size: 1.15rem;
   color: var(--ink);
-}
-
-.view-mobile .course-selection-menu {
-  padding: 15px;
 }
 
 .view-mobile .search-bar {
@@ -630,10 +610,6 @@
 .view-mobile .course-pill-campus[data-campus="xinmin"] { background-color: rgba(79, 122, 63, 0.15); color: #3e6431; }
 .view-mobile .course-pill-campus[data-campus="linsen"] { background-color: rgba(176, 122, 38, 0.16); color: #8a5d14; }
 .view-mobile .course-pill-campus[data-campus="online"] { background-color: rgba(74, 85, 96, 0.14); color: #414b54; }
-
-.view-mobile .selected-panel {
-  padding: 15px;
-}
 
 .view-mobile .selected-courses-summary {
   display: flex;
