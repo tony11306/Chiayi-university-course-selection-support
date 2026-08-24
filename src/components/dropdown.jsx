@@ -1,4 +1,5 @@
 import { useState } from "react"
+import RBDropdown from "react-bootstrap/Dropdown";
 
 function Dropdown({ dropdownName, dropdownItems, onSelected, defaultValue }) {
 
@@ -11,15 +12,23 @@ function Dropdown({ dropdownName, dropdownItems, onSelected, defaultValue }) {
     }
 
     return (
-        <div className="dropdown m-2">
+        <div className="m-2 d-inline-flex align-items-center">
             <label className="me-1 text-muted">{dropdownName} </label>
-                
-            <button className="btn dropdown-toggle btn-outline-dark shadow-none" type="button" data-bs-toggle="dropdown">
-                {currentItem}
-            </button>
-            <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                { dropdownItems.map((dropdownItem, index) => { return <li key={index} onClick={ () => changeCurrentItem(dropdownItem) }><a className="dropdown-item">{ dropdownItem }</a></li> }) }
-            </ul>
+            <RBDropdown>
+                <RBDropdown.Toggle variant="outline-dark" size="sm" className="shadow-none">
+                    {currentItem}
+                </RBDropdown.Toggle>
+                <RBDropdown.Menu>
+                    {dropdownItems.map(dropdownItem => (
+                        <RBDropdown.Item
+                            key={dropdownItem}
+                            onClick={() => changeCurrentItem(dropdownItem)}
+                        >
+                            {dropdownItem}
+                        </RBDropdown.Item>
+                    ))}
+                </RBDropdown.Menu>
+            </RBDropdown>
         </div>
     )
 }
