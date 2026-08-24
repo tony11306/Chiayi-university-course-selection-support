@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import CourseSelectionMenu from './courseSelectionMenu';
-import { useGlobalData } from '../hooks/useGlobalData';
 import { renderWithStore } from '../testUtils/render';
 import { MOBILE_WIDTH, DESKTOP_WIDTH } from '../testUtils/viewport';
 
@@ -36,23 +34,10 @@ const algorithms = makeCourse({
     上課時間: [{ 星期: '三', 開始節次: '5', 結束節次: '7' }],
 });
 
-function TabProbe() {
-    const { activeTab, setActiveTab } = useGlobalData();
-    return (
-        <>
-            <span data-testid="active-tab">{activeTab}</span>
-            <button type="button" onClick={() => setActiveTab('search')}>去找課</button>
-        </>
-    );
-}
-
 function renderMenu({ courses, width = MOBILE_WIDTH } = {}) {
     window.innerWidth = width;
     return renderWithStore(
-        <>
-            <TabProbe />
-            <CourseSelectionMenu />
-        </>,
+        <CourseSelectionMenu />,
         { courses }
     );
 }
@@ -72,72 +57,18 @@ test('顯示學期', async () => {
     expect(await screen.findByText(/114-1/)).toBeInTheDocument();
 });
 
-test('手機在清單上方常駐課表預覽', async () => {
-    renderMenu({ courses: [dataStructure] });
-    await screen.findByText('演算法');
-
-    expect(screen.getAllByTestId(/^mini-slot-/)).toHaveLength(84);
-    expect(screen.getByTestId('mini-slot-一-1')).toHaveAttribute('data-state', 'occupied');
-});
-
-test('桌機不需要預覽，因為課表就在旁邊', async () => {
-    renderMenu({ courses: [dataStructure], width: DESKTOP_WIDTH });
-    await screen.findByText('演算法');
-
-    expect(screen.queryAllByTestId(/^mini-slot-/)).toHaveLength(0);
-});
-
-test('加課之後預覽的格子立刻變成已佔用', async () => {
+test('搜尋列與篩選按鈕固定在同一區，清單在下面', async () => {
     renderMenu();
-    await userEvent.click(await screen.findByRole('button', { name: '加入 資料結構' }));
 
-    await waitFor(() =>
-        expect(screen.getByTestId('mini-slot-一-1')).toHaveAttribute('data-state', 'occupied')
-    );
-    expect(screen.getByTestId('mini-slot-一-1')).toHaveAttribute('data-highlight', 'true');
+    const searchBar = await screen.findByPlaceholderText(/課名/);
+    expect(searchBar.closest('.search-dock')).not.toBeNull();
+    expect(screen.getByRole('button', { name: /^篩選/ })).toBeInTheDocument();
+    expect(await screen.findByTestId('course-list')).toBeInTheDocument();
 });
 
-test('輕觸課程卡會在預覽上標出它的位置', async () => {
-    renderMenu();
-    await userEvent.click(await screen.findByText('演算法'));
+test('桌機沒有篩選按鈕，欄位直接排在頁面上', async () => {
+    renderMenu({ width: DESKTOP_WIDTH });
 
-    expect(screen.getByTestId('mini-slot-三-5')).toHaveAttribute('data-state', 'preview');
-
-    expect(screen.getAllByText('演算法')).toHaveLength(2);
-});
-
-test('再輕觸一次會取消預覽', async () => {
-    renderMenu();
-    const card = async () => within(await screen.findByTestId('course-list')).getByText('演算法');
-
-    await userEvent.click(await card());
-    expect(screen.getByTestId('mini-slot-三-5')).toHaveAttribute('data-state', 'preview');
-
-    await userEvent.click(await card());
-    expect(screen.getByTestId('mini-slot-三-5')).toHaveAttribute('data-state', 'free');
-});
-
-test('預覽衝堂的課會標成 conflict', async () => {
-    const overlapping = makeCourse({
-        開課序號: '03',
-        永久課號: 'CS301',
-        課程名稱: '程式設計(一)',
-        上課時間: [{ 星期: '一', 開始節次: '3', 結束節次: '4' }],
-    });
-    getCourseDatas.mockResolvedValue({ data: { semester: '114-1', result: [overlapping] } });
-    renderMenu({ courses: [dataStructure] });
-
-    await userEvent.click(await screen.findByText('程式設計(一)'));
-    expect(screen.getByTestId('mini-slot-一-2')).toHaveAttribute('data-state', 'conflict');
-});
-
-test('點課表預覽會切到課表分頁', async () => {
-    renderMenu({ courses: [dataStructure] });
-    await screen.findByText('演算法');
-
-    await userEvent.click(screen.getByRole('button', { name: '去找課' }));
-    expect(screen.getByTestId('active-tab')).toHaveTextContent('search');
-
-    await userEvent.click(screen.getByRole('button', { name: /完整課表/ }));
-    expect(screen.getByTestId('active-tab')).toHaveTextContent('timetable');
+    expect(await screen.findByLabelText('上課系所')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^篩選/ })).not.toBeInTheDocument();
 });

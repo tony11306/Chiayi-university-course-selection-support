@@ -234,122 +234,6 @@
   color: var(--ink);
 }
 
-.view-mobile .mini-timetable {
-  background-color: rgba(255, 255, 255, 0.46);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 9px 10px 8px;
-}
-
-.view-mobile .mini-timetable-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.view-mobile .mini-timetable-count {
-  font-size: 0.72rem;
-  color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.view-mobile .mini-timetable-toggle {
-  margin-left: auto;
-  padding: 0 4px;
-  min-height: 32px;
-  font-size: 0.78rem;
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.view-mobile .mini-timetable-grid {
-  display: grid;
-  grid-template-columns: 15px repeat(6, 1fr);
-  gap: 2px;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-}
-
-.view-mobile .mini-timetable-day,
-.view-mobile .mini-timetable-period {
-  font-size: 0.6rem;
-  color: var(--ink-2);
-  text-align: center;
-  line-height: 1.1;
-}
-
-.view-mobile .mini-timetable-period {
-  font-size: 0.53rem;
-  color: var(--ink-3);
-  text-align: right;
-  line-height: 9px;
-  height: 9px;
-}
-
-.view-mobile .mini-timetable-cell {
-  height: 9px;
-  border-radius: 2px;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.view-mobile .mini-timetable-cell[data-state="occupied"] {
-  background-color: var(--occupied);
-}
-
-.view-mobile .mini-timetable-cell[data-state="preview"] {
-  background-color: var(--ink);
-}
-
-.view-mobile .mini-timetable-cell[data-state="conflict"] {
-  background-color: var(--warm);
-}
-
-.view-mobile .mini-timetable-cell[data-highlight="true"] {
-  animation: mini-pop 0.45s ease-out;
-}
-
-@keyframes mini-pop {
-  0% { transform: scaleY(0.2); opacity: 0.3; }
-  60% { transform: scaleY(1.25); }
-  100% { transform: scaleY(1); opacity: 1; }
-}
-
-.view-mobile .mini-timetable-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 8px;
-  font-size: 0.68rem;
-  color: var(--ink-2);
-}
-
-.view-mobile .mini-timetable-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.view-mobile .mini-timetable-swatch {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  display: inline-block;
-}
-
-.view-mobile .mini-timetable-swatch[data-state="occupied"] { background-color: var(--occupied); }
-.view-mobile .mini-timetable-swatch[data-state="preview"] { background-color: var(--ink); }
-.view-mobile .mini-timetable-swatch[data-state="conflict"] { background-color: var(--warm); }
-
-.view-mobile .mini-timetable-hint {
-  margin: 7px 0 0;
-  font-size: 0.7rem;
-  color: var(--ink-3);
-  line-height: 1.45;
-}
-
 .view-mobile .course-selection-menu {
   background-color: rgba(221, 215, 215, 0.39);
   padding: 15px;
@@ -364,6 +248,38 @@
   width: 100%;
   margin: 6px 0 10px;
   color: var(--ink);
+}
+
+.view-mobile .search-dock {
+  position: sticky;
+  top: 6px;
+  z-index: 1020;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 7px;
+  margin: 6px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(29, 36, 41, 0.08);
+}
+
+.view-mobile .search-dock .search-bar {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  background-color: rgba(29, 36, 41, 0.05);
+}
+
+.view-mobile .search-dock .filter-chip-open {
+  flex: none;
+  border-style: solid;
+  border-color: rgba(21, 105, 127, 0.35);
+  background-color: rgba(21, 105, 127, 0.08);
+  color: var(--accent);
 }
 
 .view-mobile .filter-chips {
@@ -505,19 +421,9 @@
   cursor: default;
 }
 
-.view-mobile .course-card[role="button"] {
-  cursor: pointer;
-}
-
 .view-mobile .course-card[data-conflict="true"] {
   background-color: rgba(255, 255, 255, 0.42);
   border-style: dashed;
-}
-
-.view-mobile .course-card[data-previewing="true"] {
-  outline: 2px solid var(--ink);
-  outline-offset: -1px;
-  background-color: rgba(255, 255, 255, 0.94);
 }
 
 .view-mobile .course-card-body {

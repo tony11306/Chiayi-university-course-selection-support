@@ -48,7 +48,6 @@ export function GlobalDataProvider({ children }) {
 
     const [selectedDay, setSelectedDayState] = useState(today);
     const [timetableView, setTimetableView] = useState(TIMETABLE_VIEW.DAY);
-    const [previewCourse, setPreviewCourse] = useState(null);
     const [toast, setToast] = useState(null);
     const toastId = useRef(0);
 
@@ -71,7 +70,6 @@ export function GlobalDataProvider({ children }) {
     );
 
     const addCourse = useCallback(course => {
-        setPreviewCourse(null);
         setUserSelectedCourses(courses =>
             courses.some(selected => courseKey(selected) === courseKey(course))
                 ? courses
@@ -126,14 +124,12 @@ export function GlobalDataProvider({ children }) {
         setSelectedDay,
         timetableView,
         setTimetableView,
-        previewCourse,
-        setPreviewCourse,
         toast,
         showToast,
         dismissToast,
     }), [
         filters, userSelectedCourses, occupancy, totalCredits, isSelected, findConflictWith,
-        addCourse, removeCourse, clearCourses, restoreCourses, activeTab, previewCourse,
+        addCourse, removeCourse, clearCourses, restoreCourses, activeTab,
         selectedDay, setSelectedDay, timetableView, toast, showToast, dismissToast,
     ]);
 

@@ -18,8 +18,6 @@ export default function CourseCard({
     variant,
     conflictWith = null,
     onAction,
-    onPreview,
-    isPreviewing = false,
     showClassroom = false,
 }) {
     const isAdd = variant === 'add';
@@ -30,18 +28,6 @@ export default function CourseCard({
         <div
             className="course-card"
             data-conflict={conflictWith ? 'true' : undefined}
-            data-previewing={isPreviewing ? 'true' : undefined}
-            {...(onPreview ? {
-                role: 'button',
-                tabIndex: 0,
-                onClick: () => onPreview(course),
-                onKeyDown: event => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onPreview(course);
-                    }
-                },
-            } : {})}
         >
             <div className="course-card-body">
                 <div className="course-card-title">
@@ -51,7 +37,6 @@ export default function CourseCard({
                             href={course.教學大綱}
                             target="_blank"
                             rel="noreferrer"
-                            onClick={event => event.stopPropagation()}
                         >
                             {course.課程名稱}
                         </a>
@@ -67,7 +52,6 @@ export default function CourseCard({
                         href={teacherSearchUrl(course.授課老師)}
                         target="_blank"
                         rel="noreferrer"
-                        onClick={event => event.stopPropagation()}
                     >
                         {course.授課老師}
                     </a>
@@ -100,10 +84,7 @@ export default function CourseCard({
                 className={`course-card-action ${isAdd ? 'is-add' : 'is-remove'}`}
                 aria-label={actionLabel}
                 disabled={isDisabled}
-                onClick={event => {
-                    event.stopPropagation();
-                    onAction(course);
-                }}
+                onClick={() => onAction(course)}
             >
                 <span aria-hidden="true">{isAdd ? '＋' : '−'}</span>
             </button>

@@ -159,22 +159,6 @@ test('activeTab 預設是課表，可以切換', async () => {
     expect(store.activeTab).toBe('search');
 });
 
-test('previewCourse 可以設定與清除', () => {
-    renderStore();
-    expect(store.previewCourse).toBeNull();
-    act(() => store.setPreviewCourse(calculus));
-    expect(store.previewCourse).toEqual(calculus);
-    act(() => store.setPreviewCourse(null));
-    expect(store.previewCourse).toBeNull();
-});
-
-test('加入課程時會清掉預覽', () => {
-    renderStore();
-    act(() => store.setPreviewCourse(dataStructure));
-    act(() => store.addCourse(dataStructure));
-    expect(store.previewCourse).toBeNull();
-});
-
 test('selectedDay 預設是今天，星期日退回星期一', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-08-26T09:00:00'));

@@ -84,44 +84,6 @@ test('移除變體用的按鈕會回呼 onAction', async () => {
     expect(onAction).toHaveBeenCalledWith(course);
 });
 
-test('點卡片本體會預覽這門課的位置', async () => {
-    const onPreview = vi.fn();
-    render(<CourseCard course={course} variant="add" onAction={() => {}} onPreview={onPreview} />);
-    await userEvent.click(screen.getByText('資料結構'));
-    expect(onPreview).toHaveBeenCalledWith(course);
-});
-
-test('點加入不會同時觸發預覽', async () => {
-    const onPreview = vi.fn();
-    const onAction = vi.fn();
-    render(<CourseCard course={course} variant="add" onAction={onAction} onPreview={onPreview} />);
-    await userEvent.click(screen.getByRole('button', { name: /加入/ }));
-    expect(onAction).toHaveBeenCalledTimes(1);
-    expect(onPreview).not.toHaveBeenCalled();
-});
-
-test('衝堂的卡片仍然可以預覽，讓使用者看到為什麼撞', async () => {
-    const onPreview = vi.fn();
-    const conflict = makeCourse({ 永久課號: 'MA101', 課程名稱: '微積分(二)' });
-    render(
-        <CourseCard course={course} variant="add" conflictWith={conflict} onAction={() => {}} onPreview={onPreview} />
-    );
-    await userEvent.click(screen.getByText('資料結構'));
-    expect(onPreview).toHaveBeenCalledWith(course);
-});
-
-test('正在預覽的卡片會標記出來', () => {
-    const { container } = render(
-        <CourseCard course={course} variant="add" onAction={() => {}} isPreviewing />
-    );
-    expect(container.firstChild).toHaveAttribute('data-previewing', 'true');
-});
-
-test('沒有 onPreview 時卡片不是可點的', () => {
-    const { container } = render(<CourseCard course={course} variant="remove" onAction={() => {}} />);
-    expect(container.firstChild).not.toHaveAttribute('role', 'button');
-});
-
 test('showClassroom 會把上課教室帶進 meta，已選清單需要它', () => {
     render(<CourseCard course={course} variant="remove" onAction={() => {}} showClassroom />);
     expect(screen.getByText(/工程館 A203/)).toBeInTheDocument();

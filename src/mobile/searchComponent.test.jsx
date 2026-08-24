@@ -42,6 +42,14 @@ test('手機把篩選收在底部 sheet 裡，預設不顯示欄位', () => {
     expect(screen.getByRole('button', { name: /^篩選/ })).toBeInTheDocument();
 });
 
+test('手機的搜尋框跟篩選按鈕固定在同一列，滑到清單底部也能操作', () => {
+    renderSearch({ width: MOBILE_WIDTH });
+
+    const dock = screen.getByPlaceholderText(/課名/).closest('.search-dock');
+    expect(dock).not.toBeNull();
+    expect(within(dock).getByRole('button', { name: /^篩選/ })).toBeInTheDocument();
+});
+
 test('手機點篩選會打開 sheet，裡面是原生 select', async () => {
     renderSearch({ width: MOBILE_WIDTH });
     await userEvent.click(screen.getByRole('button', { name: /^篩選/ }));

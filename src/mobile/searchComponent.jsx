@@ -31,14 +31,27 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
     const fields = <FilterFields filters={filters} onFilterChange={onFilterChange} />;
 
     return (
-        <div className="course-search">
-            <input
-                className="search-bar rounded-pill border-0 shadow-sm"
-                value={displaySettings.keyword}
-                onChange={event => setDisplaySettings(s => ({ ...s, keyword: event.target.value }))}
-                placeholder="課名、系所、老師、學制"
-                aria-label="搜尋課程"
-            />
+        <>
+            <div className="search-dock">
+                <input
+                    className="search-bar rounded-pill border-0 shadow-sm"
+                    value={displaySettings.keyword}
+                    onChange={event => setDisplaySettings(s => ({ ...s, keyword: event.target.value }))}
+                    placeholder="課名、系所、老師、學制"
+                    aria-label="搜尋課程"
+                />
+
+                {isMobile && (
+                    <button
+                        type="button"
+                        className="filter-chip filter-chip-open"
+                        onClick={() => setIsSheetOpen(true)}
+                    >
+                        篩選
+                        {active.length > 0 ? <span className="filter-chip-count">{active.length}</span> : null}
+                    </button>
+                )}
+            </div>
 
             <div className="filter-chips">
                 {active.map(field => (
@@ -53,17 +66,6 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
                         <span className="filter-chip-remove" aria-hidden="true">×</span>
                     </button>
                 ))}
-
-                {isMobile && (
-                    <button
-                        type="button"
-                        className="filter-chip filter-chip-open"
-                        onClick={() => setIsSheetOpen(true)}
-                    >
-                        篩選
-                        {active.length > 0 ? <span className="filter-chip-count">{active.length}</span> : null}
-                    </button>
-                )}
 
                 {active.length > 0 && (
                     <button type="button" className="btn btn-link btn-sm shadow-none filter-clear-all" onClick={clearAllFilters}>
@@ -108,6 +110,6 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
                     </Offcanvas.Body>
                 </Offcanvas>
             ) : fields}
-        </div>
+        </>
     );
 }

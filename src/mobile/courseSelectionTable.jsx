@@ -15,7 +15,7 @@ function matchesKeyword(course, keyword) {
 }
 
 export default function CourseSelectionTable({ displaySettings }) {
-    const { isSelected, findConflictWith, addCourse, setPreviewCourse, previewCourse, showToast } = useGlobalData();
+    const { isSelected, findConflictWith, addCourse, showToast } = useGlobalData();
     const { data, isFetching, error } = useCourseDatas();
 
     const courseDatas = data?.result ?? [];
@@ -89,10 +89,6 @@ export default function CourseSelectionTable({ displaySettings }) {
                         variant="add"
                         conflictWith={conflictWith}
                         onAction={onSelected}
-                        onPreview={picked => setPreviewCourse(
-                            previewCourse && courseKey(previewCourse) === courseKey(picked) ? null : picked
-                        )}
-                        isPreviewing={Boolean(previewCourse) && courseKey(previewCourse) === courseKey(course)}
                     />
                 ))}
             </div>
