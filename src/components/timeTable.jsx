@@ -1,11 +1,23 @@
 import html2canvas from "html2canvas";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
-import { useGlobalData } from "../hooks/useGlobalData";
+import { TIMETABLE_VIEW, useGlobalData } from "../hooks/useGlobalData";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { DAYS, PERIODS, courseSlots } from "../lib/schedule";
+import DayAgenda from "./dayAgenda";
 
 export default function TimeTable() {
-    const { userSelectedCourses } = useGlobalData();
-    const tableRef = useRef(null);
+    const {
+        userSelectedCourses,
+        occupancy,
+        showToast,
+        selectedDay,
+        setSelectedDay,
+        timetableView,
+        setTimetableView,
+    } = useGlobalData();
+    const isMobile = useIsMobile();
+    const exportRef = useRef(null);
     const [displaySettings, setDisplaySettings] = useState(() => ({
         isShowTeacherButtonOn: Cookies.get('isShowTeacherButtonOn') === 'true',
         isShowClassroomButtonOn: Cookies.get('isShowClassroomButtonOn') === 'true',
@@ -14,147 +26,189 @@ export default function TimeTable() {
     useEffect(() => {
         Cookies.set('isShowTeacherButtonOn', displaySettings.isShowTeacherButtonOn);
         Cookies.set('isShowClassroomButtonOn', displaySettings.isShowClassroomButtonOn);
-    }, [displaySettings])
+    }, [displaySettings]);
 
-    function downloadURI(uri, fileName) {
-        const link = document.createElement("a")
-        link.href = uri.replace('image/png', 'image/octet-stream')
-        link.download = fileName
-        link.click()
-    }
+    const coursesPerDay = useMemo(() => {
+        const counts = Object.fromEntries(DAYS.map(day => [day, new Set()]));
+        for (const course of userSelectedCourses) {
+            for (const slot of courseSlots(course)) {
+                const day = slot.split('-')[0];
+                if (counts[day]) counts[day].add(course.課程名稱);
+            }
+        }
+        return Object.fromEntries(DAYS.map(day => [day, counts[day].size]));
+    }, [userSelectedCourses]);
+
+    const isWeekVisible = !isMobile || timetableView === TIMETABLE_VIEW.WEEK;
 
     function onExportButtonClick() {
-        const isConfirm = window.confirm('確定下載「選課結果.png」？(可能需要等待幾秒)')
-        if (!isConfirm) {
-            return
-        }
-        const table = tableRef.current
+        const exportRoot = exportRef.current;
+        if (!exportRoot) return;
+
         const originalStyles = {
-            backgroundImage: table.style.backgroundImage,
-            borderRadius: table.style.borderRadius,
-            backgroundColor: table.style.backgroundColor,
-            width: table.style.width,
-        }
+            backgroundImage: exportRoot.style.backgroundImage,
+            borderRadius: exportRoot.style.borderRadius,
+            backgroundColor: exportRoot.style.backgroundColor,
+            width: exportRoot.style.width,
+            padding: exportRoot.style.padding,
+        };
 
-        table.style.backgroundImage = "linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))"
-        table.style.backgroundColor = "rgba(255,255,255, 0.3)"
-        table.style.borderRadius = "30px"
-        table.style.width = "800px"
+        Object.assign(exportRoot.style, {
+            backgroundImage: 'linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))',
+            backgroundColor: 'rgba(255,255,255, 0.3)',
+            borderRadius: '30px',
+            width: '800px',
+            padding: '20px',
+        });
 
-        html2canvas(table, {backgroundColor: null}).then(canvas => {
-            const img = canvas.toDataURL('image/png')
-            downloadURI(img, "選課結果.png")
-        })
-        Object.assign(table.style, originalStyles)
+        html2canvas(exportRoot, { backgroundColor: null })
+            .then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+                link.download = '選課結果.png';
+                link.click();
+                showToast({ title: '已下載 選課結果.png' });
+            })
+            .catch(() => {
+                showToast({ title: '圖片產生失敗，請再試一次' });
+            })
+            // 原本這行寫在 then 外面同步執行，樣式會在截圖完成前就被還原
+            .finally(() => {
+                Object.assign(exportRoot.style, originalStyles);
+            });
     }
-
-    const CLASSES_COUNT = 14
-    const DAYS = 6
-    const CHINESE_WORD_TO_NUMBER = {
-        '一': 1,
-        '二': 2,
-        '三': 3,
-        '四': 4,
-        '五': 5,
-        '六': 6,
-        '日': 7,
-    }
-    const CLASS_MAP = {
-        '1': 1,
-        '2': 2,
-        '3': 3,
-        '4': 4,
-        'F': 5,
-        '5': 6,
-        '6': 7,
-        '7': 8,
-        '8': 9,
-        '9': 10,
-        'A': 11,
-        'B': 12,
-        'C': 13,
-        'D': 14
-    }
-    const tableRowsConst = [
-        { 'nThClassText': '第 1 節', 'classTime': '08:10 ~ 09:00' },
-        { 'nThClassText': '第 2 節', 'classTime': '09:10 ~ 10:00' },
-        { 'nThClassText': '第 3 節', 'classTime': '10:10 ~ 11:00' },
-        { 'nThClassText': '第 4 節', 'classTime': '11:10 ~ 12:00' },
-        { 'nThClassText': '第 F 節', 'classTime': '12:10 ~ 13:00' },
-        { 'nThClassText': '第 5 節', 'classTime': '13:20 ~ 14:10' },
-        { 'nThClassText': '第 6 節', 'classTime': '14:20 ~ 15:10' },
-        { 'nThClassText': '第 7 節', 'classTime': '15:20 ~ 16:10' },
-        { 'nThClassText': '第 8 節', 'classTime': '16:20 ~ 17:10' },
-        { 'nThClassText': '第 9 節', 'classTime': '17:20 ~ 18:10' },
-        { 'nThClassText': '第 A 節', 'classTime': '18:30 ~ 19:15' },
-        { 'nThClassText': '第 B 節', 'classTime': '19:20 ~ 20:05' },
-        { 'nThClassText': '第 C 節', 'classTime': '20:10 ~ 21:55' },
-        { 'nThClassText': '第 D 節', 'classTime': '21:00 ~ 21:45' },
-    ]
-
-    const courseTdValues = new Array(CLASSES_COUNT).fill(0).map(() => new Array(DAYS).fill(''))
-
-    userSelectedCourses.forEach(course => {
-        course['上課時間'].forEach(classTime => {
-            const day = CHINESE_WORD_TO_NUMBER[classTime['星期']] - 1
-            const start = CLASS_MAP[classTime['開始節次']] - 1
-            const end = CLASS_MAP[classTime['結束節次']] - 1
-            for (let i = start; i <= end; ++i) {
-                courseTdValues[i][day] = course
-            }
-        })
-    })
 
     return (
-        <div className="table-responsive shadow-sm  curriculum-table rounded" ref={tableRef}>
-            <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setDisplaySettings(s => ({ ...s, isShowTeacherButtonOn: !s.isShowTeacherButtonOn }))} checked={displaySettings.isShowTeacherButtonOn} />
-                <label className="form-check-label" htmlFor="flexSwitchCheckTeacher" >顯示授課老師</label>
+        <section className="timetable-panel rounded shadow-sm">
+            <div className="timetable-controls">
+                <div className="form-check form-switch">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="flexSwitchCheckTeacher"
+                        onChange={() => setDisplaySettings(s => ({ ...s, isShowTeacherButtonOn: !s.isShowTeacherButtonOn }))}
+                        checked={displaySettings.isShowTeacherButtonOn}
+                    />
+                    <label className="form-check-label" htmlFor="flexSwitchCheckTeacher">顯示授課老師</label>
+                </div>
+                <div className="form-check form-switch">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="flexSwitchCheckClassroom"
+                        onChange={() => setDisplaySettings(s => ({ ...s, isShowClassroomButtonOn: !s.isShowClassroomButtonOn }))}
+                        checked={displaySettings.isShowClassroomButtonOn}
+                    />
+                    <label className="form-check-label" htmlFor="flexSwitchCheckClassroom">顯示課堂教室</label>
+                </div>
+                <button
+                    type="button"
+                    className="btn-icon-circle border-0 shadow-none ms-auto"
+                    title="下載課表"
+                    aria-label="下載課表"
+                    disabled={userSelectedCourses.length === 0}
+                    onClick={onExportButtonClick}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path fillRule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5Z" />
+                        <path d="M1.6 11.85h1.2c.9 0 1.4.55 1.4 1.35 0 .8-.5 1.35-1.4 1.35H2.4v1.3H1.6v-4Zm.8.65v1.4h.3c.45 0 .7-.25.7-.7s-.25-.7-.7-.7h-.3Zm2.9-.65h.8l1.5 2.5h.05v-2.5h.75v4h-.7l-1.6-2.6H6.1v2.6H5.3v-4Zm5.6 1.9h1.6v.8c0 .8-.6 1.4-1.6 1.4-1.1 0-1.75-.7-1.75-2.05 0-1.35.65-2.1 1.75-2.1.85 0 1.45.45 1.55 1.2h-.8c-.1-.35-.35-.55-.75-.55-.6 0-.95.45-.95 1.45 0 1 .35 1.4.95 1.4.5 0 .8-.25.8-.7v-.2h-.8v-.65Z" />
+                    </svg>
+                </button>
             </div>
-            <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setDisplaySettings(s => ({ ...s, isShowClassroomButtonOn: !s.isShowClassroomButtonOn }))} checked={displaySettings.isShowClassroomButtonOn} />
-                <label className="form-check-label" htmlFor="flexSwitchCheckClassroom" >顯示課堂教室</label>
-            </div>
-            <button type="button" className=" btn-icon-circle float-end border-0 shadow-none me-2" title="下載課表" onClick={onExportButtonClick}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-filetype-png" viewBox="0 0 16 16">
-                    <path fillRule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5Zm-3.76 8.132c.076.153.123.317.14.492h-.776a.797.797 0 0 0-.097-.249.689.689 0 0 0-.17-.19.707.707 0 0 0-.237-.126.96.96 0 0 0-.299-.044c-.285 0-.506.1-.665.302-.156.201-.234.484-.234.85v.498c0 .234.032.439.097.615a.881.881 0 0 0 .304.413.87.87 0 0 0 .519.146.967.967 0 0 0 .457-.096.67.67 0 0 0 .272-.264c.06-.11.091-.23.091-.363v-.255H8.82v-.59h1.576v.798c0 .193-.032.377-.097.55a1.29 1.29 0 0 1-.293.458 1.37 1.37 0 0 1-.495.313c-.197.074-.43.111-.697.111a1.98 1.98 0 0 1-.753-.132 1.447 1.447 0 0 1-.533-.377 1.58 1.58 0 0 1-.32-.58 2.482 2.482 0 0 1-.105-.745v-.506c0-.362.067-.678.2-.95.134-.271.328-.482.582-.633.256-.152.565-.228.926-.228.238 0 .45.033.636.1.187.066.348.158.48.275.133.117.238.253.314.407Zm-8.64-.706H0v4h.791v-1.343h.803c.287 0 .531-.057.732-.172.203-.118.358-.276.463-.475a1.42 1.42 0 0 0 .161-.677c0-.25-.053-.475-.158-.677a1.176 1.176 0 0 0-.46-.477c-.2-.12-.443-.179-.732-.179Zm.545 1.333a.795.795 0 0 1-.085.381.574.574 0 0 1-.238.24.794.794 0 0 1-.375.082H.788v-1.406h.66c.218 0 .389.06.512.182.123.12.185.295.185.521Zm1.964 2.666V13.25h.032l1.761 2.675h.656v-3.999h-.75v2.66h-.032l-1.752-2.66h-.662v4h.747Z" />
-                </svg>
-            </button>
-            
-            <table className="table fs-6 table-bordered table-borderless non-border">
-                <tbody>
-                    <tr>
-                        <th>節\\日</th>
-                        <th>星期一</th>
-                        <th>星期二</th>
-                        <th>星期三</th>
-                        <th>星期四</th>
-                        <th>星期五</th>
-                        <th>星期六</th>
-                    </tr>
-                    {
-                        tableRowsConst.map((row, index) =>
-                            <tr key={'row0' + index}>
-                                <td>{row['nThClassText']}<br />{row['classTime']}</td>
-                                {
-                                    courseTdValues[index].map((courseTdValue, index2) =>
-                                        <td key={'col0' + index2} className={courseTdValue ? "used-course-td" : "unused-course-td"}>
-                                            {courseTdValue ? "【" + courseTdValue['課程名稱'] + "】" : ""}
-                                            <br />
 
-                                            {displaySettings.isShowTeacherButtonOn ? <br/> : ""}
-                                            {displaySettings.isShowTeacherButtonOn ? courseTdValue['授課老師'] : ""}
-                                            {displaySettings.isShowClassroomButtonOn ? <br/> : ""}
-                                            {displaySettings.isShowClassroomButtonOn ? courseTdValue['上課教室'] : ""}
-                                        </td>
-                                    )
-                                }
-                            </tr>
-                        )
-                    }
+            {isMobile && (
+                <div className="day-tabs" role="tablist" aria-label="星期">
+                    {DAYS.map(day => (
+                        <button
+                            key={day}
+                            type="button"
+                            role="tab"
+                            className="day-tab"
+                            aria-selected={timetableView === TIMETABLE_VIEW.DAY && selectedDay === day}
+                            aria-label={`星期${day} ${coursesPerDay[day]} 堂`}
+                            onClick={() => setSelectedDay(day)}
+                        >
+                            <span className="day-tab-name">{day}</span>
+                            <span className="day-tab-count">{coursesPerDay[day]} 堂</span>
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        role="tab"
+                        className="day-tab"
+                        aria-selected={timetableView === TIMETABLE_VIEW.WEEK}
+                        aria-label="整週"
+                        onClick={() => setTimetableView(TIMETABLE_VIEW.WEEK)}
+                    >
+                        <span className="day-tab-name">週</span>
+                        <span className="day-tab-count">全表</span>
+                    </button>
+                </div>
+            )}
+
+            {isMobile && timetableView === TIMETABLE_VIEW.DAY && (
+                <DayAgenda
+                    courses={userSelectedCourses}
+                    day={selectedDay}
+                    showTeacher={displaySettings.isShowTeacherButtonOn}
+                    showClassroom={displaySettings.isShowClassroomButtonOn}
+                />
+            )}
+
+            {/*
+              週表格永遠掛著，只是在單日檢視時移到畫面外 —— 這樣匯出 PNG
+              不必先切檢視，html2canvas 也不能截 display:none 的節點。
+            */}
+            <div
+                ref={exportRef}
+                data-testid="timetable-export-root"
+                className={isWeekVisible ? 'timetable-week' : 'timetable-week is-offscreen'}
+                aria-hidden={isWeekVisible ? undefined : 'true'}
+            >
+                <WeekGrid
+                    occupancy={occupancy}
+                    showTeacher={displaySettings.isShowTeacherButtonOn}
+                    showClassroom={displaySettings.isShowClassroomButtonOn}
+                />
+            </div>
+        </section>
+    );
+}
+
+function WeekGrid({ occupancy, showTeacher, showClassroom }) {
+    return (
+        <div className="table-responsive">
+            <table className="table curriculum-table mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">節次</th>
+                        {DAYS.map(day => <th key={day} scope="col">星期{day}</th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {PERIODS.map((period, index) => (
+                        <tr key={period.code}>
+                            <th scope="row" className="curriculum-period">
+                                第 {period.code} 節<br />{period.start} ~ {period.end}
+                            </th>
+                            {DAYS.map(day => {
+                                const course = occupancy[`${day}-${index}`];
+                                return (
+                                    <td key={day} className={course ? 'used-course-td' : 'unused-course-td'}>
+                                        {course ? (
+                                            <>
+                                                {`【${course.課程名稱}】`}
+                                                {showTeacher ? <><br />{course.授課老師}</> : null}
+                                                {showClassroom ? <><br />{course.上課教室}</> : null}
+                                            </>
+                                        ) : null}
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
-    )
-
+    );
 }

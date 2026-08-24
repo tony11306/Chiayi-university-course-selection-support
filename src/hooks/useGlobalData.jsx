@@ -1,6 +1,7 @@
-import { useEffect, useContext, useState, useMemo, createContext } from "react";
+import { useEffect, useContext, useState, useMemo, useCallback, useRef, createContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as courseApi from "../api/course";
+import { buildOccupancy, findConflict, totalCredits as sumCredits, courseKey, DAYS } from "../lib/schedule";
 
 const GlobalDataContext = createContext(null);
 
@@ -13,11 +14,17 @@ const INITIAL_FILTERS = {
     grade: '不限',
     department: '不限',
     courseType: '不限',
-    keyword: '',
-    isShowConflictedCourses: true,
 };
 
 const FILTER_KEYS = ['campus', 'day', 'educationLevel', 'startClass', 'endClass', 'grade', 'department', 'courseType'];
+
+export const TABS = { TIMETABLE: 'timetable', SEARCH: 'search', SELECTED: 'selected' };
+export const TIMETABLE_VIEW = { DAY: 'day', WEEK: 'week' };
+
+function today() {
+    const weekday = new Date().getDay(); // 0 = 星期日
+    return weekday >= 1 && weekday <= 6 ? DAYS[weekday - 1] : DAYS[0];
+}
 
 function toAPIFormat(filters) {
     const apiFormatFilters = {};
@@ -37,17 +44,100 @@ export function GlobalDataProvider({ children }) {
             return [];
         }
     });
+    const [activeTab, setActiveTab] = useState(TABS.TIMETABLE);
+    // 課表的日期與檢視放在 store，是因為 toast 的「看課表」要能跳到那門課所在的星期
+    const [selectedDay, setSelectedDayState] = useState(today);
+    const [timetableView, setTimetableView] = useState(TIMETABLE_VIEW.DAY);
+    const [previewCourse, setPreviewCourse] = useState(null);
+    const [toast, setToast] = useState(null);
+    const toastId = useRef(0);
 
     useEffect(() => {
         localStorage.setItem('userSelectedCourses', JSON.stringify(userSelectedCourses));
     }, [userSelectedCourses]);
+
+    // 建一次查表，衝堂判斷就不必每一列重跑 O(課程數 × 已選數)
+    const occupancy = useMemo(() => buildOccupancy(userSelectedCourses), [userSelectedCourses]);
+    const totalCredits = useMemo(() => sumCredits(userSelectedCourses), [userSelectedCourses]);
+    const selectedKeys = useMemo(
+        () => new Set(userSelectedCourses.map(courseKey)),
+        [userSelectedCourses]
+    );
+
+    const isSelected = useCallback(course => selectedKeys.has(courseKey(course)), [selectedKeys]);
+
+    const findConflictWith = useCallback(
+        course => findConflict(course, occupancy),
+        [occupancy]
+    );
+
+    const addCourse = useCallback(course => {
+        setPreviewCourse(null);
+        setUserSelectedCourses(courses =>
+            courses.some(selected => courseKey(selected) === courseKey(course))
+                ? courses
+                : [...courses, course]
+        );
+    }, []);
+
+    const removeCourse = useCallback(course => {
+        setUserSelectedCourses(courses =>
+            courses.filter(selected => courseKey(selected) !== courseKey(course))
+        );
+    }, []);
+
+    /** 清空並回傳被清掉的清單，呼叫端可以拿它做「復原」。 */
+    const clearCourses = useCallback(() => {
+        const cleared = userSelectedCourses;
+        setUserSelectedCourses([]);
+        return cleared;
+    }, [userSelectedCourses]);
+
+    const restoreCourses = useCallback(courses => {
+        setUserSelectedCourses(courses ?? []);
+    }, []);
+
+    const setSelectedDay = useCallback(day => {
+        setSelectedDayState(day);
+        setTimetableView(TIMETABLE_VIEW.DAY);
+    }, []);
+
+    const showToast = useCallback(toastData => {
+        toastId.current += 1;
+        setToast({ id: toastId.current, ...toastData });
+    }, []);
+
+    const dismissToast = useCallback(() => setToast(null), []);
 
     const value = useMemo(() => ({
         filters,
         setFilters,
         userSelectedCourses,
         setUserSelectedCourses,
-    }), [filters, userSelectedCourses]);
+        occupancy,
+        totalCredits,
+        isSelected,
+        findConflictWith,
+        addCourse,
+        removeCourse,
+        clearCourses,
+        restoreCourses,
+        activeTab,
+        setActiveTab,
+        selectedDay,
+        setSelectedDay,
+        timetableView,
+        setTimetableView,
+        previewCourse,
+        setPreviewCourse,
+        toast,
+        showToast,
+        dismissToast,
+    }), [
+        filters, userSelectedCourses, occupancy, totalCredits, isSelected, findConflictWith,
+        addCourse, removeCourse, clearCourses, restoreCourses, activeTab, previewCourse,
+        selectedDay, setSelectedDay, timetableView, toast, showToast, dismissToast,
+    ]);
 
     return (
         <GlobalDataContext.Provider value={value}>

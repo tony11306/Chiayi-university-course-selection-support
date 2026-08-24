@@ -1,152 +1,184 @@
+import { useMemo } from "react";
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { courseKey } from "../lib/schedule";
+import CampusBadge from "./campusBadge";
+import CourseCard from "./courseCard";
 
-export default function CourseSelectionTable({ displaySettings }) {
+const GRADE_TEXT = { '1': '一', '2': '二', '3': '三', '4': '四', '5': '五' };
 
-    const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
-    const { data, isFetching, error } = useCourseDatas();
-    const courseDatas = data?.result ?? [];
-    const displayedCourses = courseDatas.filter(course => {
-        if (userSelectedCourses.some(userSelectedCourse => userSelectedCourse.開課系號 + userSelectedCourse.開課序號 + userSelectedCourse.永久課號 === course.開課系號 + course.開課序號 + course.永久課號)) {
-            return false
-        }
-        if (displaySettings.isShowedConflictedCourses === false && isOverlapWithUserSelectedCourses(course)) {
-            return false
-        }
-        if (displaySettings.keyword !== '' && course.課程名稱.indexOf(displaySettings.keyword) === -1) {
-            return false
-        }
-
-        return true
-    });
-
-    function isOverlap(course1, course2) {
-
-        const CLASS_MAP = {
-            '1': 1,
-            '2': 2,
-            '3': 3,
-            '4': 4,
-            'F': 5,
-            '5': 6,
-            '6': 7,
-            '7': 8,
-            '8': 9,
-            '9': 10,
-            'A': 11,
-            'B': 12,
-            'C': 13,
-            'D': 14
-        }
-        for (let i = 0; i < course1['上課時間'].length; ++i) {
-            for (let j = 0; j < course2['上課時間'].length; ++j) {
-                if (course1['上課時間'][i]['星期'] === course2['上課時間'][j]['星期']) {
-                    if (CLASS_MAP[course1['上課時間'][i]['開始節次']] <= CLASS_MAP[course2['上課時間'][j]['結束節次']] && CLASS_MAP[course2['上課時間'][j]['開始節次']] <= CLASS_MAP[course1['上課時間'][i]['結束節次']]) {
-                        return true
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    function isOverlapWithUserSelectedCourses(course) {
-        for (let i = 0; i < userSelectedCourses.length; ++i) {
-            if (isOverlap(course, userSelectedCourses[i])) {
-                return true
-            }
-        }
-        return false
-    }
-
-    function onSelected(courseData) {
-        setUserSelectedCourses(courses => [...courses, courseData])
-    }
-
-    return (
-        <div className="table-wrapper-scroll-y custom-scrollbar">
-            <table className="table table-striped non-border align-middle table-first-row-white">
-                <tbody>
-                    <tr className="position-sticky top-0 blur-background">
-                        <th>校區</th>
-                        <th>年級</th>
-                        <th>上課系所</th>
-                        <th>課程名稱</th>
-                        <th>老師</th>
-                        <th>學分數</th>
-                        <th>上課時間</th>
-                        <th>選擇</th>
-                    </tr>
-                    {
-                        !isFetching && !error && displayedCourses.map((courseData, index) => {
-                            return (
-                                <CourseSelectionTableRow key={index} courseData={courseData} isDisabled={isOverlapWithUserSelectedCourses(courseData)} onSelected={onSelected}  />
-                            )
-                        })
-                    }
-                </tbody>
-            </table>
-            {isFetching ?
-                <div>
-                    <div className="spinner-grow" role="status">
-                        <span className="visually-hidden">正在載入資料...</span>
-                    </div>
-                    <span className="fs-3 ms-3">載入中...</span>
-                    <br />
-                    <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
-                </div>
-                : ""}
-            {error ? <span className="fs-3">發生錯誤</span> : ""}
-            {!error && !isFetching && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
-        </div>
-    )
+function matchesKeyword(course, keyword) {
+    if (!keyword) return true;
+    const haystack = [
+        course.課程名稱,
+        course.上課系所,
+        course.授課老師,
+        course.上課學制,
+    ].filter(Boolean).join(' ');
+    return haystack.includes(keyword);
 }
 
-function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
+export default function CourseSelectionTable({ displaySettings }) {
+    const { isSelected, findConflictWith, addCourse, setPreviewCourse, previewCourse, showToast } = useGlobalData();
+    const { data, isFetching, error } = useCourseDatas();
+    const isMobile = useIsMobile();
+
+    const courseDatas = data?.result ?? [];
+
+    // 先過關鍵字與已選，再算衝堂；衝堂只查一次 occupancy 表，不再是每列 O(已選數)
+    const matched = useMemo(
+        () => courseDatas.filter(course =>
+            !isSelected(course) && matchesKeyword(course, displaySettings.keyword)
+        ),
+        [courseDatas, isSelected, displaySettings.keyword]
+    );
+
+    const withConflict = useMemo(
+        () => matched.map(course => ({ course, conflictWith: findConflictWith(course) })),
+        [matched, findConflictWith]
+    );
+
+    const displayed = displaySettings.isShowedConflictedCourses
+        ? withConflict
+        : withConflict.filter(entry => !entry.conflictWith);
+    const hiddenCount = withConflict.length - displayed.length;
+
+    function onSelected(course) {
+        addCourse(course);
+        showToast({
+            title: `已加入 ${course.課程名稱}`,
+            meta: (course.上課時間 ?? [])
+                .map(t => `${t.星期} ${t.開始節次}${t.開始節次 === t.結束節次 ? '' : `~${t.結束節次}`}`)
+                .join('、'),
+            highlightCourse: course,
+            action: { type: 'goToDay', day: course.上課時間?.[0]?.星期 },
+        });
+    }
+
+    if (isFetching) {
+        return (
+            <div className="course-results-status">
+                <div className="spinner-grow" role="status" aria-hidden="true" />
+                <span className="fs-4 ms-3">載入中...</span>
+                <p className="text-muted mb-0 mt-2">
+                    （若載入時間很長，通常代表後端正在從休眠中起床）
+                </p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="course-results-status fs-4">發生錯誤，請稍後再試</div>;
+    }
+
+    if (displayed.length === 0) {
+        return (
+            <div className="course-results-status">
+                <span className="fs-4">查無結果</span>
+                <p className="text-muted mb-0 mt-2">放寬一點篩選條件試試</p>
+            </div>
+        );
+    }
+
     return (
-        <tr className={isDisabled ? "conflict-warning" : ""}>
-            <td>
-                <div className={
-                    courseData.校區 === "蘭潭校區" ? "badge rounded-pill bg-primary" :
-                    courseData.校區 === "民雄校區" ? "badge rounded-pill bg-secondary" :
-                    courseData.校區 === "新民校區" ? "badge rounded-pill bg-success" :
-                    courseData.校區 === "林森校區" ? "badge rounded-pill bg-warning" : 
-                    courseData.校區 === "ecourse 線上" ? "badge rounded-pill badge bg-dark" : ""
-                }>
-                    {courseData.校區}
+        <div className="course-results">
+            <p className="course-results-count">
+                {displayed.length} 門課
+                {hiddenCount > 0 ? `（已隱藏 ${hiddenCount} 門衝堂）` : ''}
+            </p>
+
+            {isMobile ? (
+                <div className="course-card-list" data-testid="course-card-list">
+                    {displayed.map(({ course, conflictWith }) => (
+                        <CourseCard
+                            key={courseKey(course)}
+                            course={course}
+                            variant="add"
+                            conflictWith={conflictWith}
+                            onAction={onSelected}
+                            onPreview={picked => setPreviewCourse(
+                                previewCourse && courseKey(previewCourse) === courseKey(picked) ? null : picked
+                            )}
+                            isPreviewing={Boolean(previewCourse) && courseKey(previewCourse) === courseKey(course)}
+                        />
+                    ))}
                 </div>
+            ) : (
+                <div className="table-wrapper-scroll-y custom-scrollbar">
+                    <table className="table table-striped non-border align-middle table-first-row-white">
+                        <thead>
+                            <tr className="position-sticky top-0 blur-background">
+                                <th scope="col">校區</th>
+                                <th scope="col">年級</th>
+                                <th scope="col">上課系所</th>
+                                <th scope="col">課程名稱</th>
+                                <th scope="col">老師</th>
+                                <th scope="col">學分數</th>
+                                <th scope="col">上課時間</th>
+                                <th scope="col">選擇</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {displayed.map(({ course, conflictWith }) => (
+                                <CourseSelectionTableRow
+                                    key={courseKey(course)}
+                                    course={course}
+                                    conflictWith={conflictWith}
+                                    onSelected={onSelected}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function CourseSelectionTableRow({ course, conflictWith, onSelected }) {
+    return (
+        <tr className={conflictWith ? 'conflict-warning' : ''}>
+            <td><CampusBadge campus={course.校區} /></td>
+            <td>{GRADE_TEXT[course.適用年級] ?? course.適用年級}</td>
+            <td>{course.上課系所?.length > 1 ? course.上課系所 : '不限'}</td>
+            <td>
+                {course.教學大綱?.length > 0 ? (
+                    <a className="text-decoration-none" href={course.教學大綱} target="_blank" rel="noreferrer">
+                        {`【${course.上課學制}】${course.課程名稱}`}
+                    </a>
+                ) : `【${course.上課學制}】${course.課程名稱}`}
             </td>
             <td>
-                {
-                    courseData.適用年級 === "1" ? "一":
-                    courseData.適用年級 === "2" ? "二":
-                    courseData.適用年級 === "3" ? "三":
-                    courseData.適用年級 === "4" ? "四":
-                    "五"
-                }
-            </td>
-            <td>
-                {courseData.上課系所.length !== 1 ? courseData.上課系所 : "不限"}
-            </td>
-            <td>
-                {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{"【" + courseData.上課學制 + "】" + courseData.課程名稱}</a> : "【" + courseData.上課學制 + "】" + courseData.課程名稱}
-            </td>
-            <td>
-                <a className="text-decoration-none" href={"https://www.google.com/search?q="+courseData.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank" rel="noreferrer">
-                    {courseData.授課老師}
+                <a
+                    className="text-decoration-none"
+                    href={`https://www.google.com/search?q=${encodeURIComponent(`${course.授課老師} 嘉義大學 dcard | ptt`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    {course.授課老師}
                 </a>
             </td>
-            <td>{courseData.學分數}</td>
-            <td>{courseData.上課時間.map((courseTime, index) => {
-                return (
-                    <div key={"badge " + index} className="badge bg-primary">
-                        {courseTime.星期 + " " + courseTime.開始節次 + '~' + courseTime.結束節次}
-                    </div>
-                )
-            })}</td>
+            <td>{course.學分數}</td>
             <td>
-                <input className="form-check-input" type="checkbox" value="" checked={false} onChange={() => onSelected(courseData)} disabled={isDisabled} />
+                {(course.上課時間 ?? []).map((classTime, index) => (
+                    <span key={index} className="course-pill course-pill-time">
+                        {classTime.星期} {classTime.開始節次}
+                        {classTime.開始節次 === classTime.結束節次 ? '' : `~${classTime.結束節次}`}
+                    </span>
+                ))}
+            </td>
+            <td>
+                <button
+                    type="button"
+                    className="course-card-action is-add"
+                    aria-label={`加入 ${course.課程名稱}`}
+                    disabled={Boolean(conflictWith)}
+                    title={conflictWith ? `和「${conflictWith.課程名稱}」衝堂` : undefined}
+                    onClick={() => onSelected(course)}
+                >
+                    <span aria-hidden="true">＋</span>
+                </button>
             </td>
         </tr>
-    )
+    );
 }
