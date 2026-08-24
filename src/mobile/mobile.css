@@ -56,8 +56,9 @@
 
 .view-mobile .week-grid-scroll {
   overflow-x: auto;
-  display: flex;
-  justify-content: center;
+  /* 不能用 flex 置中：表格比容器寬時左側會被切掉而且滑不到，
+     改靠 .week-grid 自己的 margin: 0 auto 置中，
+     寬度放不下時會退成從最左邊開始、可以正常往右滑 */
 }
 
 .view-mobile .week-grid {
