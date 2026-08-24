@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useGlobalData } from "../hooks/useGlobalData";
 import { useTimetableExport } from "../hooks/useTimetableExport";
-import { PERIODS } from "../lib/schedule";
+import { PERIODS, visibleDays, visiblePeriods } from "../lib/schedule";
 import TimetableSheet from "../shared/timetableSheet";
 
 export default function TimeTable() {
@@ -18,8 +18,6 @@ export default function TimeTable() {
         Cookies.set('isShowClassroomButtonOn', displaySettings.isShowClassroomButtonOn);
     }, [displaySettings])
 
-    const CLASSES_COUNT = 14
-    const DAYS = 6
     const CHINESE_WORD_TO_NUMBER = {
         '一': 1,
         '二': 2,
@@ -27,22 +25,26 @@ export default function TimeTable() {
         '四': 4,
         '五': 5,
         '六': 6,
-        '日': 7,
     }
     const CLASS_MAP = Object.fromEntries(PERIODS.map((period, index) => [period.code, index + 1]))
 
-    const tableRowsConst = PERIODS.map(period => ({
+    // 預設只畫週一～五、第 1～8 節，選到週六或更晚的課才把範圍撐開
+    const days = visibleDays(occupancy)
+    const periods = visiblePeriods(occupancy)
+
+    const tableRowsConst = periods.map(period => ({
         nThClassText: `第 ${period.code} 節`,
         classTime: `${period.start} ~ ${period.end}`,
     }))
 
-    const courseTdValues = new Array(CLASSES_COUNT).fill(0).map(() => new Array(DAYS).fill(''))
+    const courseTdValues = periods.map(() => days.map(() => ''))
 
     userSelectedCourses.forEach(course => {
         course['上課時間'].forEach(classTime => {
             const day = CHINESE_WORD_TO_NUMBER[classTime['星期']] - 1
-            const start = CLASS_MAP[classTime['開始節次']] - 1
-            const end = CLASS_MAP[classTime['結束節次']] - 1
+            if (day < 0 || day >= days.length) return
+            const start = Math.max(CLASS_MAP[classTime['開始節次']] - 1, 0)
+            const end = Math.min(CLASS_MAP[classTime['結束節次']] - 1, courseTdValues.length - 1)
             for (let i = start; i <= end; ++i) {
                 courseTdValues[i][day] = course
             }
@@ -70,12 +72,7 @@ export default function TimeTable() {
                 <tbody>
                     <tr>
                         <th>節\\日</th>
-                        <th>星期一</th>
-                        <th>星期二</th>
-                        <th>星期三</th>
-                        <th>星期四</th>
-                        <th>星期五</th>
-                        <th>星期六</th>
+                        {days.map(day => <th key={day}>星期{day}</th>)}
                     </tr>
                     {
                         tableRowsConst.map((row, index) =>

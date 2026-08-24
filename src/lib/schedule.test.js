@@ -6,6 +6,8 @@ import {
     courseSlots,
     buildOccupancy,
     findConflict,
+    visibleDays,
+    visiblePeriods,
     totalCredits,
     buildAgenda,
     courseKey,
@@ -145,6 +147,43 @@ describe('buildOccupancy 與 findConflict', () => {
 
     test('空課表不會衝堂', () => {
         expect(findConflict(dataStructure, buildOccupancy([]))).toBeNull();
+    });
+});
+
+describe('visibleDays 與 visiblePeriods', () => {
+    test('預設只顯示週一到週五、第 1～8 節（含午間 F）', () => {
+        expect(visibleDays({})).toEqual(['一', '二', '三', '四', '五']);
+        expect(visiblePeriods({}).map(p => p.code))
+            .toEqual(['1', '2', '3', '4', 'F', '5', '6', '7', '8']);
+    });
+
+    test('空課表也是預設範圍', () => {
+        expect(visibleDays(buildOccupancy([]))).toEqual(['一', '二', '三', '四', '五']);
+        expect(visiblePeriods(buildOccupancy([]))).toHaveLength(9);
+    });
+
+    test('選到週六的課才把星期六長出來', () => {
+        const occupancy = buildOccupancy([makeCourse({
+            上課時間: [{ 星期: '六', 開始節次: '2', 結束節次: '3' }],
+        })]);
+        expect(visibleDays(occupancy)).toEqual(['一', '二', '三', '四', '五', '六']);
+    });
+
+    test('第八節以後有課，節次列往外長到那一節為止', () => {
+        const occupancy = buildOccupancy([makeCourse({
+            上課時間: [{ 星期: '二', 開始節次: 'A', 結束節次: 'B' }],
+        })]);
+        expect(visiblePeriods(occupancy).map(p => p.code)).toHaveLength(12);
+        expect(visiblePeriods(occupancy).at(-1).code).toBe('B');
+    });
+
+    test('中間的節次照樣連續，不會跳過沒課的列', () => {
+        const occupancy = buildOccupancy([makeCourse({
+            上課時間: [{ 星期: '三', 開始節次: 'D', 結束節次: 'D' }],
+        })]);
+        const codes = visiblePeriods(occupancy).map(p => p.code);
+        expect(codes[codes.length - 1]).toBe('D');
+        expect(codes.slice(0, 9)).toEqual(['1', '2', '3', '4', 'F', '5', '6', '7', '8']);
     });
 });
 

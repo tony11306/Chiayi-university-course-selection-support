@@ -61,13 +61,34 @@ afterEach(() => {
     window.innerWidth = DESKTOP_WIDTH;
 });
 
-test('桌機畫出整週表格，不出現星期分頁', () => {
+test('桌機預設畫週一～五的整週表格，不出現星期分頁', () => {
     window.innerWidth = DESKTOP_WIDTH;
     renderWithStore(<TimeTable />, { courses: [monday] });
 
     expect(screen.getByRole('columnheader', { name: '星期一' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: '星期六' })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: '星期六' })).not.toBeInTheDocument();
     expect(screen.queryByRole('tablist', { name: '星期' })).not.toBeInTheDocument();
+});
+
+test('選到週六或第八節以後的課，週表格才把範圍撐開', () => {
+    window.innerWidth = DESKTOP_WIDTH;
+    const { unmount } = renderWithStore(<TimeTable />, { courses: [monday] });
+
+    // 預設畫到第 8 節（索引 8），第 9 節之後不畫
+    expect(screen.getByTestId('week-slot-一-8')).toBeInTheDocument();
+    expect(screen.queryByTestId('week-slot-一-9')).not.toBeInTheDocument();
+    unmount();
+
+    const saturdayNight = makeCourse({
+        永久課號: 'CS902',
+        課程名稱: '週六進修課',
+        上課時間: [{ 星期: '六', 開始節次: '9', 結束節次: 'A' }],
+    });
+    renderWithStore(<TimeTable />, { courses: [saturdayNight] });
+
+    expect(screen.getByRole('columnheader', { name: '星期六' })).toBeInTheDocument();
+    expect(screen.getByTestId('week-slot-六-9')).toHaveAttribute('data-state', 'occupied');
+    expect(screen.getByTestId('week-slot-六-10')).toHaveAttribute('data-state', 'occupied');
 });
 
 test('手機出現星期分頁與當日議程，而不是週表格', () => {

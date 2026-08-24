@@ -60,14 +60,15 @@ test('手機在「當日」檢視也照樣匯出整週的課表', () => {
     window.innerWidth = MOBILE_WIDTH;
     renderWithStore(<MobileTimeTable />, { courses: [dataStructure] });
 
-    // 畫面上只有當日議程，但匯出用的課表一直都在
+    // 畫面上只有當日議程，但匯出用的課表一直都在（預設畫週一～五）
     expect(screen.queryByRole('columnheader', { name: '星期六' })).not.toBeInTheDocument();
     const sheet = screen.getByTestId('timetable-export-root');
-    expect(sheet.textContent).toContain('星期六');
+    expect(sheet.textContent).toContain('星期五');
+    expect(sheet.textContent).not.toContain('星期六');
     expect(sheet.querySelectorAll('[data-state="occupied"]')).toHaveLength(3);
 });
 
-test('匯出的課表沿用改版前的版面：800px 寬、有節\\日 表頭、不吃 Bootstrap 的 .table', () => {
+test('匯出的課表預設畫到第 8 節，800px 寬、有節\\日 表頭、不吃 Bootstrap 的 .table', () => {
     renderWithStore(<DesktopTimeTable />, { courses: [dataStructure] });
     const sheet = screen.getByTestId('timetable-export-root');
 
@@ -75,8 +76,27 @@ test('匯出的課表沿用改版前的版面：800px 寬、有節\\日 表頭�
     expect(sheet.textContent).toContain('節\\日');
     expect(sheet.textContent).toContain('第 F 節');
     expect(sheet.querySelector('table')).not.toHaveClass('table');
-    expect(sheet.querySelectorAll('tbody tr')).toHaveLength(14);
-    expect(sheet.querySelectorAll('thead th')).toHaveLength(7);
+    expect(sheet.querySelectorAll('tbody tr')).toHaveLength(9);
+    expect(sheet.querySelectorAll('thead th')).toHaveLength(6);
+    expect(sheet.textContent).toContain('第 8 節');
+    expect(sheet.textContent).not.toContain('第 9 節');
+});
+
+test('選到週六的課，匯出的課表會長出星期六', () => {
+    const saturday = { ...dataStructure, 永久課號: 'CS900', 上課時間: [{ 星期: '六', 開始節次: '2', 結束節次: '3' }] };
+    renderWithStore(<DesktopTimeTable />, { courses: [saturday] });
+
+    const sheet = screen.getByTestId('timetable-export-root');
+    expect(sheet.textContent).toContain('星期六');
+});
+
+test('選到第八節以後的課，匯出的課表會長出那些節次', () => {
+    const night = { ...dataStructure, 永久課號: 'CS901', 上課時間: [{ 星期: '二', 開始節次: 'A', 結束節次: 'B' }] };
+    renderWithStore(<DesktopTimeTable />, { courses: [night] });
+
+    const sheet = screen.getByTestId('timetable-export-root');
+    expect(sheet.textContent).toContain('第 B 節');
+    expect(sheet.textContent).not.toContain('第 C 節');
 });
 
 test('匯出的課表不含開關與下載按鈕（那些不該被截進圖裡）', () => {

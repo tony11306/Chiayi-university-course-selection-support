@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { TIMETABLE_VIEW, useGlobalData } from "../hooks/useGlobalData";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useTimetableExport } from "../hooks/useTimetableExport";
-import { DAYS, PERIODS, courseSlots } from "../lib/schedule";
+import { DAYS, courseSlots, visibleDays, visiblePeriods } from "../lib/schedule";
 import TimetableSheet from "../shared/timetableSheet";
 import DayAgenda from "./dayAgenda";
 
@@ -143,22 +143,25 @@ export default function TimeTable() {
 }
 
 function WeekGrid({ occupancy, showTeacher, showClassroom }) {
+    const days = visibleDays(occupancy);
+    const periods = visiblePeriods(occupancy);
+
     return (
         <div className="week-grid-scroll">
             <table className="week-grid">
                 <thead>
                     <tr>
                         <th scope="col">節次</th>
-                        {DAYS.map(day => <th key={day} scope="col">星期{day}</th>)}
+                        {days.map(day => <th key={day} scope="col">星期{day}</th>)}
                     </tr>
                 </thead>
                 <tbody>
-                    {PERIODS.map((period, index) => (
+                    {periods.map((period, index) => (
                         <tr key={period.code}>
                             <th scope="row" className="week-grid-period">
                                 第 {period.code} 節<br />{period.start} ~ {period.end}
                             </th>
-                            {DAYS.map(day => {
+                            {days.map(day => {
                                 const course = occupancy[`${day}-${index}`];
                                 return (
                                     <td

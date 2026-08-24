@@ -71,22 +71,31 @@ test('課表與課程清單並排，沿用改版前的版面', async () => {
     expect(await screen.findByText(/114-1 課程清單/)).toBeInTheDocument();
 });
 
-test('課表畫出 14 節 × 6 天，已選的格子上綠色', async () => {
+test('預設畫週一～五 × 第 1～8 節，已選的格子上綠色', async () => {
     const { container } = renderDesktop({ courses: [dataStructure] });
 
     expect(screen.getByRole('columnheader', { name: '星期一' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: '星期六' })).toBeInTheDocument();
-    expect(container.querySelectorAll('.curriculum-table tbody tr')).toHaveLength(15);
+    expect(screen.queryByRole('columnheader', { name: '星期六' })).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.curriculum-table tbody tr')).toHaveLength(10);
 
     expect(container.querySelectorAll('.used-course-td')).toHaveLength(3);
     expect(within(container.querySelector('.curriculum-table')).getAllByText('【資料結構】')).toHaveLength(3);
 });
 
-test('第 C 節是 20:10 ~ 20:55，不會和第 D 節重疊', () => {
-    const { container } = renderDesktop();
-    expect(container.textContent).toContain('20:10 ~ 20:55');
-    expect(container.textContent).toContain('21:00 ~ 21:45');
-    expect(container.textContent).not.toContain('21:55');
+test('沒選晚上的課不畫出 C、D 節，選到才長出來', () => {
+    const { container, unmount } = renderDesktop();
+    expect(container.textContent).not.toContain('20:10 ~ 20:55');
+    unmount();
+
+    const night = makeCourse({
+        開課序號: '04',
+        永久課號: 'CS400',
+        課程名稱: '夜間程式設計',
+        上課時間: [{ 星期: '二', 開始節次: 'C', 結束節次: 'D' }],
+    });
+    const { container: expanded } = renderDesktop({ courses: [night] });
+    expect(expanded.textContent).toContain('20:10 ~ 20:55');
+    expect(expanded.textContent).toContain('21:00 ~ 21:45');
 });
 
 test('顯示授課老師與課堂教室的開關', async () => {

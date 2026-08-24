@@ -62,6 +62,29 @@ export function findConflict(course, occupancy) {
     return null;
 }
 
+// 課表預設只顯示週一～五、第 1～8 節（含午間 F），
+// 選到週六或更晚的課時，範圍才往外長。
+export const BASE_DAY_COUNT = 5;
+export const BASE_PERIOD_COUNT = 9;
+
+export function visibleDays(occupancy) {
+    let count = BASE_DAY_COUNT;
+    for (const key of Object.keys(occupancy ?? {})) {
+        const dayIndex = DAYS.indexOf(key.split('-')[0]);
+        if (dayIndex >= count) count = dayIndex + 1;
+    }
+    return DAYS.slice(0, Math.min(count, DAYS.length));
+}
+
+export function visiblePeriods(occupancy) {
+    let count = BASE_PERIOD_COUNT;
+    for (const key of Object.keys(occupancy ?? {})) {
+        const index = Number.parseInt(key.split('-')[1], 10);
+        if (!Number.isNaN(index) && index >= count) count = index + 1;
+    }
+    return PERIODS.slice(0, Math.min(count, PERIODS.length));
+}
+
 export function totalCredits(courses) {
     return courses.reduce((sum, course) => {
         const credit = Number.parseInt(course.學分數, 10);
