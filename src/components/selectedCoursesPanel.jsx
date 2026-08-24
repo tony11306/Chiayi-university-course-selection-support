@@ -39,10 +39,10 @@ export default function SelectedCoursesPanel() {
                     </svg>
                     <Modal.Title as="h5" className="fw-bold m-1">已選擇的課程</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className="p-0">
-                    <div className="mt-3 mb-3">
-                        <div className="float-start ms-3">已選擇 {userSelectedCourses.length} 堂課，共 {totalCredit} 學分</div>
-                        <button type="button" className="btn btn-danger float-end w-25 fw-bold" onClick={onRemoveAll}>
+                <Modal.Body className="p-0 selected-courses-body d-flex flex-column">
+                    <div className="d-flex justify-content-between align-items-center mt-3 mb-3 px-3">
+                        <div>已選擇 {userSelectedCourses.length} 堂課，共 {totalCredit} 學分</div>
+                        <button type="button" className="btn btn-danger w-25 fw-bold" onClick={onRemoveAll}>
                             清空
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />

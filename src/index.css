@@ -267,3 +267,13 @@ footer {
   height: 75vh;
   padding: 15px;
 }
+
+.selected-courses-body {
+  overflow: hidden;
+}
+
+.selected-courses-body .custom-scrollbar {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
