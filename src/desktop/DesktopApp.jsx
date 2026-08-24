@@ -4,6 +4,7 @@ import CourseSelectionMenu from "./courseSelectionMenu";
 import TimeTable from "./timeTable";
 import SelectedCoursesPanel from './selectedCoursesPanel';
 import Toast from '../shared/toast';
+import Footer from '../shared/footer';
 import { useGlobalData } from '../hooks/useGlobalData';
 
 export default function DesktopApp() {
@@ -21,6 +22,7 @@ export default function DesktopApp() {
                 </div>
             </div>
             <SelectedCoursesPanel />
+            <Footer />
             <Toast toast={toast} onDismiss={dismissToast} onAction={() => {}} />
         </div>
     );

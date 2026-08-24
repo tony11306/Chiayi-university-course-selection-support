@@ -5,6 +5,7 @@ import CourseSelectionMenu from "./courseSelectionMenu";
 import TimeTable from "./timeTable";
 import SelectedCoursesList from './selectedCoursesList';
 import Toast from '../shared/toast';
+import Footer from '../shared/footer';
 import { TABS, useGlobalData } from '../hooks/useGlobalData';
 
 const TAB_ORDER = [TABS.TIMETABLE, TABS.SEARCH, TABS.SELECTED];
@@ -93,6 +94,8 @@ export default function MobileApp() {
                                     <SelectedCoursesList />
                                 </section>
                             )}
+                            {/* footer 放進捲動區尾端才不會被固定高度的 app 外殼擋住 */}
+                            <Footer />
                         </div>
                     );
                 })}
