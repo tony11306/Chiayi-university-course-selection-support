@@ -95,18 +95,15 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
                     placement="bottom"
                     className="filter-sheet"
                 >
+                    <span className="filter-sheet-handle" aria-hidden="true" />
                     <Offcanvas.Header closeButton>
-                        <Offcanvas.Title as="h2" className="h6 mb-0">篩選條件</Offcanvas.Title>
+                        <Offcanvas.Title as="h2" className="h6 mb-0">
+                            篩選條件
+                            {active.length > 0 && <span className="filter-sheet-count">{active.length}</span>}
+                        </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                         {fields}
-                        <button
-                            type="button"
-                            className="btn btn-dark w-100 mt-3 filter-sheet-done"
-                            onClick={() => setIsSheetOpen(false)}
-                        >
-                            看結果
-                        </button>
                     </Offcanvas.Body>
                 </Offcanvas>
             ) : fields}

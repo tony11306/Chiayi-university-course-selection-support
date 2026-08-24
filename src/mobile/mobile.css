@@ -14,7 +14,9 @@
 
 .view-mobile .announcement {
   background-color: rgba(255, 255, 255, 0.32);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
   border-radius: 12px;
   padding: 14px 16px;
   margin-top: 16px;
@@ -25,8 +27,19 @@
   color: var(--ink-2);
 }
 
+/* 大面板共用：半透明卡片，讓底層的橘藍漸層透出來。
+   刻意不加 backdrop-filter —— 面板會跟著捲動，模糊看不出來，
+   又會讓裡面搜尋框的毛玻璃取樣不到底層漸層。 */
+.view-mobile .timetable-panel,
+.view-mobile .course-selection-menu,
+.view-mobile .selected-panel {
+  background-color: rgba(255, 255, 255, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(29, 36, 41, 0.05);
+}
+
 .view-mobile .timetable-panel {
-  background-color: rgba(221, 215, 215, 0.39);
   padding: 12px;
 }
 
@@ -235,7 +248,6 @@
 }
 
 .view-mobile .course-selection-menu {
-  background-color: rgba(221, 215, 215, 0.39);
   padding: 15px;
 }
 
@@ -252,18 +264,19 @@
 
 .view-mobile .search-dock {
   position: sticky;
-  top: 6px;
+  /* 停在 sticky navbar 的下面，由 MobileApp 量測後寫入 --navbar-height */
+  top: calc(var(--navbar-height, 58px) + 8px);
   z-index: 1020;
   display: flex;
   align-items: stretch;
   gap: 8px;
   padding: 7px;
   margin: 6px 0 10px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 16px;
-  background-color: rgba(255, 255, 255, 0.88);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.52);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
   box-shadow: 0 6px 18px rgba(29, 36, 41, 0.08);
 }
 
@@ -271,7 +284,7 @@
   flex: 1;
   min-width: 0;
   margin: 0;
-  background-color: rgba(29, 36, 41, 0.05);
+  background-color: rgba(255, 255, 255, 0.55);
 }
 
 .view-mobile .search-dock .filter-chip-open {
@@ -344,50 +357,147 @@
   margin-bottom: 12px;
 }
 
-.view-mobile .filter-fields {
+/* 篩選欄位有兩個家：頁面內（.view-mobile）跟 portal 出去的篩選 sheet（.filter-sheet），
+   兩邊都要套到，所以每條規則都寫成雙選擇器。 */
+.view-mobile .filter-fields,
+.filter-sheet .filter-fields {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
-.view-mobile .filter-field {
+.view-mobile .filter-field,
+.filter-sheet .filter-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
   min-width: 0;
 }
 
-.view-mobile .filter-field label {
+.view-mobile .filter-field label,
+.view-mobile .filter-field-label,
+.filter-sheet .filter-field label,
+.filter-sheet .filter-field-label {
   font-size: 0.78rem;
   color: var(--ink-2);
   font-weight: 500;
 }
 
-.view-mobile .filter-field select {
+/* 已生效的條件把標籤點成強調色 */
+.view-mobile .filter-field[data-active] label,
+.view-mobile .filter-field[data-active] .filter-field-label,
+.filter-sheet .filter-field[data-active] label,
+.filter-sheet .filter-field[data-active] .filter-field-label {
+  color: var(--accent);
+}
+
+.view-mobile .chip-group,
+.filter-sheet .chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.view-mobile .chip,
+.filter-sheet .chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background-color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-mobile .chip[aria-pressed="true"],
+.filter-sheet .chip[aria-pressed="true"] {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(21, 105, 127, 0.3);
+}
+
+.view-mobile .filter-field select,
+.filter-sheet .filter-field select {
+  appearance: none;
   font-size: 16px;
-  min-height: 46px;
-  padding: 0 12px;
+  min-height: 48px;
+  padding: 0 38px 0 14px;
   border: 1px solid var(--line);
-  border-radius: 11px;
-  background-color: #fff;
+  border-radius: 13px;
+  background-color: rgba(255, 255, 255, 0.62);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23556069' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
   color: var(--ink);
   width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-mobile .filter-field select:focus,
+.filter-sheet .filter-field select:focus {
+  outline: none;
+  border-color: rgba(21, 105, 127, 0.55);
+  box-shadow: 0 0 0 3px rgba(21, 105, 127, 0.16);
+}
+
+/* 已生效的條件用強調色提示，跟上面的 chip 呼應 */
+.view-mobile .filter-field[data-active] select,
+.filter-sheet .filter-field[data-active] select {
+  border-color: rgba(21, 105, 127, 0.5);
+  background-color: rgba(21, 105, 127, 0.09);
+  font-weight: 500;
 }
 
 .filter-sheet {
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
   height: auto;
-  max-height: 82vh;
-  max-height: 82dvh;
+  max-height: 88vh;
+  max-height: 88dvh;
+  background-color: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  backdrop-filter: blur(26px) saturate(170%);
+}
+
+.filter-sheet .filter-sheet-handle {
+  display: block;
+  width: 42px;
+  height: 4px;
+  margin: 10px auto 0;
+  border-radius: 2px;
+  background-color: rgba(29, 36, 41, 0.18);
+}
+
+.filter-sheet .offcanvas-header {
+  align-items: center;
+  padding: 6px 1rem 10px;
+}
+
+.filter-sheet .offcanvas-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-sheet-count {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0 6px;
+  background-color: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  display: grid;
+  place-items: center;
 }
 
 .filter-sheet .offcanvas-body {
-  padding-bottom: calc(20px + env(safe-area-inset-bottom));
-}
-
-.filter-sheet .filter-fields {
-  grid-template-columns: 1fr;
+  padding-top: 2px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
 }
 
 .view-mobile .course-results-count {
@@ -395,6 +505,14 @@
   color: var(--ink-2);
   margin-bottom: 8px;
   font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .course-results-refreshing {
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 9px;
+  background-color: rgba(21, 105, 127, 0.12);
+  color: var(--accent);
 }
 
 .view-mobile .course-results-status {
@@ -514,8 +632,6 @@
 .view-mobile .course-pill-campus[data-campus="online"] { background-color: rgba(74, 85, 96, 0.14); color: #414b54; }
 
 .view-mobile .selected-panel {
-  background-color: rgba(221, 215, 215, 0.39);
-  border-radius: 12px;
   padding: 15px;
 }
 
@@ -536,9 +652,10 @@
   z-index: 1030;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  background-color: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(8px);
-  border-top: 1px solid var(--line);
+  background-color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
   padding-bottom: env(safe-area-inset-bottom);
 }
 

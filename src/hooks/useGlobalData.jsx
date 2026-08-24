@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, useMemo, useCallback, useRef, createContext } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import * as courseApi from "../api/course";
 import { buildOccupancy, findConflict, totalCredits as sumCredits, courseKey, DAYS } from "../lib/schedule";
 
@@ -155,5 +155,11 @@ export function useCourseDatas() {
         queryKey: ['courseDatas', apiFilters],
         queryFn: ({ signal }) => courseApi.getCourseDatas(apiFilters, signal),
         select: (response) => response.data,
+        // 課程資料一學期才變一次：切分頁回來時直接用快取，不要重打 API
+        staleTime: 5 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        // 換篩選條件時先顯示上一份結果，背景安靜更新
+        placeholderData: keepPreviousData,
     });
 }

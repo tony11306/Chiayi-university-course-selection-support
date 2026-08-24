@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import './mobile.css';
 import Announcement from "./announcement";
 import CourseSelectionMenu from "./courseSelectionMenu";
@@ -17,6 +18,25 @@ export default function MobileApp() {
         addCourse,
         restoreCourses,
     } = useGlobalData();
+
+    // 上方的 navbar 是 sticky 的，量出它的實際高度讓搜尋框停在它下面，不會撞在一起
+    useEffect(() => {
+        const root = document.documentElement;
+        const navbar = document.querySelector('.navbar');
+        if (!navbar) return undefined;
+
+        const update = () => root.style.setProperty('--navbar-height', `${navbar.offsetHeight}px`);
+        update();
+
+        if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', update);
+            return () => window.removeEventListener('resize', update);
+        }
+
+        const observer = new ResizeObserver(update);
+        observer.observe(navbar);
+        return () => observer.disconnect();
+    }, []);
 
     function onToastAction(action) {
         if (action.type === 'goToDay' && action.day) {

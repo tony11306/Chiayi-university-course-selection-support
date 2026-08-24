@@ -50,19 +50,23 @@ test('手機的搜尋框跟篩選按鈕固定在同一列，滑到清單底部�
     expect(within(dock).getByRole('button', { name: /^篩選/ })).toBeInTheDocument();
 });
 
-test('手機點篩選會打開 sheet，裡面是原生 select', async () => {
+test('手機點篩選會打開 sheet：短欄位是晶片、長清單用原生 select', async () => {
     renderSearch({ width: MOBILE_WIDTH });
     await userEvent.click(screen.getByRole('button', { name: /^篩選/ }));
 
     const department = await screen.findByLabelText('上課系所');
     expect(department.tagName).toBe('SELECT');
-    expect(screen.getByLabelText('校區').tagName).toBe('SELECT');
     expect(screen.getByLabelText('課程類別').tagName).toBe('SELECT');
+
+    const campusGroup = screen.getByRole('group', { name: '校區' });
+    expect(within(campusGroup).getByRole('button', { name: '蘭潭校區' })).toBeInTheDocument();
+    expect(within(screen.getByRole('group', { name: '星期' })).getByRole('button', { name: '六' })).toBeInTheDocument();
 });
 
-test('桌機直接把 select 排在頁面上，沒有 sheet 按鈕', () => {
+test('桌機直接把欄位排在頁面上，沒有 sheet 按鈕', () => {
     renderSearch({ width: DESKTOP_WIDTH });
     expect(screen.getByLabelText('上課系所').tagName).toBe('SELECT');
+    expect(screen.getByRole('group', { name: '校區' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^篩選/ })).not.toBeInTheDocument();
 });
 
@@ -86,12 +90,28 @@ test('「不限」的條件不會產生 chip', () => {
     expect(screen.queryByRole('button', { name: /上課系所/ })).not.toBeInTheDocument();
 });
 
+test('點晶片就能切換條件，再點「不限」取消', async () => {
+    renderSearch({ width: DESKTOP_WIDTH });
+
+    const campusGroup = screen.getByRole('group', { name: '校區' });
+    await userEvent.click(within(campusGroup).getByRole('button', { name: '民雄校區' }));
+
+    expect(within(campusGroup).getByRole('button', { name: '民雄校區' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '移除篩選 校區：民雄校區' })).toBeInTheDocument();
+
+    await userEvent.click(within(campusGroup).getByRole('button', { name: '不限' }));
+    expect(within(campusGroup).getByRole('button', { name: '不限' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: /移除篩選 校區/ })).not.toBeInTheDocument();
+});
+
 test('點 chip 的移除會把該條件清成「不限」', async () => {
     renderSearch({ width: DESKTOP_WIDTH });
     await userEvent.click(screen.getByRole('button', { name: '移除篩選 校區：蘭潭校區' }));
 
     expect(screen.queryByRole('button', { name: /移除篩選 校區/ })).not.toBeInTheDocument();
-    expect(screen.getByLabelText('校區')).toHaveValue('不限');
+    expect(
+        within(screen.getByRole('group', { name: '校區' })).getByRole('button', { name: '不限' })
+    ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('改 select 會更新條件並反映在 chip 上', async () => {
@@ -114,10 +134,11 @@ test('隱藏衝堂的開關會回報上去', async () => {
     expect(setDisplaySettings).toHaveBeenCalled();
 });
 
-test('節次選單用學校的代碼順序', () => {
+test('節次晶片用學校的代碼順序', () => {
     renderSearch({ width: DESKTOP_WIDTH });
-    const options = within(screen.getByLabelText('開始節次')).getAllByRole('option');
-    expect(options.map(o => o.textContent)).toEqual(
+    const group = screen.getByRole('group', { name: '開始節次' });
+    const codes = within(group).getAllByRole('button').map(button => button.textContent);
+    expect(codes).toEqual(
         ['不限', '1', '2', '3', '4', 'F', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D']
     );
 });

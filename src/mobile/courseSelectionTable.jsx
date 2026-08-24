@@ -49,7 +49,11 @@ export default function CourseSelectionTable({ displaySettings }) {
         });
     }
 
-    if (isFetching) {
+    if (error) {
+        return <div className="course-results-status fs-4">發生錯誤，請稍後再試</div>;
+    }
+
+    if (data === undefined) {
         return (
             <div className="course-results-status">
                 <div className="spinner-grow" role="status" aria-hidden="true" />
@@ -59,10 +63,6 @@ export default function CourseSelectionTable({ displaySettings }) {
                 </p>
             </div>
         );
-    }
-
-    if (error) {
-        return <div className="course-results-status fs-4">發生錯誤，請稍後再試</div>;
     }
 
     if (displayed.length === 0) {
@@ -79,6 +79,7 @@ export default function CourseSelectionTable({ displaySettings }) {
             <p className="course-results-count">
                 {displayed.length} 門課
                 {hiddenCount > 0 ? `（已隱藏 ${hiddenCount} 門衝堂）` : ''}
+                {isFetching ? <span className="course-results-refreshing">更新中…</span> : null}
             </p>
 
             <div className="course-list" data-testid="course-list">

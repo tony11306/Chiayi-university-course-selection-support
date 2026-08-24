@@ -61,7 +61,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                         <th>選擇</th>
                     </tr>
                     {
-                        !isFetching && !error && displayedCourses.map((courseData, index) => {
+                        !error && displayedCourses.map((courseData, index) => {
                             return (
                                 <CourseSelectionTableRow key={index} courseData={courseData} isDisabled={isOverlapWithUserSelectedCourses(courseData)} onSelected={onSelected}  />
                             )
@@ -69,7 +69,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                     }
                 </tbody>
             </table>
-            {isFetching ?
+            {isFetching && !data ?
                 <div>
                     <div className="spinner-grow" role="status">
                         <span className="visually-hidden">正在載入資料...</span>
@@ -80,7 +80,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                 </div>
                 : ""}
             {error ? <span className="fs-3">發生錯誤</span> : ""}
-            {!error && !isFetching && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
+            {!error && data !== undefined && !isFetching && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
         </div>
     )
 }
