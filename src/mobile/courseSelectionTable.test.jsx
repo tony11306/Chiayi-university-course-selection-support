@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CourseSelectionTable from './courseSelectionTable';
 import { renderWithStore } from '../testUtils/render';
@@ -69,23 +69,30 @@ afterEach(() => {
     window.innerWidth = DESKTOP_WIDTH;
 });
 
-test('桌機用表格呈現', async () => {
+test('手機與桌機用同一份 DOM，密度交給 CSS', async () => {
+    respondWith([dataStructure, algorithms]);
+    const { unmount } = renderTable({ width: MOBILE_WIDTH });
+
+    const mobileList = await screen.findByTestId('course-list');
+    expect(within(mobileList).getAllByRole('button', { name: /^加入/ })).toHaveLength(2);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    const mobileHtml = mobileList.innerHTML;
+    unmount();
+
+    respondWith([dataStructure, algorithms]);
+    renderTable({ width: DESKTOP_WIDTH });
+
+    const desktopList = await screen.findByTestId('course-list');
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(desktopList.innerHTML).toBe(mobileHtml);
+});
+
+test('桌機也是按鈕加入，不是 16px 的勾選框', async () => {
     respondWith([dataStructure]);
     renderTable({ width: DESKTOP_WIDTH });
 
-    // 桌機表格沿用原本的「【學制】課名」寫法
-    expect(await screen.findByText('【大學部】資料結構')).toBeInTheDocument();
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: '課程名稱' })).toBeInTheDocument();
-});
-
-test('手機用卡片呈現，不出現表格', async () => {
-    respondWith([dataStructure]);
-    renderTable({ width: MOBILE_WIDTH });
-
-    expect(await screen.findByText('資料結構')).toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '加入 資料結構' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '加入 資料結構' })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
 });
 
 test('已經選過的課不會出現在清單裡', async () => {

@@ -1,0 +1,783 @@
+/* ---------- 版面骨架 ---------- */
+.view-mobile .app-main {
+  display: block;
+  padding-bottom: 8px;
+}
+
+.view-mobile div::-webkit-scrollbar {
+  width: 12px;
+}
+
+.view-mobile div::-webkit-scrollbar-thumb {
+  background-color: rgb(121, 121, 121);
+  border-radius: 5px;
+}
+
+/* ---------- 公告 ---------- */
+.view-mobile .announcement {
+  background-color: rgba(255, 255, 255, 0.32);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+.view-mobile .announcement p {
+  margin-bottom: 8px;
+  color: var(--ink-2);
+}
+
+/* ---------- 課表 ---------- */
+.view-mobile .timetable-panel {
+  background-color: rgba(221, 215, 215, 0.39);
+  padding: 12px;
+}
+
+.view-mobile .timetable-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.view-mobile .timetable-controls .form-check {
+  margin-bottom: 0;
+}
+
+.view-mobile .btn-icon-circle {
+  background-color: #757575be;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.view-mobile .btn-icon-circle:disabled {
+  background-color: rgba(117, 117, 117, 0.35);
+}
+
+/* 單日檢視時把週表格移到畫面外，好讓 html2canvas 還能截到它 */
+.view-mobile .timetable-week.is-offscreen {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 800px;
+  pointer-events: none;
+}
+
+/*
+  課表自己畫格線，不吃 Bootstrap 的 .table。
+  .table>:not(caption)>*>* 的特異度是 (0,
+1,
+3)，padding 和 background-color
+  都會蓋過來，原本是靠 !important 硬壓 —— 直接不用它就沒有這場仗。
+*/
+.view-mobile .week-grid-scroll {
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.view-mobile .week-grid {
+  border-collapse: separate;
+  border-spacing: 4px;
+  margin: 0 auto;
+  color: var(--ink);
+}
+
+.view-mobile .week-grid th,
+.view-mobile .week-grid td {
+  border: 0;
+  padding: 4px 3px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.8rem;
+  border-radius: 5px;
+}
+
+.view-mobile .week-grid thead th {
+  font-weight: 600;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+.view-mobile .week-grid tbody td {
+  width: 54px;
+  min-width: 54px;
+  line-height: 1.3;
+}
+
+.view-mobile .week-grid .week-grid-period {
+  background-color: var(--slot-period);
+  font-size: 0.66rem;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 4px 7px;
+}
+
+.view-mobile .week-grid tbody td[data-state="occupied"] {
+  background-color: var(--slot-used);
+}
+
+.view-mobile .week-grid tbody td[data-state="free"] {
+  background-color: var(--slot-free);
+}
+
+.view-mobile .week-grid-course {
+  font-weight: 500;
+}
+
+/* 星期分頁 */
+.view-mobile .day-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 12px;
+  padding-bottom: 2px;
+}
+
+.view-mobile .day-tabs::-webkit-scrollbar {
+  height: 0;
+}
+
+.view-mobile .day-tab {
+  flex: none;
+  min-width: 48px;
+  min-height: 46px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.52);
+  color: var(--ink-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.view-mobile .day-tab[aria-selected="true"] {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.view-mobile .day-tab-count {
+  font-size: 0.62rem;
+  opacity: 0.75;
+}
+
+/* 當日議程 */
+.view-mobile .agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.view-mobile .agenda-row {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 11px;
+  align-items: stretch;
+}
+
+.view-mobile .agenda-when {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .agenda-period {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.view-mobile .agenda-time {
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  line-height: 1.45;
+}
+
+.view-mobile .agenda-card {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 13px;
+}
+
+.view-mobile .agenda-title {
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.view-mobile .agenda-meta {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  margin-top: 3px;
+}
+
+.view-mobile .agenda-gap {
+  grid-column: 2;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  padding: 7px 12px;
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.view-mobile .agenda-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-2);
+  background-color: rgba(255, 255, 255, 0.34);
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.view-mobile .agenda-empty-title {
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+/* ---------- 迷你課表 ---------- */
+.view-mobile .mini-timetable {
+  background-color: rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 9px 10px 8px;
+}
+
+.view-mobile .mini-timetable-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.view-mobile .mini-timetable-count {
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .mini-timetable-toggle {
+  margin-left: auto;
+  padding: 0 4px;
+  min-height: 32px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.view-mobile .mini-timetable-grid {
+  display: grid;
+  grid-template-columns: 15px repeat(6, 1fr);
+  gap: 2px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.view-mobile .mini-timetable-day,
+.view-mobile .mini-timetable-period {
+  font-size: 0.6rem;
+  color: var(--ink-2);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.view-mobile .mini-timetable-period {
+  font-size: 0.53rem;
+  color: var(--ink-3);
+  text-align: right;
+  line-height: 9px;
+  height: 9px;
+}
+
+.view-mobile .mini-timetable-cell {
+  height: 9px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.view-mobile .mini-timetable-cell[data-state="occupied"] {
+  background-color: var(--occupied);
+}
+
+.view-mobile .mini-timetable-cell[data-state="preview"] {
+  background-color: var(--ink);
+}
+
+.view-mobile .mini-timetable-cell[data-state="conflict"] {
+  background-color: var(--warm);
+}
+
+.view-mobile .mini-timetable-cell[data-highlight="true"] {
+  animation: mini-pop 0.45s ease-out;
+}
+
+@keyframes mini-pop {
+  0% { transform: scaleY(0.2); opacity: 0.3; }
+  60% { transform: scaleY(1.25); }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+.view-mobile .mini-timetable-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.68rem;
+  color: var(--ink-2);
+}
+
+.view-mobile .mini-timetable-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.view-mobile .mini-timetable-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.view-mobile .mini-timetable-swatch[data-state="occupied"] { background-color: var(--occupied); }
+.view-mobile .mini-timetable-swatch[data-state="preview"] { background-color: var(--ink); }
+.view-mobile .mini-timetable-swatch[data-state="conflict"] { background-color: var(--warm); }
+
+.view-mobile .mini-timetable-hint {
+  margin: 7px 0 0;
+  font-size: 0.7rem;
+  color: var(--ink-3);
+  line-height: 1.45;
+}
+
+/* ---------- 找課 ---------- */
+.view-mobile .course-selection-menu {
+  background-color: rgba(221, 215, 215, 0.39);
+  padding: 15px;
+}
+
+.view-mobile .search-bar {
+  background-color: rgba(255, 255, 255, 0.6);
+  /* 16px 以上，iOS 聚焦時才不會自動放大整頁 */
+  font-size: 16px;
+  min-height: 46px;
+  padding: 0 16px;
+  width: 100%;
+  margin: 6px 0 10px;
+  color: var(--ink);
+}
+
+.view-mobile .filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.view-mobile .filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 8px 0 12px;
+  border: 0;
+  border-radius: 18px;
+  background-color: rgba(29, 36, 41, 0.08);
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+.view-mobile .filter-chip-remove {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(29, 36, 41, 0.13);
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.view-mobile .filter-chip-open {
+  background-color: transparent;
+  border: 1px dashed var(--line);
+  padding: 0 14px;
+  color: var(--ink-2);
+}
+
+.view-mobile .filter-chip-count {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  background-color: var(--accent);
+  color: #fff;
+  font-size: 0.66rem;
+  display: grid;
+  place-items: center;
+}
+
+.view-mobile .filter-clear-all {
+  color: var(--accent);
+  font-size: 0.8rem;
+  padding: 0 4px;
+  min-height: 36px;
+}
+
+.view-mobile .conflict-switch {
+  margin-bottom: 12px;
+}
+
+.view-mobile .filter-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.view-mobile .filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.view-mobile .filter-field label {
+  font-size: 0.78rem;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.view-mobile .filter-field select {
+  /* 原生 select：手機會叫出系統選擇器，130 多個系所也能首字跳轉 */
+  font-size: 16px;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background-color: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+
+.filter-sheet {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  height: auto;
+  max-height: 82vh;
+  max-height: 82dvh;
+}
+
+.filter-sheet .offcanvas-body {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+
+.filter-sheet .filter-fields {
+  grid-template-columns: 1fr;
+}
+
+/* ---------- 課程卡與清單 ---------- */
+.view-mobile .course-results-count {
+  font-size: 0.74rem;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .course-results-status {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.view-mobile .course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.view-mobile .course-card {
+  background-color: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 13px;
+  display: grid;
+  grid-template-columns: 1fr 46px;
+  gap: 10px;
+  align-items: start;
+  text-align: left;
+  cursor: default;
+}
+
+.view-mobile .course-card[role="button"] {
+  cursor: pointer;
+}
+
+.view-mobile .course-card[data-conflict="true"] {
+  background-color: rgba(255, 255, 255, 0.42);
+  border-style: dashed;
+}
+
+.view-mobile .course-card[data-previewing="true"] {
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+  background-color: rgba(255, 255, 255, 0.94);
+}
+
+.view-mobile .course-card-body {
+  min-width: 0;
+}
+
+.view-mobile .course-card-title {
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.view-mobile .course-card-level {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.view-mobile .course-card-meta {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  margin-top: 3px;
+}
+
+.view-mobile .course-card-teacher {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(21, 105, 127, 0.3);
+}
+
+.view-mobile .course-card-action {
+  /* 原本是 16px 的 checkbox，遠低於 44px 的觸控下限 */
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  background-color: var(--ink);
+  color: #fff;
+}
+
+.view-mobile .course-card-action.is-remove {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--warm);
+  border: 1px solid rgba(193, 92, 54, 0.3);
+}
+
+.view-mobile .course-card-action:disabled {
+  background-color: rgba(29, 36, 41, 0.12);
+  color: var(--ink-3);
+  border-color: transparent;
+}
+
+.view-mobile .course-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.view-mobile .course-pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 7px;
+  font-weight: 500;
+  background-color: rgba(29, 36, 41, 0.07);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.view-mobile .course-pill-time {
+  background-color: rgba(21, 105, 127, 0.11);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .course-pill-conflict {
+  background-color: rgba(193, 92, 54, 0.14);
+  color: var(--warm);
+}
+
+/* 校區色票：原本用 Bootstrap 的 bg-primary/secondary/success/warning */
+.view-mobile .course-pill-campus[data-campus="lantan"] { background-color: rgba(31, 111, 128, 0.13); color: #155a69; }
+.view-mobile .course-pill-campus[data-campus="minhsiung"] { background-color: rgba(154, 91, 122, 0.15); color: #7e4460; }
+.view-mobile .course-pill-campus[data-campus="xinmin"] { background-color: rgba(79, 122, 63, 0.15); color: #3e6431; }
+.view-mobile .course-pill-campus[data-campus="linsen"] { background-color: rgba(176, 122, 38, 0.16); color: #8a5d14; }
+.view-mobile .course-pill-campus[data-campus="online"] { background-color: rgba(74, 85, 96, 0.14); color: #414b54; }
+
+/* ---------- 已選課程 ---------- */
+.view-mobile .selected-panel {
+  background-color: rgba(221, 215, 215, 0.39);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.view-mobile .selected-courses-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+}
+
+/* ---------- 底部分頁 ---------- */
+.view-mobile .tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.view-mobile .tab-bar-button {
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 0 6px;
+  min-height: 54px;
+  color: var(--ink-2);
+  position: relative;
+}
+
+.view-mobile .tab-bar-button[aria-selected="true"] {
+  color: var(--accent);
+}
+
+.view-mobile .tab-bar-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.view-mobile .tab-bar-badge {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  margin-left: 8px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9px;
+  padding: 0 4px;
+  background-color: var(--warm);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 500;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+/* 分頁列會蓋住頁尾，留出空間 */
+@media (max-width: 991.98px) {
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+
+  footer {
+    min-height: 0;
+    margin-top: 20px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ---------- Toast ---------- */
+.view-mobile .app-toast {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  z-index: 1040;
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: var(--ink);
+  color: #fff;
+  border-radius: 13px;
+  padding: 9px 10px 9px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  box-shadow: 0 6px 24px rgba(29, 36, 41, 0.3);
+  animation: toast-rise 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes toast-rise {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.view-mobile .app-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.view-mobile .app-toast-meta {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mobile .app-toast-action {
+  flex: none;
+  border: 0;
+  border-radius: 9px;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  min-height: 38px;
+  padding: 0 13px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ---------- 通用 ---------- */
+.view-mobile .form-switch .form-check-input:focus {
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: none;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='4' fill='rgba(0,0,0,0.25)'/></svg>");
+}
+
+.view-mobile .form-switch .form-check-input:checked {
+  background-color: #30d158;
+  border-color: #30d158;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='4' fill='rgba(255,255,255,1.0)'/></svg>");
+}

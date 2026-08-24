@@ -186,3 +186,23 @@ test('沒有選課時不讓匯出', () => {
     renderWithStore(<TimeTable />, { courses: [] });
     expect(screen.getByRole('button', { name: /下載課表/ })).toBeDisabled();
 });
+
+test('週表格的節次帶著 occupied / free 狀態，顏色不靠 Bootstrap 的表格樣式', () => {
+    window.innerWidth = DESKTOP_WIDTH;
+    renderWithStore(<TimeTable />, { courses: [monday] });
+
+    expect(screen.getByTestId('week-slot-一-1')).toHaveAttribute('data-state', 'occupied');
+    expect(screen.getByTestId('week-slot-一-3')).toHaveAttribute('data-state', 'occupied');
+    expect(screen.getByTestId('week-slot-一-4')).toHaveAttribute('data-state', 'free');
+    expect(screen.getByTestId('week-slot-二-1')).toHaveAttribute('data-state', 'free');
+});
+
+test('課表不掛 Bootstrap 的 .table，避免 padding 與背景色被蓋掉', () => {
+    window.innerWidth = DESKTOP_WIDTH;
+    renderWithStore(<TimeTable />, { courses: [monday] });
+
+    const grid = screen.getByRole('table');
+    expect(grid).toHaveClass('week-grid');
+    // .table>:not(caption)>*>* 的特異度比我們的規則高，會蓋掉格子的 padding 和背景
+    expect(grid).not.toHaveClass('table');
+});

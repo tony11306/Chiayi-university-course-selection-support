@@ -177,8 +177,12 @@ export default function TimeTable() {
 
 function WeekGrid({ occupancy, showTeacher, showClassroom }) {
     return (
-        <div className="table-responsive">
-            <table className="table curriculum-table mb-0">
+        <div className="week-grid-scroll">
+            {/*
+              刻意不掛 Bootstrap 的 .table：.table>:not(caption)>*>* 的特異度是 (0,1,3)，
+              會蓋掉格子的 padding 和背景色 —— 原本得靠 !important 才壓得過它。
+            */}
+            <table className="week-grid">
                 <thead>
                     <tr>
                         <th scope="col">節次</th>
@@ -188,16 +192,20 @@ function WeekGrid({ occupancy, showTeacher, showClassroom }) {
                 <tbody>
                     {PERIODS.map((period, index) => (
                         <tr key={period.code}>
-                            <th scope="row" className="curriculum-period">
+                            <th scope="row" className="week-grid-period">
                                 第 {period.code} 節<br />{period.start} ~ {period.end}
                             </th>
                             {DAYS.map(day => {
                                 const course = occupancy[`${day}-${index}`];
                                 return (
-                                    <td key={day} className={course ? 'used-course-td' : 'unused-course-td'}>
+                                    <td
+                                        key={day}
+                                        data-testid={`week-slot-${day}-${index}`}
+                                        data-state={course ? 'occupied' : 'free'}
+                                    >
                                         {course ? (
                                             <>
-                                                {`【${course.課程名稱}】`}
+                                                <span className="week-grid-course">{`【${course.課程名稱}】`}</span>
                                                 {showTeacher ? <><br />{course.授課老師}</> : null}
                                                 {showClassroom ? <><br />{course.上課教室}</> : null}
                                             </>

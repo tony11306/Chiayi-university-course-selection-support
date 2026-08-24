@@ -73,16 +73,16 @@ test('沒選課時顯示空狀態，也不顯示清空', () => {
     expect(screen.queryByRole('button', { name: /清空/ })).not.toBeInTheDocument();
 });
 
-test('手機用卡片列出，每一門都有移除按鈕', () => {
-    renderList({ width: MOBILE_WIDTH });
+test('手機與桌機用同一份 DOM', () => {
+    const { unmount } = renderList({ width: MOBILE_WIDTH });
+    const mobileHtml = screen.getByTestId('selected-course-list').innerHTML;
     expect(screen.getByRole('button', { name: '移除 資料結構' })).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
-});
+    unmount();
 
-test('桌機用表格列出', () => {
     renderList({ width: DESKTOP_WIDTH });
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '移除 資料結構' })).toBeInTheDocument();
+    expect(screen.getByTestId('selected-course-list').innerHTML).toBe(mobileHtml);
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });
 
 test('移除一門課會給可復原的提示', async () => {

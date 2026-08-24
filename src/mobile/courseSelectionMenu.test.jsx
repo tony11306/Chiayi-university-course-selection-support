@@ -82,7 +82,7 @@ test('手機在清單上方常駐課表預覽', async () => {
 
 test('桌機不需要預覽，因為課表就在旁邊', async () => {
     renderMenu({ courses: [dataStructure], width: DESKTOP_WIDTH });
-    await screen.findByText('【大學部】演算法');
+    await screen.findByText('演算法');
 
     expect(screen.queryAllByTestId(/^mini-slot-/)).toHaveLength(0);
 });
@@ -108,7 +108,7 @@ test('輕觸課程卡會在預覽上標出它的位置', async () => {
 
 test('再輕觸一次會取消預覽', async () => {
     renderMenu();
-    const card = async () => within(await screen.findByTestId('course-card-list')).getByText('演算法');
+    const card = async () => within(await screen.findByTestId('course-list')).getByText('演算法');
 
     await userEvent.click(await card());
     expect(screen.getByTestId('mini-slot-三-5')).toHaveAttribute('data-state', 'preview');

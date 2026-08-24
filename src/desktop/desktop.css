@@ -1,0 +1,257 @@
+/*
+  桌機版樣式 —— 改版前的原版，規則本身一字不動，只加上 scope。
+
+  scope 用 :is(.view-desktop .desktop-modal) 兩個一起，是因為「已選課程」的
+  Modal 會被 portal 到 document.body，掛在 .view-desktop 外面，
+  單靠祖先 class 選不到它裡面的表格。
+
+  .modal 本身的規則保持未 scope —— 它就是那個 portal 出去的根節點，
+  而手機版沒有 Modal，不會撞。
+*/
+
+:is(.view-desktop, .desktop-modal) .custom-scrollbar {
+  position: relative;
+  height: 100vh;
+  overflow: auto;
+}
+
+:is(.view-desktop, .desktop-modal) .table-wrapper-scroll-y {
+display: block;
+}
+
+:is(.view-desktop, .desktop-modal) .min-height-30 {
+  min-height: 30%;
+}
+
+:is(.view-desktop, .desktop-modal) .min-height-70 {
+  min-height: 70%;
+}
+
+:is(.view-desktop, .desktop-modal) details[open] summary ~ * {
+  animation: open 0.3s ease-in-out;
+}
+
+@keyframes open {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+:is(.view-desktop, .desktop-modal) details summary::-webkit-details-marker {
+  display: none;
+}
+
+:is(.view-desktop, .desktop-modal) details summary {
+  width: 100%;
+  padding: 0.5rem 0;
+  position: relative;
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 300;
+  list-style: none;
+}
+
+:is(.view-desktop, .desktop-modal) details summary:after {
+  content: "+";
+  color: black;
+  position: absolute;
+  font-size: 1.75rem;
+  line-height: 0;
+  margin-top: 0.75rem;
+  right: 0;
+  font-weight: 200;
+  transform-origin: center;
+  transition: 200ms linear;
+}
+:is(.view-desktop, .desktop-modal) details[open] summary:after {
+  transform: rotate(45deg);
+  font-size: 2rem;
+}
+:is(.view-desktop, .desktop-modal) details summary {
+  outline: 0;
+}
+
+:is(.view-desktop, .desktop-modal) div::-webkit-scrollbar {
+  width: 12px;               /* width of the entire scrollbar */
+}
+
+:is(.view-desktop, .desktop-modal) div::-webkit-scrollbar-thumb {
+  background-color: rgb(121, 121, 121);    /* color of the scroll thumb */
+  border-radius: 5px; /* creates padding around scroll thumb */
+}
+
+:is(.view-desktop, .desktop-modal) .conflict-warning {
+  background: rgba(253, 68, 68, 0.747);
+}
+
+:is(.view-desktop, .desktop-modal) .dropdown-menu {
+  background: rgba(255, 255, 255, 0.808);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+:is(.view-desktop, .desktop-modal) .dropdown-menu::-webkit-scrollbar {
+  width: 4px;               /* width of the entire scrollbar */
+}
+:is(.view-desktop, .desktop-modal) .dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: rgb(121, 121, 121);    /* color of the scroll thumb */
+  border-radius: 5px;       /* roundness of the scroll thumb */
+}
+
+:is(.view-desktop, .desktop-modal) .course-selection-menu {
+  background-color: rgba(221, 215, 215, 0.39);
+  padding: 15px;
+}
+
+:is(.view-desktop, .desktop-modal) .table-first-row-white tr:first-child {
+  background-color: rgba(230, 230, 230, 0.938);
+}
+
+:is(.view-desktop, .desktop-modal) .curriculum-table {
+  opacity: 0.8;
+  padding: 5px;
+  padding-top: 15px;
+  border-spacing: 4px;
+  border-radius: 5px;
+  background-color: rgba(221, 215, 215, 0.39);
+  border-collapse: separate;
+}
+
+:is(.view-desktop, .desktop-modal) .curriculum-table tbody tr td {
+  width: 50px;
+  border-radius: 5px;
+  opacity: 0.9;
+  text-align: center;
+  vertical-align: middle;
+}
+
+:is(.view-desktop, .desktop-modal) .curriculum-table tr:nth-child(even) td:first-child {
+  background-color: rgb(113, 113, 113);
+}
+
+:is(.view-desktop, .desktop-modal) .curriculum-table tr:nth-child(odd) td:first-child {
+  background-color: rgb(198, 184, 184);
+}
+
+:is(.view-desktop, .desktop-modal) .used-course-td {
+  background-color: rgb(199, 241, 208) !important;
+}
+
+:is(.view-desktop, .desktop-modal) .unused-course-td {
+  background-color: rgb(221, 215, 215) !important;
+}
+
+:is(.view-desktop, .desktop-modal) .search-bar {
+  background-color: rgba(255, 255, 255, 0.425);
+  text-indent: 20px; 
+  height: 40px;
+}
+
+:is(.view-desktop, .desktop-modal) .float-left {
+  float: left;
+}
+
+:is(.view-desktop, .desktop-modal) .non-border {
+  border-width: 0px;
+  border-color: transparent;
+}
+
+:is(.view-desktop, .desktop-modal) .form-switch .form-check-input:focus {
+  border-color: rgba(0, 0, 0, 0.25);
+  outline: 0;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='4' fill='rgba(0,0,0,0.25)'/></svg>");
+}
+:is(.view-desktop, .desktop-modal) .form-switch .form-check-input:checked {
+  background-color: #30D158;
+  border-color: #30D158;
+  border: none;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='4' fill='rgba(255,255,255,1.0)'/></svg>");
+}
+
+:is(.view-desktop, .desktop-modal) .rounded {
+  border-radius: 30px !important;
+}
+
+:is(.view-desktop, .desktop-modal) .btn-icon-circle {
+  background-color: #757575be;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+}
+
+:is(.view-desktop, .desktop-modal) .edit-btn {
+  border-radius: 10px;
+  width: 80px;
+  height: 60px;
+  position: fixed;
+  bottom: 10%;
+  right: 0px;
+  margin-right: -20px;
+  display: flex;
+  align-items: center;
+  background-color: rgba(137, 175, 0, 0.842);  
+  z-index: 1;
+  transition: 0.3s;
+}
+
+:is(.view-desktop, .desktop-modal) .relative-wrapper {
+  position: relative;
+}
+
+:is(.view-desktop, .desktop-modal) .edit-btn svg {
+  margin-left: 5px;
+}
+
+:is(.view-desktop, .desktop-modal) .edit-btn:hover {
+  margin-right: -7px;
+}
+
+:is(.view-desktop, .desktop-modal) .edit-btn .cnt-div {
+  position: absolute;
+  border-radius: 50%;
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  top: 0;
+  left: 0;
+  transform: translate(-50%,-50%);
+  font-weight: bold;
+  background-color: rgb(255, 182, 141);
+  box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.1);
+}
+
+.modal {
+  background-color: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(4px) opacity(0);
+  transition: 0.5s;
+  margin-top: 100%;
+}
+
+.modal.show {
+  backdrop-filter: blur(4px) opacity(1);
+  opacity: 1;
+  margin-top: 0;
+  transform:none;
+}
+
+.modal-content {
+  background-color: rgba(221, 215, 215, 0.925);
+  height: 75vh;
+  padding: 15px;
+}
+
+:is(.view-desktop, .desktop-modal) .selected-courses-body {
+  overflow: hidden;
+}
+
+:is(.view-desktop, .desktop-modal) .selected-courses-body .custom-scrollbar {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
