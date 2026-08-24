@@ -44,9 +44,8 @@ export default function TimeTable() {
         html2canvas(table, {backgroundColor: null}).then(canvas => {
             const img = canvas.toDataURL('image/png')
             downloadURI(img, "選課結果.png")
-        }).finally(() => {
-            Object.assign(table.style, originalStyles)
         })
+        Object.assign(table.style, originalStyles)
     }
 
     const CLASSES_COUNT = 14
