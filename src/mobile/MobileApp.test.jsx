@@ -76,6 +76,21 @@ test('手機可以切到找課與已選', async () => {
     expect(screen.getByRole('button', { name: '移除 資料結構' })).toBeInTheDocument();
 });
 
+test('切換分頁時內容帶著滑入方向的 class，初次掛載不播動畫', async () => {
+    renderApp({ courses: [dataStructure] });
+
+    expect(document.querySelector('.tab-slide')).not.toBeInTheDocument();
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /找課/ }));
+    expect(document.querySelector('.tab-slide-forward')).toBeInTheDocument();
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /已選/ }));
+    expect(document.querySelector('.tab-slide-forward')).toBeInTheDocument();
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /課表/ }));
+    expect(document.querySelector('.tab-slide-back')).toBeInTheDocument();
+});
+
 test('已選分頁的徽章顯示門數', () => {
     renderApp({ courses: [dataStructure, wednesdayCourse] });
     expect(mainTabs().getByRole('tab', { name: /已選 2/ })).toBeInTheDocument();

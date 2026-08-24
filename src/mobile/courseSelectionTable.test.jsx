@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CourseSelectionTable from './courseSelectionTable';
-import { renderWithStore } from '../testUtils/render';
+import { GlobalDataProvider } from '../hooks/useGlobalData';
+import { renderWithStore, seedSelectedCourses } from '../testUtils/render';
 import { MOBILE_WIDTH, DESKTOP_WIDTH } from '../testUtils/viewport';
 
 const getCourseDatas = vi.hoisted(() => vi.fn());
@@ -52,12 +54,22 @@ function respondWith(courses) {
 
 function renderTable({ courses, hideConflicted = false, keyword = '', width = MOBILE_WIDTH } = {}) {
     window.innerWidth = width;
-    return renderWithStore(
-        <CourseSelectionTable
-            displaySettings={{ keyword, isShowedConflictedCourses: !hideConflicted }}
-        />,
-        { courses }
+    if (courses) seedSelectedCourses(courses);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const table = displaySettings => (
+        <QueryClientProvider client={client}>
+            <GlobalDataProvider>
+                <CourseSelectionTable displaySettings={displaySettings} />
+            </GlobalDataProvider>
+        </QueryClientProvider>
     );
+    const renderResult = renderWithStore(table({ keyword, isShowedConflictedCourses: !hideConflicted }));
+    return {
+        ...renderResult,
+        rerenderTable(displaySettings) {
+            renderResult.rerender(table(displaySettings));
+        },
+    };
 }
 
 beforeEach(() => {
@@ -178,4 +190,45 @@ test('沒有符合的課顯示查無結果', async () => {
     respondWith([]);
     renderTable();
     expect(await screen.findByText(/查無結果/)).toBeInTheDocument();
+});
+
+function makeManyCourses(count) {
+    return Array.from({ length: count }, (_, index) => makeCourse({
+        開課序號: String(index + 1).padStart(2, '0'),
+        永久課號: `CS${index + 1}`,
+        課程名稱: `課程${index + 1}`,
+    }));
+}
+
+test('長清單先只畫一部分，按「顯示更多」才長出後面的', async () => {
+    respondWith(makeManyCourses(100));
+    renderTable();
+
+    const list = await screen.findByTestId('course-list');
+    expect(within(list).getAllByRole('button', { name: /^加入/ })).toHaveLength(40);
+    expect(screen.getByText(/還有 60 門/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /顯示更多/ }));
+
+    expect(within(list).getAllByRole('button', { name: /^加入/ })).toHaveLength(100);
+    expect(screen.queryByRole('button', { name: /顯示更多/ })).not.toBeInTheDocument();
+});
+
+test('搜尋條件變動後，分批計數會從第一頁重算', async () => {
+    respondWith(makeManyCourses(100));
+    const { rerenderTable } = renderTable();
+
+    await screen.findByTestId('course-list');
+    await userEvent.click(screen.getByRole('button', { name: /顯示更多/ }));
+    expect(screen.getAllByRole('button', { name: /^加入/ })).toHaveLength(100);
+
+    rerenderTable({ keyword: '課程1', isShowedConflictedCourses: true });
+    // 子字串比對：課程1、課程10～19、課程100 都算命中
+    expect(await screen.findAllByRole('button', { name: /^加入/ })).toHaveLength(12);
+
+    rerenderTable({ keyword: '', isShowedConflictedCourses: true });
+
+    // 回到空白關鍵字時回到第一頁的量，而不是沿用展開後的計數
+    expect(await screen.findAllByRole('button', { name: /^加入/ })).toHaveLength(40);
+    expect(screen.getByText(/還有 60 門/)).toBeInTheDocument();
 });

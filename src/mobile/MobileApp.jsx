@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './mobile.css';
 import Announcement from "./announcement";
 import CourseSelectionMenu from "./courseSelectionMenu";
@@ -6,6 +6,9 @@ import TimeTable from "./timeTable";
 import SelectedCoursesList from './selectedCoursesList';
 import Toast from '../shared/toast';
 import { TABS, useGlobalData } from '../hooks/useGlobalData';
+
+// 分頁在底部的排列順序，用來判斷切換方向
+const TAB_ORDER = [TABS.TIMETABLE, TABS.SEARCH, TABS.SELECTED];
 
 export default function MobileApp() {
     const {
@@ -18,6 +21,16 @@ export default function MobileApp() {
         addCourse,
         restoreCourses,
     } = useGlobalData();
+
+    // 記住上一次的分頁：往右邊的分頁切就從右側滑進來，往左切就從左側。
+    // 初次掛載不吃動畫。
+    const [slide, setSlide] = useState({ tab: activeTab, dir: '' });
+    if (slide.tab !== activeTab) {
+        setSlide({
+            tab: activeTab,
+            dir: TAB_ORDER.indexOf(activeTab) > TAB_ORDER.indexOf(slide.tab) ? 'forward' : 'back',
+        });
+    }
 
     // 上方的 navbar 是 sticky 的，量出它的實際高度讓搜尋框停在它下面，不會撞在一起
     useEffect(() => {
@@ -52,19 +65,22 @@ export default function MobileApp() {
     return (
         <div className="view-mobile">
             <main className="app-main" id="app-tab-panel" role="tabpanel">
-                {activeTab === TABS.TIMETABLE && (
-                    <>
-                        <TimeTable />
-                        <Announcement />
-                    </>
-                )}
-                {activeTab === TABS.SEARCH && <CourseSelectionMenu />}
-                {activeTab === TABS.SELECTED && (
-                    <section aria-label="已選擇的課程">
-                        <h2 className="fs-4 mb-2">已選擇的課程</h2>
-                        <SelectedCoursesList />
-                    </section>
-                )}
+                {/* key 換掉時整塊重掛，滑入動畫才會每次都重播 */}
+                <div key={activeTab} className={slide.dir ? `tab-slide tab-slide-${slide.dir}` : undefined}>
+                    {activeTab === TABS.TIMETABLE && (
+                        <>
+                            <TimeTable />
+                            <Announcement />
+                        </>
+                    )}
+                    {activeTab === TABS.SEARCH && <CourseSelectionMenu />}
+                    {activeTab === TABS.SELECTED && (
+                        <section aria-label="已選擇的課程">
+                            <h2 className="fs-4 mb-2">已選擇的課程</h2>
+                            <SelectedCoursesList />
+                        </section>
+                    )}
+                </div>
             </main>
 
             <Toast toast={toast} onDismiss={dismissToast} onAction={onToastAction} />

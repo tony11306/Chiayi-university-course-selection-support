@@ -1,6 +1,31 @@
 .view-mobile .app-main {
   display: block;
   padding-bottom: 8px;
+  /* 分頁轉場的位移會暫時把內容推出右邊界，在這裡裁掉，
+     免得冒出橫向捲軸把固定的頁籤列頂得抖動。
+     用 clip 而非 hidden：clip 不會把這層變成捲動容器，sticky 搜尋列才不會壞掉 */
+  overflow-x: clip;
+}
+
+/* 切換分頁的轉場：內容帶著一點位移和淡入滑進來，
+   方向由 MobileApp 依分頁前後順序決定（tab-slide-forward / tab-slide-back）。
+   prefers-reduced-motion 時 index.css 會把動畫長度壓到近零 */
+@keyframes tab-slide-forward {
+  from { transform: translateX(28px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes tab-slide-back {
+  from { transform: translateX(-28px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.view-mobile .tab-slide {
+  animation: tab-slide-forward 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.view-mobile .tab-slide-back {
+  animation-name: tab-slide-back;
 }
 
 .view-mobile div::-webkit-scrollbar {
@@ -507,6 +532,18 @@
   gap: 10px;
 }
 
+.view-mobile .course-results-more {
+  display: block;
+  margin: 14px auto 0;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px dashed var(--line);
+  border-radius: 22px;
+  background-color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+
 .view-mobile .course-card {
   background-color: var(--card);
   border: 1px solid var(--line);
@@ -518,6 +555,9 @@
   align-items: start;
   text-align: left;
   cursor: default;
+  /* 長清單效能：畫面外的卡片先跳過排版與上色 */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 96px;
 }
 
 .view-mobile .course-card[data-conflict="true"] {

@@ -1,7 +1,12 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 import { courseKey } from "../lib/schedule";
 import CourseCard from "./courseCard";
+
+// 先只掛前幾十張卡片進 DOM：整份清單一次全掛會把分頁轉場卡住，
+// 剩下的等使用者按「顯示更多」再長出來。
+const INITIAL_VISIBLE_COUNT = 40;
+const VISIBLE_COUNT_STEP = 60;
 
 function matchesKeyword(course, keyword) {
     if (!keyword) return true;
@@ -36,6 +41,16 @@ export default function CourseSelectionTable({ displaySettings }) {
         ? withConflict
         : withConflict.filter(entry => !entry.conflictWith);
     const hiddenCount = withConflict.length - displayed.length;
+
+    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+
+    // 換關鍵字或換一批資料就從第一頁重新開始
+    useEffect(() => {
+        setVisibleCount(INITIAL_VISIBLE_COUNT);
+    }, [displaySettings.keyword, courseDatas]);
+
+    const displayedCourses = displayed.slice(0, visibleCount);
+    const remainingCount = displayed.length - displayedCourses.length;
 
     function onSelected(course) {
         addCourse(course);
@@ -83,7 +98,7 @@ export default function CourseSelectionTable({ displaySettings }) {
             </p>
 
             <div className="course-list" data-testid="course-list">
-                {displayed.map(({ course, conflictWith }) => (
+                {displayedCourses.map(({ course, conflictWith }) => (
                     <CourseCard
                         key={courseKey(course)}
                         course={course}
@@ -93,6 +108,16 @@ export default function CourseSelectionTable({ displaySettings }) {
                     />
                 ))}
             </div>
+
+            {remainingCount > 0 && (
+                <button
+                    type="button"
+                    className="course-results-more"
+                    onClick={() => setVisibleCount(count => count + VISIBLE_COUNT_STEP)}
+                >
+                    顯示更多（還有 {remainingCount} 門）
+                </button>
+            )}
         </div>
     );
 }
