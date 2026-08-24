@@ -28,7 +28,6 @@ export default function TimeTable() {
     }
     const CLASS_MAP = Object.fromEntries(PERIODS.map((period, index) => [period.code, index + 1]))
 
-    // 預設只畫週一～五、第 1～8 節，選到週六或更晚的課才把範圍撐開
     const days = visibleDays(occupancy)
     const periods = visiblePeriods(occupancy)
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CourseSelectionTable from './courseSelectionTable';
@@ -52,6 +52,26 @@ function respondWith(courses) {
     getCourseDatas.mockResolvedValue({ data: { semester: '114-1', result: courses } });
 }
 
+// jsdom 沒有 IntersectionObserver，做一個可以手動觸發的替身來模擬「捲到清單尾端」
+class MockIntersectionObserver {
+    constructor(callback) {
+        this.callback = callback;
+        this.targets = [];
+        MockIntersectionObserver.instances.push(this);
+    }
+    observe(target) { this.targets.push(target); }
+    disconnect() { this.targets = []; }
+    unobserve() {}
+    trigger() { this.callback([{ isIntersecting: true }], this); }
+}
+MockIntersectionObserver.instances = [];
+
+function fireScrollNearEnd() {
+    const observer = MockIntersectionObserver.instances.at(-1);
+    if (!observer) throw new Error('清單沒有掛上無限捲動的哨兵');
+    act(() => observer.trigger());
+}
+
 function renderTable({ courses, hideConflicted = false, keyword = '', width = MOBILE_WIDTH } = {}) {
     window.innerWidth = width;
     if (courses) seedSelectedCourses(courses);
@@ -75,9 +95,12 @@ function renderTable({ courses, hideConflicted = false, keyword = '', width = MO
 beforeEach(() => {
     localStorage.clear();
     getCourseDatas.mockReset();
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+    MockIntersectionObserver.instances.length = 0;
 });
 
 afterEach(() => {
+    vi.unstubAllGlobals();
     window.innerWidth = DESKTOP_WIDTH;
 });
 
@@ -200,18 +223,18 @@ function makeManyCourses(count) {
     }));
 }
 
-test('長清單先只畫一部分，按「顯示更多」才長出後面的', async () => {
+test('長清單先只畫一部分，捲到尾端自動長出後面的', async () => {
     respondWith(makeManyCourses(100));
     renderTable();
 
     const list = await screen.findByTestId('course-list');
     expect(within(list).getAllByRole('button', { name: /^加入/ })).toHaveLength(40);
-    expect(screen.getByText(/還有 60 門/)).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: /顯示更多/ }));
-
+    fireScrollNearEnd();
     expect(within(list).getAllByRole('button', { name: /^加入/ })).toHaveLength(100);
-    expect(screen.queryByRole('button', { name: /顯示更多/ })).not.toBeInTheDocument();
+
+    // 全部都出來之後就不需要哨兵了
+    expect(document.querySelector('.course-results-sentinel')).not.toBeInTheDocument();
 });
 
 test('搜尋條件變動後，分批計數會從第一頁重算', async () => {
@@ -219,16 +242,17 @@ test('搜尋條件變動後，分批計數會從第一頁重算', async () => {
     const { rerenderTable } = renderTable();
 
     await screen.findByTestId('course-list');
-    await userEvent.click(screen.getByRole('button', { name: /顯示更多/ }));
+    fireScrollNearEnd();
     expect(screen.getAllByRole('button', { name: /^加入/ })).toHaveLength(100);
 
     rerenderTable({ keyword: '課程1', isShowedConflictedCourses: true });
     // 子字串比對：課程1、課程10～19、課程100 都算命中
     expect(await screen.findAllByRole('button', { name: /^加入/ })).toHaveLength(12);
+    expect(document.querySelector('.course-results-sentinel')).not.toBeInTheDocument();
 
     rerenderTable({ keyword: '', isShowedConflictedCourses: true });
 
     // 回到空白關鍵字時回到第一頁的量，而不是沿用展開後的計數
     expect(await screen.findAllByRole('button', { name: /^加入/ })).toHaveLength(40);
-    expect(screen.getByText(/還有 60 門/)).toBeInTheDocument();
+    expect(document.querySelector('.course-results-sentinel')).toBeInTheDocument();
 });

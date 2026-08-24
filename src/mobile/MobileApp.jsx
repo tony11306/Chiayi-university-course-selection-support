@@ -7,7 +7,6 @@ import SelectedCoursesList from './selectedCoursesList';
 import Toast from '../shared/toast';
 import { TABS, useGlobalData } from '../hooks/useGlobalData';
 
-// 分頁在底部的排列順序，用來判斷切換方向
 const TAB_ORDER = [TABS.TIMETABLE, TABS.SEARCH, TABS.SELECTED];
 
 export default function MobileApp() {
@@ -22,17 +21,22 @@ export default function MobileApp() {
         restoreCourses,
     } = useGlobalData();
 
-    // 記住上一次的分頁：往右邊的分頁切就從右側滑進來，往左切就從左側。
-    // 初次掛載不吃動畫。
     const [slide, setSlide] = useState({ tab: activeTab, dir: '' });
+    const [visitedTabs, setVisitedTabs] = useState(() => new Set([activeTab]));
+
     if (slide.tab !== activeTab) {
         setSlide({
             tab: activeTab,
             dir: TAB_ORDER.indexOf(activeTab) > TAB_ORDER.indexOf(slide.tab) ? 'forward' : 'back',
         });
     }
+    if (!visitedTabs.has(activeTab)) {
+        const next = new Set(visitedTabs);
+        next.add(activeTab);
+        setVisitedTabs(next);
+    }
 
-    // 上方的 navbar 是 sticky 的，量出它的實際高度讓搜尋框停在它下面，不會撞在一起
+    // 上方的 navbar 是 sticky 的，量出實際高度讓分頁外殼剛好接在它下面
     useEffect(() => {
         const root = document.documentElement;
         const navbar = document.querySelector('.navbar');
@@ -65,22 +69,33 @@ export default function MobileApp() {
     return (
         <div className="view-mobile">
             <main className="app-main" id="app-tab-panel" role="tabpanel">
-                {/* key 換掉時整塊重掛，滑入動畫才會每次都重播 */}
-                <div key={activeTab} className={slide.dir ? `tab-slide tab-slide-${slide.dir}` : undefined}>
-                    {activeTab === TABS.TIMETABLE && (
-                        <>
-                            <TimeTable />
-                            <Announcement />
-                        </>
-                    )}
-                    {activeTab === TABS.SEARCH && <CourseSelectionMenu />}
-                    {activeTab === TABS.SELECTED && (
-                        <section aria-label="已選擇的課程">
-                            <h2 className="fs-4 mb-2">已選擇的課程</h2>
-                            <SelectedCoursesList />
-                        </section>
-                    )}
-                </div>
+                {TAB_ORDER.map(tab => {
+                    const isActive = tab === activeTab;
+                    if (!visitedTabs.has(tab)) return null;
+                    const classes = [
+                        'tab-panel',
+                        isActive ? '' : 'tab-panel-hidden',
+                        // 剛變成分頁才掛上動畫 class，重新套上的瞬間動畫就會重播
+                        isActive && slide.dir ? `tab-slide tab-slide-${slide.dir}` : '',
+                    ].filter(Boolean).join(' ');
+                    return (
+                        <div key={tab} className={classes} inert={isActive ? undefined : true}>
+                            {tab === TABS.TIMETABLE && (
+                                <>
+                                    <TimeTable />
+                                    <Announcement />
+                                </>
+                            )}
+                            {tab === TABS.SEARCH && <CourseSelectionMenu />}
+                            {tab === TABS.SELECTED && (
+                                <section aria-label="已選擇的課程">
+                                    <h2 className="fs-4 mb-2">已選擇的課程</h2>
+                                    <SelectedCoursesList />
+                                </section>
+                            )}
+                        </div>
+                    );
+                })}
             </main>
 
             <Toast toast={toast} onDismiss={dismissToast} onAction={onToastAction} />

@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 import { courseKey } from "../lib/schedule";
 import CourseCard from "./courseCard";
 
-// 先只掛前幾十張卡片進 DOM：整份清單一次全掛會把分頁轉場卡住，
-// 剩下的等使用者按「顯示更多」再長出來。
 const INITIAL_VISIBLE_COUNT = 40;
 const VISIBLE_COUNT_STEP = 60;
 
@@ -43,14 +41,31 @@ export default function CourseSelectionTable({ displaySettings }) {
     const hiddenCount = withConflict.length - displayed.length;
 
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+    const sentinelRef = useRef(null);
 
-    // 換關鍵字或換一批資料就從第一頁重新開始
     useEffect(() => {
         setVisibleCount(INITIAL_VISIBLE_COUNT);
     }, [displaySettings.keyword, courseDatas]);
 
     const displayedCourses = displayed.slice(0, visibleCount);
     const remainingCount = displayed.length - displayedCourses.length;
+
+    // 捲到清單尾端就自動長出下一批；rootMargin 提前一點開始載，滑起來才不用等
+    useEffect(() => {
+        const sentinel = sentinelRef.current;
+        if (!sentinel || remainingCount <= 0 || typeof IntersectionObserver === 'undefined') {
+            return undefined;
+        }
+
+        const observer = new IntersectionObserver(entries => {
+            if (entries.some(entry => entry.isIntersecting)) {
+                setVisibleCount(count => count + VISIBLE_COUNT_STEP);
+            }
+        }, { rootMargin: '240px' });
+
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, [remainingCount]);
 
     function onSelected(course) {
         addCourse(course);
@@ -110,13 +125,7 @@ export default function CourseSelectionTable({ displaySettings }) {
             </div>
 
             {remainingCount > 0 && (
-                <button
-                    type="button"
-                    className="course-results-more"
-                    onClick={() => setVisibleCount(count => count + VISIBLE_COUNT_STEP)}
-                >
-                    顯示更多（還有 {remainingCount} 門）
-                </button>
+                <div ref={sentinelRef} className="course-results-sentinel" aria-hidden="true" />
             )}
         </div>
     );

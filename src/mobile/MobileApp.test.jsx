@@ -55,6 +55,7 @@ beforeEach(() => {
 
 afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
     window.innerWidth = DESKTOP_WIDTH;
 });
 
@@ -89,6 +90,23 @@ test('切換分頁時內容帶著滑入方向的 class，初次掛載不播動�
 
     await userEvent.click(mainTabs().getByRole('tab', { name: /課表/ }));
     expect(document.querySelector('.tab-slide-back')).toBeInTheDocument();
+});
+
+test('切走的分頁保持掛載、只隱藏，切回來時狀態原封不動', async () => {
+    renderApp({ courses: [dataStructure] });
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /找課/ }));
+    await userEvent.type(await screen.findByLabelText('搜尋課程'), '資料');
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /課表/ }));
+
+    // 找課面板還在，只是被藏起來
+    const searchPanel = document.querySelector('.tab-panel-hidden');
+    expect(searchPanel).not.toBeNull();
+    expect(within(searchPanel).getByLabelText('搜尋課程')).toHaveValue('資料');
+
+    await userEvent.click(mainTabs().getByRole('tab', { name: /找課/ }));
+    expect(screen.getByLabelText('搜尋課程')).toHaveValue('資料');
 });
 
 test('已選分頁的徽章顯示門數', () => {

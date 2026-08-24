@@ -40,7 +40,6 @@ function createUrl(blob) {
         throw new Error('這個瀏覽器不支援圖片下載');
     }
     const url = URL.createObjectURL(blob);
-    // 太早 revoke 會讓下載中斷，留一段時間再收
     setTimeout(() => URL.revokeObjectURL?.(url), 60000);
     return url;
 }

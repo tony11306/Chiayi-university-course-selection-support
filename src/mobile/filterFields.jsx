@@ -1,7 +1,5 @@
 import { ANY, FILTER_FIELDS } from "../lib/filterOptions";
 
-// 選項少的欄位直接用晶片一鍵選取，不用打開下拉選單；
-// 系所、課程類別選項太多，保留原生 select 交給系統的滾輪選擇器。
 const CHIP_FIELDS = new Set(['campus', 'educationLevel', 'grade', 'day', 'startClass', 'endClass']);
 
 export default function FilterFields({ filters, onFilterChange }) {

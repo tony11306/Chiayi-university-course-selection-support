@@ -1,15 +1,31 @@
 .view-mobile .app-main {
+  position: relative;
   display: block;
-  padding-bottom: 8px;
-  /* 分頁轉場的位移會暫時把內容推出右邊界，在這裡裁掉，
-     免得冒出橫向捲軸把固定的頁籤列頂得抖動。
-     用 clip 而非 hidden：clip 不會把這層變成捲動容器，sticky 搜尋列才不會壞掉 */
-  overflow-x: clip;
+  height: calc(100vh - var(--navbar-height, 58px));
+  height: calc(100dvh - var(--navbar-height, 58px));
+  overflow: clip;
 }
 
-/* 切換分頁的轉場：內容帶著一點位移和淡入滑進來，
-   方向由 MobileApp 依分頁前後順序決定（tab-slide-forward / tab-slide-back）。
-   prefers-reduced-motion 時 index.css 會把動畫長度壓到近零 */
+.view-mobile .tab-panel {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(121, 121, 121, 0.5) transparent;
+  padding-bottom: calc(70px + env(safe-area-inset-bottom));
+}
+
+.view-mobile .tab-panel-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @keyframes tab-slide-forward {
   from { transform: translateX(28px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -29,12 +45,13 @@
 }
 
 .view-mobile div::-webkit-scrollbar {
-  width: 12px;
+  width: 5px;
+  height: 5px;
 }
 
 .view-mobile div::-webkit-scrollbar-thumb {
-  background-color: rgb(121, 121, 121);
-  border-radius: 5px;
+  background-color: rgba(121, 121, 121, 0.5);
+  border-radius: 999px;
 }
 
 .view-mobile .announcement {
@@ -270,8 +287,8 @@
 
 .view-mobile .search-dock {
   position: sticky;
-  /* 停在 sticky navbar 的下面，由 MobileApp 量測後寫入 --navbar-height */
-  top: calc(var(--navbar-height, 58px) + 8px);
+  /* 面板自己捲動，停靠在面板頂（也就是 navbar 正下方）就好 */
+  top: 8px;
   z-index: 1020;
   display: flex;
   align-items: stretch;
@@ -532,16 +549,9 @@
   gap: 10px;
 }
 
-.view-mobile .course-results-more {
-  display: block;
-  margin: 14px auto 0;
-  min-height: 44px;
-  padding: 0 22px;
-  border: 1px dashed var(--line);
-  border-radius: 22px;
-  background-color: rgba(255, 255, 255, 0.4);
-  color: var(--ink-2);
-  font-size: 0.85rem;
+/* 無限捲動的哨兵：被捲進視窗附近時就自動長出下一批課程卡 */
+.view-mobile .course-results-sentinel {
+  height: 1px;
 }
 
 .view-mobile .course-card {
@@ -717,10 +727,6 @@
 }
 
 @media (max-width: 991.98px) {
-  body {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom));
-  }
-
   footer {
     min-height: 0;
     margin-top: 20px;
