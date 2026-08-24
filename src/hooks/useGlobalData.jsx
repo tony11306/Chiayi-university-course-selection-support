@@ -1,108 +1,75 @@
-import { useEffect, useContext, useState } from "react";
-import React from "react";
+import { useEffect, useContext, useState, useMemo, createContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 import * as courseApi from "../api/course";
 
-const GlobalDataContext = React.createContext({
-    semesterYear: '',
-    courseDatas: [],
-    userSelectedCourses: [],
-    setUserSelectedCourses: null,
-    loading: false,
-    error: null,
-    filters: {
-        campus: '大學部',
-        day: '不限',
-        educationLevel: '大學部',
-        startClass: '不限',
-        endClass: '不限',
-        grade: '不限',
-        department: '不限',
-        courseType: '不限',
-    },
-});
+const GlobalDataContext = createContext(null);
+
+const INITIAL_FILTERS = {
+    campus: '蘭潭校區',
+    day: '不限',
+    educationLevel: '大學部',
+    startClass: '不限',
+    endClass: '不限',
+    grade: '不限',
+    department: '不限',
+    courseType: '不限',
+    keyword: '',
+    isShowConflictedCourses: true,
+};
+
+const FILTER_KEYS = ['campus', 'day', 'educationLevel', 'startClass', 'endClass', 'grade', 'department', 'courseType'];
+
+function toAPIFormat(filters) {
+    const apiFormatFilters = {};
+    for (const key of FILTER_KEYS) {
+        if (filters[key] !== '不限') apiFormatFilters[key] = filters[key];
+    }
+    return apiFormatFilters;
+}
 
 export function GlobalDataProvider({ children }) {
-    const [courseDatas, setCourseDatas] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [filters, setFilters] = useState({
-        campus: '蘭潭校區',
-        day: '不限',
-        educationLevel: '大學部',
-        startClass: '不限',
-        endClass: '不限',
-        grade: '不限',
-        department: '不限',
-        courseType: '不限',
-        keyword: '',
-        isShowConflictedCourses: true,
+    const [filters, setFilters] = useState(INITIAL_FILTERS);
+    const [userSelectedCourses, setUserSelectedCourses] = useState(() => {
+        try {
+            const saved = localStorage.getItem('userSelectedCourses');
+            return saved === null ? [] : JSON.parse(saved);
+        } catch {
+            return [];
+        }
     });
-    const [semesterYear, setSemesterYear] = useState('')
-    const [userSelectedCourses, setUserSelectedCourses] = useState(localStorage.getItem('userSelectedCourses') === null ? [] : JSON.parse(localStorage.getItem('userSelectedCourses')))
-    
-    function toAPIFormat(filters) {
-        let apiFormatFilters = {};
-        if (filters.campus !== '不限') apiFormatFilters.campus = filters.campus;
-        if (filters.day !== '不限') apiFormatFilters.day = filters.day;
-        if (filters.educationLevel !== '不限') apiFormatFilters.educationLevel = filters.educationLevel;
-        if (filters.startClass !== '不限') apiFormatFilters.startClass = filters.startClass;
-        if (filters.endClass !== '不限') apiFormatFilters.endClass = filters.endClass;
-        if (filters.grade !== '不限') apiFormatFilters.grade = filters.grade;
-        if (filters.department !== '不限') apiFormatFilters.department = filters.department;
-        if (filters.courseType !== '不限') apiFormatFilters.courseType = filters.courseType;
-        return apiFormatFilters;
-    }
-    
-    useEffect(() => {
-        setLoading(true);
-        courseApi.getCourseDatas(toAPIFormat(filters))
-            .then((courseDatas) => {
-                setCourseDatas(courseDatas.data.result);
-                setSemesterYear(courseDatas.data.semester)
-                setLoading(false);
-                setError(null);
-            })
-            .catch((error) => {
-                if (error.response) {
-                    setError(error.response.data);
-                } else {
-                    setError("unknown error");
-                }
-                setLoading(false);
-            });
-    }, []);
 
     useEffect(() => {
-        setLoading(true);
-        courseApi.getCourseDatas(toAPIFormat(filters))
-            .then((courseDatas) => {
-                setCourseDatas(courseDatas.data.result);
-                setSemesterYear(courseDatas.data.semester)
-                setLoading(false);
-                setError(null);
-            })
-            .catch((error) => {
-                if (error.response) {
-                    setError(error.response.data);
-                } else {
-                    setError("unknown error");
-                }
-                setLoading(false);
-            });
-    }, [filters]);
+        localStorage.setItem('userSelectedCourses', JSON.stringify(userSelectedCourses));
+    }, [userSelectedCourses]);
 
-
-    useEffect(() => {
-        localStorage.setItem('userSelectedCourses', JSON.stringify(userSelectedCourses))
-      }, [userSelectedCourses])
+    const value = useMemo(() => ({
+        filters,
+        setFilters,
+        userSelectedCourses,
+        setUserSelectedCourses,
+    }), [filters, userSelectedCourses]);
 
     return (
-        <GlobalDataContext.Provider value={{ semesterYear, courseDatas, loading, error, filters, setFilters, userSelectedCourses, setUserSelectedCourses, }}>
+        <GlobalDataContext.Provider value={value}>
             {children}
         </GlobalDataContext.Provider>
     );
 }
 
 export function useGlobalData() {
-    return useContext(GlobalDataContext);
+    const context = useContext(GlobalDataContext);
+    if (!context) {
+        throw new Error('useGlobalData 必須在 GlobalDataProvider 內使用');
+    }
+    return context;
+}
+
+export function useCourseDatas() {
+    const { filters } = useGlobalData();
+    const apiFilters = toAPIFormat(filters);
+    return useQuery({
+        queryKey: ['courseDatas', apiFilters],
+        queryFn: ({ signal }) => courseApi.getCourseDatas(apiFilters, signal),
+        select: (response) => response.data,
+    });
 }

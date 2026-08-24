@@ -141,43 +141,43 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
     const EDUCATION_LEVEL = ['博士班', '大學部', '碩士班', '碩專班', '進學班']
 
     function onCampusSelected(value) {
-        setFilters({ ...filters, campus: value })
+        setFilters(f => ({ ...f, campus: value }))
     }
 
     function onDepartmentSelected(value) {
-        setFilters({ ...filters, department: value })
+        setFilters(f => ({ ...f, department: value }))
     }
 
     function onEducationLevelSelected(value) {
-        setFilters({ ...filters, educationLevel: value })
+        setFilters(f => ({ ...f, educationLevel: value }))
     }
 
     function onGradeSelected(value) {
-        setFilters({ ...filters, grade: value })
+        setFilters(f => ({ ...f, grade: value }))
     }
 
     function onCourseTypeSelected(value) {
-        setFilters({ ...filters, courseType: value })
+        setFilters(f => ({ ...f, courseType: value }))
     }
 
     function onDaySelected(value) {
-        setFilters({ ...filters, day: value })
+        setFilters(f => ({ ...f, day: value }))
     }
 
     function onStartClassSelected(value) {
-        setFilters({ ...filters, startClass: value })
+        setFilters(f => ({ ...f, startClass: value }))
     }
 
     function onEndClassSelected(value) {
-        setFilters({ ...filters, endClass: value })
+        setFilters(f => ({ ...f, endClass: value }))
     }
 
     function onKeywordChanged(value) {
-        setDisplaySettings({ ...displaySettings, keyword: value })
+        setDisplaySettings(s => ({ ...s, keyword: value }))
     }
 
     function onShowConflictedCheckChange(value) {
-        setDisplaySettings({ ...displaySettings, isShowedConflictedCourses: value })
+        setDisplaySettings(s => ({ ...s, isShowedConflictedCourses: value }))
     }
 
 

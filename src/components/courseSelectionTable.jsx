@@ -1,9 +1,11 @@
-import { useGlobalData } from "../hooks/useGlobalData";
+import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 
 export default function CourseSelectionTable({ displaySettings }) {
 
-    const { courseDatas, userSelectedCourses, setUserSelectedCourses, loading, error } = useGlobalData();
-    const displayedCourses = courseDatas ? courseDatas.filter(course => {
+    const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
+    const { data, isFetching, error } = useCourseDatas();
+    const courseDatas = data?.result ?? [];
+    const displayedCourses = courseDatas.filter(course => {
         if (userSelectedCourses.some(userSelectedCourse => userSelectedCourse.開課系號 + userSelectedCourse.開課序號 + userSelectedCourse.永久課號 === course.開課系號 + course.開課序號 + course.永久課號)) {
             return false
         }
@@ -15,7 +17,7 @@ export default function CourseSelectionTable({ displaySettings }) {
         }
 
         return true
-    }) : [];
+    });
 
     function isOverlap(course1, course2) {
 
@@ -58,7 +60,7 @@ export default function CourseSelectionTable({ displaySettings }) {
     }
 
     function onSelected(courseData) {
-        setUserSelectedCourses([...userSelectedCourses, courseData])
+        setUserSelectedCourses(courses => [...courses, courseData])
     }
 
     return (
@@ -76,7 +78,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                         <th>選擇</th>
                     </tr>
                     {
-                        !loading && !error && displayedCourses.map((courseData, index) => {
+                        !isFetching && !error && displayedCourses.map((courseData, index) => {
                             return (
                                 <CourseSelectionTableRow key={index} courseData={courseData} isDisabled={isOverlapWithUserSelectedCourses(courseData)} onSelected={onSelected}  />
                             )
@@ -84,7 +86,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                     }
                 </tbody>
             </table>
-            {loading ?
+            {isFetching ?
                 <div>
                     <div className="spinner-grow" role="status">
                         <span className="visually-hidden">正在載入資料...</span>
@@ -95,7 +97,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                 </div>
                 : ""}
             {error ? <span className="fs-3">發生錯誤</span> : ""}
-            {!error && !loading && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
+            {!error && !isFetching && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
         </div>
     )
 }

@@ -5,7 +5,7 @@ export default function SelectedCoursesPanel() {
     const totalCredit = userSelectedCourses.reduce((prev, current) => prev + parseInt(current.學分數, 10), 0)
 
     function onRemove(courseData) {
-        setUserSelectedCourses(userSelectedCourses.filter(course => course !== courseData))
+        setUserSelectedCourses(courses => courses.filter(course => course !== courseData))
     }
 
     function onRemoveAll() {

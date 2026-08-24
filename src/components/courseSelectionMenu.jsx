@@ -1,14 +1,15 @@
-import { useGlobalData } from "../hooks/useGlobalData"
+import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData"
 import SearchComponent from "./searchComponent"
 import CourseSelectionTable from "./courseSelectionTable";
 import { useState } from "react";
 
 export default function CourseSelectionMenu() {
-    const {semesterYear} = useGlobalData();
     const [displaySettings, setDisplaySettings] = useState({
         isShowedConflictedCourses: true,
         keyword: '',
     });
+    const { data } = useCourseDatas();
+    const semesterYear = data?.semester ?? '';
 
     return (
         <div className="rounded course-selection-menu shadow-sm">

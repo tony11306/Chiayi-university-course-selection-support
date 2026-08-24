@@ -1,37 +1,19 @@
 import html2canvas from "html2canvas";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Cookies from "js-cookie";
 import { useGlobalData } from "../hooks/useGlobalData";
 
 export default function TimeTable() {
     const { userSelectedCourses } = useGlobalData();
-    const [displaySettings, setDisplaySettings] = useState({
-        isShowTeacherButtonOn: false,
-        isShowClassroomButtonOn: false,
-    });
+    const tableRef = useRef(null);
+    const [displaySettings, setDisplaySettings] = useState(() => ({
+        isShowTeacherButtonOn: Cookies.get('isShowTeacherButtonOn') === 'true',
+        isShowClassroomButtonOn: Cookies.get('isShowClassroomButtonOn') === 'true',
+    }));
 
     useEffect(() => {
-        // get cookie
-        const cookies = document.cookie.split('; ')
-        let isShowTeacherButtonOn = false
-        let isShowClassroomButtonOn = false
-        cookies.forEach(cookie => {
-            const [key, value] = cookie.split('=')
-            if (key === 'isShowTeacherButtonOn') {
-                isShowTeacherButtonOn = value === 'true'
-            }
-            if (key === 'isShowClassroomButtonOn') {
-                isShowClassroomButtonOn = value === 'true'
-            }
-        })
-        setDisplaySettings({
-            isShowTeacherButtonOn: isShowTeacherButtonOn,
-            isShowClassroomButtonOn: isShowClassroomButtonOn,
-        })
-    }, [])
-
-    useEffect(() => {
-        document.cookie = `isShowTeacherButtonOn=${displaySettings.isShowTeacherButtonOn}`
-        document.cookie = `isShowClassroomButtonOn=${displaySettings.isShowClassroomButtonOn}`
+        Cookies.set('isShowTeacherButtonOn', displaySettings.isShowTeacherButtonOn);
+        Cookies.set('isShowClassroomButtonOn', displaySettings.isShowClassroomButtonOn);
     }, [displaySettings])
 
     function downloadURI(uri, fileName) {
@@ -46,11 +28,13 @@ export default function TimeTable() {
         if (!isConfirm) {
             return
         }
-        const table = document.getElementById('rendered-table')
-        const originalBackgroundImage = table.style.backgroundImage
-        const originalBorderRadius = table.style.borderRadius
-        const originalBackgroundColor = table.style.backgroundColor
-        const originalWidth = table.style.width
+        const table = tableRef.current
+        const originalStyles = {
+            backgroundImage: table.style.backgroundImage,
+            borderRadius: table.style.borderRadius,
+            backgroundColor: table.style.backgroundColor,
+            width: table.style.width,
+        }
 
         table.style.backgroundImage = "linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))"
         table.style.backgroundColor = "rgba(255,255,255, 0.3)"
@@ -60,11 +44,9 @@ export default function TimeTable() {
         html2canvas(table, {backgroundColor: null}).then(canvas => {
             const img = canvas.toDataURL('image/png')
             downloadURI(img, "選課結果.png")
+        }).finally(() => {
+            Object.assign(table.style, originalStyles)
         })
-        table.style.backgroundImage = originalBackgroundImage
-        table.style.borderRadius = originalBorderRadius
-        table.style.backgroundColor = originalBackgroundColor
-        table.style.width = originalWidth
     }
 
     const CLASSES_COUNT = 14
@@ -125,13 +107,13 @@ export default function TimeTable() {
     })
 
     return (
-        <div className="table-responsive shadow-sm  curriculum-table rounded" id='rendered-table'>
+        <div className="table-responsive shadow-sm  curriculum-table rounded" ref={tableRef}>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setDisplaySettings({ ...displaySettings, isShowTeacherButtonOn: !displaySettings.isShowTeacherButtonOn })} checked={displaySettings.isShowTeacherButtonOn} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckTeacher" onChange={() => setDisplaySettings(s => ({ ...s, isShowTeacherButtonOn: !s.isShowTeacherButtonOn }))} checked={displaySettings.isShowTeacherButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckTeacher" >顯示授課老師</label>
             </div>
             <div className="form-check form-switch float-start ms-3">
-                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setDisplaySettings({ ...displaySettings, isShowClassroomButtonOn: !displaySettings.isShowClassroomButtonOn })} checked={displaySettings.isShowClassroomButtonOn} />
+                <input className="form-check-input" data-onstyle="success" type="checkbox" id="flexSwitchCheckClassroom" onChange={() => setDisplaySettings(s => ({ ...s, isShowClassroomButtonOn: !s.isShowClassroomButtonOn }))} checked={displaySettings.isShowClassroomButtonOn} />
                 <label className="form-check-label" htmlFor="flexSwitchCheckClassroom" >顯示課堂教室</label>
             </div>
             <button type="button" className=" btn-icon-circle float-end border-0 shadow-none me-2" title="下載課表" onClick={onExportButtonClick}>
