@@ -62,3 +62,140 @@ input:focus-visible,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 匯出圖片用的課表（桌機、手機共用同一份，輸出才會一致）。
+   刻意不掛 .view-desktop / .view-mobile，也不吃 Bootstrap 的 .table。 */
+.timetable-sheet {
+  box-sizing: border-box;
+  width: 800px;
+  padding: 16px 14px 20px;
+  border-radius: 30px;
+  background-image: linear-gradient(to right top, rgb(235, 154, 133), rgb(148, 214, 235));
+  font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #1d2429;
+  text-align: center;
+}
+
+.timetable-sheet-offscreen {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  pointer-events: none;
+}
+
+.timetable-sheet-grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 4px;
+  border-radius: 5px;
+  background-color: rgba(221, 215, 215, 0.39);
+}
+
+.timetable-sheet-grid th,
+.timetable-sheet-grid td {
+  border: 0;
+  padding: 5px 3px;
+  border-radius: 5px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 400;
+}
+
+.timetable-sheet-grid thead th {
+  font-size: 15px;
+  font-weight: 500;
+  padding-bottom: 8px;
+  white-space: nowrap;
+}
+
+.timetable-sheet-corner {
+  width: 104px;
+}
+
+.timetable-sheet-grid tbody td {
+  height: 46px;
+  font-size: 12.5px;
+}
+
+.timetable-sheet-period {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* 節次欄深淺交錯，沿用改版前的配色 */
+.timetable-sheet-grid tbody tr:nth-child(odd) .timetable-sheet-period {
+  background-color: rgb(113, 113, 113);
+  color: #fff;
+}
+
+.timetable-sheet-grid tbody tr:nth-child(even) .timetable-sheet-period {
+  background-color: rgb(198, 184, 184);
+}
+
+.timetable-sheet-grid tbody td[data-state="occupied"] {
+  background-color: rgb(199, 241, 208);
+}
+
+.timetable-sheet-grid tbody td[data-state="free"] {
+  background-color: rgb(221, 215, 215);
+}
+
+.timetable-sheet-course {
+  font-weight: 500;
+}
+
+/* 下載結果的提示。兩邊都要看得到，所以基本樣式放在共用層，
+   手機再蓋掉 bottom 讓它閃過底部的頁籤列。 */
+.app-toast {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 20px;
+  z-index: 1040;
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: #1d2429;
+  color: #fff;
+  border-radius: 13px;
+  padding: 9px 10px 9px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: left;
+  box-shadow: 0 6px 24px rgba(29, 36, 41, 0.3);
+  animation: toast-rise 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes toast-rise {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.app-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-toast-meta {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-toast-action {
+  flex: none;
+  border: 0;
+  border-radius: 9px;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  min-height: 38px;
+  padding: 0 13px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

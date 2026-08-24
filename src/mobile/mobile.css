@@ -57,14 +57,6 @@
   background-color: rgba(117, 117, 117, 0.35);
 }
 
-.view-mobile .timetable-week.is-offscreen {
-  position: absolute;
-  left: -10000px;
-  top: 0;
-  width: 800px;
-  pointer-events: none;
-}
-
 .view-mobile .week-grid-scroll {
   overflow-x: auto;
   display: flex;
@@ -696,54 +688,9 @@
   }
 }
 
+/* 基本樣式在 index.css，這裡只把它抬到底部頁籤列上面 */
 .view-mobile .app-toast {
-  position: fixed;
-  left: 12px;
-  right: 12px;
   bottom: calc(66px + env(safe-area-inset-bottom));
-  z-index: 1040;
-  max-width: 520px;
-  margin: 0 auto;
-  background-color: var(--ink);
-  color: #fff;
-  border-radius: 13px;
-  padding: 9px 10px 9px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  box-shadow: 0 6px 24px rgba(29, 36, 41, 0.3);
-  animation: toast-rise 0.24s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes toast-rise {
-  from { transform: translateY(14px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.view-mobile .app-toast-text {
-  flex: 1;
-  min-width: 0;
-}
-
-.view-mobile .app-toast-meta {
-  display: block;
-  font-size: 0.72rem;
-  opacity: 0.75;
-  font-variant-numeric: tabular-nums;
-}
-
-.view-mobile .app-toast-action {
-  flex: none;
-  border: 0;
-  border-radius: 9px;
-  background-color: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  min-height: 38px;
-  padding: 0 13px;
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
 .view-mobile .form-switch .form-check-input:focus {

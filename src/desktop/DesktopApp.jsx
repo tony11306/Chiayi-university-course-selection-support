@@ -3,8 +3,12 @@ import Announcement from "./announcement";
 import CourseSelectionMenu from "./courseSelectionMenu";
 import TimeTable from "./timeTable";
 import SelectedCoursesPanel from './selectedCoursesPanel';
+import Toast from '../shared/toast';
+import { useGlobalData } from '../hooks/useGlobalData';
 
 export default function DesktopApp() {
+    const { toast, dismissToast } = useGlobalData();
+
     return (
         <div className="view-desktop">
             <Announcement />
@@ -17,6 +21,7 @@ export default function DesktopApp() {
                 </div>
             </div>
             <SelectedCoursesPanel />
+            <Toast toast={toast} onDismiss={dismissToast} onAction={() => {}} />
         </div>
     );
 }

@@ -39,3 +39,8 @@ window.__notifyMediaQueryLists = () => {
 };
 
 window.HTMLCanvasElement.prototype.getContext = () => null;
+
+if (typeof URL.createObjectURL !== 'function') {
+    URL.createObjectURL = () => 'blob:mock-url';
+    URL.revokeObjectURL = () => {};
+}

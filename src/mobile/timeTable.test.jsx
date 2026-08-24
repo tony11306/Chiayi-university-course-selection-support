@@ -5,6 +5,12 @@ import Cookies from 'js-cookie';
 import TimeTable from './timeTable';
 import { renderWithStore } from '../testUtils/render';
 import { setViewportWidth, MOBILE_WIDTH, DESKTOP_WIDTH } from '../testUtils/viewport';
+import { useGlobalData } from '../hooks/useGlobalData';
+
+function ToastProbe() {
+    const { toast } = useGlobalData();
+    return toast ? <span data-testid="toast-title">{toast.title}</span> : null;
+}
 
 const html2canvas = vi.hoisted(() => vi.fn());
 vi.mock('html2canvas', () => ({ default: html2canvas }));
@@ -45,10 +51,13 @@ beforeEach(() => {
 
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(new Date('2026-08-26T09:00:00'));
+    // jsdom 會對真的 <a> 點擊噴 navigation 警告
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
 });
 
 afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
     window.innerWidth = DESKTOP_WIDTH;
 });
 
@@ -143,8 +152,8 @@ test('cookie 存在時沿用上次的開關狀態', () => {
     expect(within(screen.getByTestId('day-agenda')).getByText(/李國賢/)).toBeInTheDocument();
 });
 
-test('匯出時把週表格交給 html2canvas', async () => {
-    html2canvas.mockResolvedValue({ toDataURL: () => 'data:image/png;base64,AAA' });
+test('匯出時把共用的匯出課表交給 html2canvas', async () => {
+    html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
     window.innerWidth = DESKTOP_WIDTH;
     renderWithStore(<TimeTable />, { courses: [monday] });
 
@@ -154,9 +163,8 @@ test('匯出時把週表格交給 html2canvas', async () => {
     expect(html2canvas.mock.calls[0][0]).toBe(screen.getByTestId('timetable-export-root'));
 });
 
-test('截圖期間才套用匯出樣式，完成後才還原（原本是同步還原，會截到還原後的樣子）', async () => {
-    let resolveCapture;
-    html2canvas.mockImplementation(() => new Promise(resolve => { resolveCapture = resolve; }));
+test('匯出用的課表不再靠 inline style 撐版面，畫面上的課表也不會被動到', async () => {
+    html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
     window.innerWidth = DESKTOP_WIDTH;
     renderWithStore(<TimeTable />, { courses: [monday] });
 
@@ -164,21 +172,40 @@ test('截圖期間才套用匯出樣式，完成後才還原（原本是同步�
     await userEvent.click(screen.getByRole('button', { name: /下載課表/ }));
 
     await waitFor(() => expect(html2canvas).toHaveBeenCalled());
-    expect(exportRoot.style.width).toBe('800px');
-
-    resolveCapture({ toDataURL: () => 'data:image/png;base64,AAA' });
-    await waitFor(() => expect(exportRoot.style.width).toBe(''));
+    expect(exportRoot.getAttribute('style')).toBeNull();
+    expect(screen.getByRole('table')).toHaveClass('week-grid');
 });
 
-test('截圖失敗也會把樣式還原', async () => {
+test('下載成功後跳提示', async () => {
+    html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
+    window.innerWidth = DESKTOP_WIDTH;
+    renderWithStore(<><TimeTable /><ToastProbe /></>, { courses: [monday] });
+
+    await userEvent.click(screen.getByRole('button', { name: /下載課表/ }));
+
+    expect(await screen.findByTestId('toast-title')).toHaveTextContent('已下載 選課結果.png');
+});
+
+test('截圖失敗會跳提示，而不是安靜地什麼都沒發生', async () => {
     html2canvas.mockRejectedValue(new Error('canvas 掛了'));
+    window.innerWidth = DESKTOP_WIDTH;
+    renderWithStore(<><TimeTable /><ToastProbe /></>, { courses: [monday] });
+
+    await userEvent.click(screen.getByRole('button', { name: /下載課表/ }));
+
+    expect(await screen.findByTestId('toast-title')).toHaveTextContent('圖片產生失敗，請再試一次');
+});
+
+test('截圖中不讓重複點擊', async () => {
+    html2canvas.mockImplementation(() => new Promise(() => {}));
     window.innerWidth = DESKTOP_WIDTH;
     renderWithStore(<TimeTable />, { courses: [monday] });
 
-    const exportRoot = screen.getByTestId('timetable-export-root');
-    await userEvent.click(screen.getByRole('button', { name: /下載課表/ }));
+    const button = screen.getByRole('button', { name: /下載課表/ });
+    await userEvent.click(button);
 
-    await waitFor(() => expect(exportRoot.style.width).toBe(''));
+    await waitFor(() => expect(button).toBeDisabled());
+    expect(html2canvas).toHaveBeenCalledTimes(1);
 });
 
 test('沒有選課時不讓匯出', () => {

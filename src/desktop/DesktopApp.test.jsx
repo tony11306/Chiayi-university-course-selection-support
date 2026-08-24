@@ -74,12 +74,12 @@ test('課表與課程清單並排，沿用改版前的版面', async () => {
 test('課表畫出 14 節 × 6 天，已選的格子上綠色', async () => {
     const { container } = renderDesktop({ courses: [dataStructure] });
 
-    expect(screen.getByText('星期一')).toBeInTheDocument();
-    expect(screen.getByText('星期六')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: '星期一' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: '星期六' })).toBeInTheDocument();
     expect(container.querySelectorAll('.curriculum-table tbody tr')).toHaveLength(15);
 
     expect(container.querySelectorAll('.used-course-td')).toHaveLength(3);
-    expect(screen.getAllByText('【資料結構】')).toHaveLength(3);
+    expect(within(container.querySelector('.curriculum-table')).getAllByText('【資料結構】')).toHaveLength(3);
 });
 
 test('第 C 節是 20:10 ~ 20:55，不會和第 D 節重疊', () => {
@@ -197,21 +197,31 @@ test('清空仍然會先問一次', async () => {
     expect(confirmSpy).toHaveBeenCalledWith('確定清空所有課程？');
 });
 
-test('匯出 PNG 時，樣式在截圖完成後才還原', async () => {
-    let resolveCapture;
-    html2canvas.mockImplementation(() => new Promise(resolve => { resolveCapture = resolve; }));
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+test('匯出 PNG 截的是共用的匯出課表，畫面上的課表不動', async () => {
+    html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
 
     const { container } = renderDesktop({ courses: [dataStructure] });
-    const exportRoot = container.querySelector('.curriculum-table');
 
     await userEvent.click(screen.getByTitle('下載課表'));
 
-    await waitFor(() => expect(html2canvas).toHaveBeenCalled());
-    expect(exportRoot.style.width).toBe('800px');
+    await waitFor(() => expect(html2canvas).toHaveBeenCalledTimes(1));
+    expect(html2canvas.mock.calls[0][0]).toBe(screen.getByTestId('timetable-export-root'));
+    expect(container.querySelector('.curriculum-table').getAttribute('style')).toBeNull();
 
-    resolveCapture({ toDataURL: () => 'data:image/png;base64,AAA' });
-    await waitFor(() => expect(exportRoot.style.width).toBe(''));
+    await waitFor(() => expect(clickSpy).toHaveBeenCalled());
+});
+
+test('匯出完成後桌機也看得到提示（改版前只有一個 confirm）', async () => {
+    html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const confirmSpy = vi.spyOn(window, 'confirm');
+
+    renderDesktop({ courses: [dataStructure] });
+    await userEvent.click(screen.getByTitle('下載課表'));
+
+    expect(await screen.findByText('已下載 選課結果.png')).toBeInTheDocument();
+    expect(confirmSpy).not.toHaveBeenCalled();
 });
 
 test('公告仍然介紹右下角的書籤按鈕', () => {

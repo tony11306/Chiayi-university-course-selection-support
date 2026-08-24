@@ -3,7 +3,7 @@ import Announcement from "./announcement";
 import CourseSelectionMenu from "./courseSelectionMenu";
 import TimeTable from "./timeTable";
 import SelectedCoursesList from './selectedCoursesList';
-import Toast from './toast';
+import Toast from '../shared/toast';
 import { TABS, useGlobalData } from '../hooks/useGlobalData';
 
 export default function MobileApp() {

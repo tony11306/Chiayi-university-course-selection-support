@@ -1,23 +1,23 @@
-import html2canvas from "html2canvas";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Cookies from "js-cookie";
 import { TIMETABLE_VIEW, useGlobalData } from "../hooks/useGlobalData";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { useTimetableExport } from "../hooks/useTimetableExport";
 import { DAYS, PERIODS, courseSlots } from "../lib/schedule";
+import TimetableSheet from "../shared/timetableSheet";
 import DayAgenda from "./dayAgenda";
 
 export default function TimeTable() {
     const {
         userSelectedCourses,
         occupancy,
-        showToast,
         selectedDay,
         setSelectedDay,
         timetableView,
         setTimetableView,
     } = useGlobalData();
     const isMobile = useIsMobile();
-    const exportRef = useRef(null);
+    const { sheetRef, exportSheet, isExporting } = useTimetableExport();
     const [displaySettings, setDisplaySettings] = useState(() => ({
         isShowTeacherButtonOn: Cookies.get('isShowTeacherButtonOn') === 'true',
         isShowClassroomButtonOn: Cookies.get('isShowClassroomButtonOn') === 'true',
@@ -41,44 +41,8 @@ export default function TimeTable() {
 
     const isWeekVisible = !isMobile || timetableView === TIMETABLE_VIEW.WEEK;
 
-    function onExportButtonClick() {
-        const exportRoot = exportRef.current;
-        if (!exportRoot) return;
-
-        const originalStyles = {
-            backgroundImage: exportRoot.style.backgroundImage,
-            borderRadius: exportRoot.style.borderRadius,
-            backgroundColor: exportRoot.style.backgroundColor,
-            width: exportRoot.style.width,
-            padding: exportRoot.style.padding,
-        };
-
-        Object.assign(exportRoot.style, {
-            backgroundImage: 'linear-gradient(to right top, rgb(235, 154, 133),rgb(148, 214, 235))',
-            backgroundColor: 'rgba(255,255,255, 0.3)',
-            borderRadius: '30px',
-            width: '800px',
-            padding: '20px',
-        });
-
-        html2canvas(exportRoot, { backgroundColor: null })
-            .then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-                link.download = '選課結果.png';
-                link.click();
-                showToast({ title: '已下載 選課結果.png' });
-            })
-            .catch(() => {
-                showToast({ title: '圖片產生失敗，請再試一次' });
-            })
-
-            .finally(() => {
-                Object.assign(exportRoot.style, originalStyles);
-            });
-    }
-
     return (
+        <>
         <section className="timetable-panel rounded shadow-sm">
             <div className="timetable-controls">
                 <div className="form-check form-switch">
@@ -106,8 +70,8 @@ export default function TimeTable() {
                     className="btn-icon-circle border-0 shadow-none ms-auto"
                     title="下載課表"
                     aria-label="下載課表"
-                    disabled={userSelectedCourses.length === 0}
-                    onClick={onExportButtonClick}
+                    disabled={userSelectedCourses.length === 0 || isExporting}
+                    onClick={exportSheet}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         <path fillRule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5Z" />
@@ -155,19 +119,26 @@ export default function TimeTable() {
                 />
             )}
 
-            <div
-                ref={exportRef}
-                data-testid="timetable-export-root"
-                className={isWeekVisible ? 'timetable-week' : 'timetable-week is-offscreen'}
-                aria-hidden={isWeekVisible ? undefined : 'true'}
-            >
-                <WeekGrid
-                    occupancy={occupancy}
-                    showTeacher={displaySettings.isShowTeacherButtonOn}
-                    showClassroom={displaySettings.isShowClassroomButtonOn}
-                />
-            </div>
+            {isWeekVisible && (
+                <div className="timetable-week">
+                    <WeekGrid
+                        occupancy={occupancy}
+                        showTeacher={displaySettings.isShowTeacherButtonOn}
+                        showClassroom={displaySettings.isShowClassroomButtonOn}
+                    />
+                </div>
+            )}
         </section>
+
+        <div className="timetable-sheet-offscreen" aria-hidden="true">
+            <TimetableSheet
+                sheetRef={sheetRef}
+                occupancy={occupancy}
+                showTeacher={displaySettings.isShowTeacherButtonOn}
+                showClassroom={displaySettings.isShowClassroomButtonOn}
+            />
+        </div>
+        </>
     );
 }
 
