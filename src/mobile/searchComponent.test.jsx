@@ -68,7 +68,7 @@ test('系所選單載入全部系所，交給系統選擇器處理', () => {
 
 test('生效中的篩選條件顯示成可移除的 chip', () => {
     renderSearch();
-    // INITIAL_FILTERS 預設是蘭潭校區 + 大學部
+
     expect(screen.getByRole('button', { name: '移除篩選 校區：蘭潭校區' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '移除篩選 上課學制：大學部' })).toBeInTheDocument();
 });

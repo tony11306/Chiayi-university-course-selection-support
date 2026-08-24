@@ -2,7 +2,6 @@ import { useState } from "react"
 import RBDropdown from "react-bootstrap/Dropdown";
 
 function Dropdown({ dropdownName, dropdownItems, onSelected, defaultValue }) {
-
     const [currentItem, setCurrentItem] = useState(defaultValue)
 
     const changeCurrentItem = (newItem) => {

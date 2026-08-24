@@ -72,7 +72,7 @@ test('預覽一門會衝堂的課，撞到的節次標成 conflict', () => {
         上課時間: [{ 星期: '一', 開始節次: '3', 結束節次: '5' }],
     });
     renderMini({ previewCourse: programming });
-    // 一-2、一-3 撞到資料結構；一-4、一-5 是空的
+
     expect(slot('一', 2)).toHaveAttribute('data-state', 'conflict');
     expect(slot('一', 3)).toHaveAttribute('data-state', 'conflict');
     expect(slot('一', 4)).toHaveAttribute('data-state', 'preview');

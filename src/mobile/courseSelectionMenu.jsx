@@ -26,10 +26,6 @@ export default function CourseSelectionMenu() {
         <section className="rounded course-selection-menu shadow-sm">
             <h2 className="fs-4 mb-2">{semesterYear} 課程清單</h2>
 
-            {/*
-              桌機的課表就在旁邊，勾一門課馬上看得到；手機改成分頁之後這條回饋
-              會斷掉，所以在清單上方常駐一張縮圖，加課當下就看到格子亮起來。
-            */}
             {isMobile && (
                 <MiniTimetable
                     courses={userSelectedCourses}

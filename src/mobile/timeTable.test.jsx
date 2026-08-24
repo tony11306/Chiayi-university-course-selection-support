@@ -42,7 +42,7 @@ beforeEach(() => {
     Cookies.remove('isShowTeacherButtonOn');
     Cookies.remove('isShowClassroomButtonOn');
     html2canvas.mockReset();
-    // 固定成 2026-08-26（星期三），讓「預設選今天」可以測
+
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(new Date('2026-08-26T09:00:00'));
 });
@@ -66,7 +66,7 @@ test('手機出現星期分頁與當日議程，而不是週表格', () => {
     renderWithStore(<TimeTable />, { courses: [monday, wednesday] });
 
     expect(screen.getByRole('tablist', { name: '星期' })).toBeInTheDocument();
-    // 今天是星期三，預設就顯示星期三的課
+
     expect(screen.getByText('微積分(二)')).toBeInTheDocument();
     expect(screen.getByText('第 3–4 節')).toBeInTheDocument();
 });
@@ -97,7 +97,7 @@ test('手機切到「週」會顯示整週表格', async () => {
 });
 
 test('星期日時預設顯示星期一', () => {
-    vi.setSystemTime(new Date('2026-08-30T09:00:00')); // 星期日
+    vi.setSystemTime(new Date('2026-08-30T09:00:00'));
     window.innerWidth = MOBILE_WIDTH;
     renderWithStore(<TimeTable />, { courses: [monday] });
 
@@ -203,6 +203,6 @@ test('課表不掛 Bootstrap 的 .table，避免 padding 與背景色被蓋掉',
 
     const grid = screen.getByRole('table');
     expect(grid).toHaveClass('week-grid');
-    // .table>:not(caption)>*>* 的特異度比我們的規則高，會蓋掉格子的 padding 和背景
+
     expect(grid).not.toHaveClass('table');
 });

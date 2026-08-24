@@ -1,17 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-/**
- * 元件測試看不到 CSS（vitest 會把 CSS import 擋掉），而這個專案踩過的坑
- * 幾乎都在 CSS 層：桌機的格子被 Bootstrap 的 .table 蓋掉、scope 加到 view
- * 外面的元素上、置中被連著 App.css 一起刪掉。這裡直接讀樣式檔，守住約定。
- */
-
 function stripComments(css) {
     return css.replace(/\/\*[\s\S]*?\*\//g, '');
 }
 
-/** 依逗號切選擇器，但要跳過 :is(...) 這種括號裡面的逗號。 */
 function splitSelectorList(prelude) {
     const parts = [];
     let depth = 0;
@@ -30,7 +23,6 @@ function splitSelectorList(prelude) {
     return parts;
 }
 
-/** 攤平出所有規則的 { selector, body }；@keyframes 的內容不算規則。 */
 function rules(css) {
     const found = [];
     walk(stripComments(css));
@@ -55,8 +47,11 @@ function rules(css) {
             const prelude = buffer.trim();
             const body = text.slice(i + 1, j - 1);
             if (prelude.startsWith('@keyframes') || prelude.startsWith('@font-face')) {
-                // 內容是 0% / 100% 這種關鍵影格，不是選擇器
-            } else if (prelude.startsWith('@')) {
+                buffer = '';
+                i = j;
+                continue;
+            }
+            if (prelude.startsWith('@')) {
                 walk(body);
             } else {
                 for (const selector of splitSelectorList(prelude)) {
@@ -94,19 +89,16 @@ describe('桌機樣式', () => {
     });
 
     test('置中只套在 view 根節點 —— 原版的 Modal 在 .App 外面，本來就沒被置中', () => {
-        // 沒有任何規則直接套在 :is(...) 這個組合的根節點上
         expect(selectorsOf(desktopCss)).not.toContain(DESKTOP_SCOPE);
-        // 根節點層級（選擇器沒有後代）宣告置中的只有 .view-desktop 一條；
-        // .curriculum-table td 的置中是格子自己的，不算在內
+
         const roots = declaring(desktopCss, 'text-align: center')
             .filter(rule => !rule.selector.includes(' '));
         expect(roots.map(rule => rule.selector)).toEqual(['.view-desktop']);
     });
 
     test('已選課程的 Modal 是 portal 到 body 的，樣式不能只靠祖先 class', () => {
-        // .modal 本身不能被 scope，否則 portal 出去的那個節點就選不到了
         expect(selectorsOf(desktopCss)).toContain('.modal');
-        // Modal 裡面的表格用到的 class 要連 .desktop-modal 一起選
+
         expect(selectorsOf(desktopCss)).toContain(DESKTOP_SCOPE + ' .custom-scrollbar');
         expect(selectorsOf(desktopCss)).toContain(DESKTOP_SCOPE + ' .table-first-row-white tr:first-child');
     });
@@ -121,7 +113,6 @@ describe('桌機樣式', () => {
     });
 
     test('課表格子的顏色保留 !important —— 要壓過 Bootstrap 的 .table 規則', () => {
-        // .table>:not(caption)>*>* 的特異度是 (0,1,3)，會把背景色蓋成 transparent
         const used = declaring(desktopCss, 'rgb(199, 241, 208)');
         expect(used).toHaveLength(1);
         expect(used[0].selector).toBe(DESKTOP_SCOPE + ' .used-course-td');
@@ -131,7 +122,6 @@ describe('桌機樣式', () => {
 
 describe('手機樣式', () => {
     test('每一條規則都關在 .view-mobile 底下', () => {
-        // body / footer 在 view 外面（寫在 index.html），加了 scope 就永遠不生效
         const outsideView = ['body', 'footer', 'html'];
         const portaled = ['.filter-sheet', '.offcanvas'];
         const leaked = selectorsOf(mobileCss).filter(selector =>

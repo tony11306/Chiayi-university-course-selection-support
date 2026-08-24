@@ -2,7 +2,6 @@ import { render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GlobalDataProvider } from '../hooks/useGlobalData';
 
-/** 用 localStorage 種入已選課程，因為 store 就是從那裡讀初始值。 */
 export function seedSelectedCourses(courses) {
     localStorage.setItem('userSelectedCourses', JSON.stringify(courses));
 }

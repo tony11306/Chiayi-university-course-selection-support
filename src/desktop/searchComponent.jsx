@@ -180,7 +180,6 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
         setDisplaySettings(s => ({ ...s, isShowedConflictedCourses: value }))
     }
 
-
     return (
         <div>
 
@@ -195,7 +194,7 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
                         篩選器(建議使用)
                     </summary>
                     <div className="row">
-                        
+
                         <div className="btn-group btn-group-sm flex-wrap" role="group">
                             <Dropdown key="campus" dropdownName="校區" defaultValue={filters.campus} dropdownItems={CAMPUS} onSelected={onCampusSelected} />
                             <Dropdown key="education_level" dropdownName="上課學制" defaultValue={filters.educationLevel} dropdownItems={EDUCATION_LEVEL} onSelected={onEducationLevelSelected}/>
@@ -221,5 +220,4 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
             </div>
         </div>
     )
-
 }

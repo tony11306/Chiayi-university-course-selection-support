@@ -6,10 +6,6 @@ import SelectedCoursesList from './selectedCoursesList';
 import Toast from './toast';
 import { TABS, useGlobalData } from '../hooks/useGlobalData';
 
-/**
- * 手機版：底部三分頁（課表／找課／已選）。
- * 樣式都掛在 .view-mobile 底下，和桌機那支完全隔開。
- */
 export default function MobileApp() {
     const {
         activeTab,

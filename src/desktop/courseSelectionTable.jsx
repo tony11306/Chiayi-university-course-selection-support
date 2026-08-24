@@ -2,7 +2,6 @@ import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 import { periodIndex } from "../lib/schedule";
 
 export default function CourseSelectionTable({ displaySettings }) {
-
     const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
     const { data, isFetching, error } = useCourseDatas();
     const courseDatas = data?.result ?? [];
@@ -21,7 +20,6 @@ export default function CourseSelectionTable({ displaySettings }) {
     });
 
     function isOverlap(course1, course2) {
-
         for (let i = 0; i < course1['上課時間'].length; ++i) {
             for (let j = 0; j < course2['上課時間'].length; ++j) {
                 if (course1['上課時間'][i]['星期'] === course2['上課時間'][j]['星期']) {
@@ -95,7 +93,7 @@ function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
                     courseData.校區 === "蘭潭校區" ? "badge rounded-pill bg-primary" :
                     courseData.校區 === "民雄校區" ? "badge rounded-pill bg-secondary" :
                     courseData.校區 === "新民校區" ? "badge rounded-pill bg-success" :
-                    courseData.校區 === "林森校區" ? "badge rounded-pill bg-warning" : 
+                    courseData.校區 === "林森校區" ? "badge rounded-pill bg-warning" :
                     courseData.校區 === "ecourse 線上" ? "badge rounded-pill badge bg-dark" : ""
                 }>
                     {courseData.校區}

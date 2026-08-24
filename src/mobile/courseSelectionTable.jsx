@@ -20,7 +20,6 @@ export default function CourseSelectionTable({ displaySettings }) {
 
     const courseDatas = data?.result ?? [];
 
-    // 先過關鍵字與已選，再算衝堂；衝堂只查一次 occupancy 表，不再是每列 O(已選數)
     const matched = useMemo(
         () => courseDatas.filter(course =>
             !isSelected(course) && matchesKeyword(course, displaySettings.keyword)

@@ -19,8 +19,6 @@ export default function SelectedCoursesList() {
         });
     }
 
-    // 原本是 window.confirm，手機上那個原生對話框會打斷操作；
-    // 改成先清掉、再給一個可以復原的提示。
     function onClearAll() {
         const cleared = clearCourses();
         showToast({

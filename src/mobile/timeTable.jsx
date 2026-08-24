@@ -72,7 +72,7 @@ export default function TimeTable() {
             .catch(() => {
                 showToast({ title: '圖片產生失敗，請再試一次' });
             })
-            // 原本這行寫在 then 外面同步執行，樣式會在截圖完成前就被還原
+
             .finally(() => {
                 Object.assign(exportRoot.style, originalStyles);
             });
@@ -155,10 +155,6 @@ export default function TimeTable() {
                 />
             )}
 
-            {/*
-              週表格永遠掛著，只是在單日檢視時移到畫面外 —— 這樣匯出 PNG
-              不必先切檢視，html2canvas 也不能截 display:none 的節點。
-            */}
             <div
                 ref={exportRef}
                 data-testid="timetable-export-root"
@@ -178,10 +174,6 @@ export default function TimeTable() {
 function WeekGrid({ occupancy, showTeacher, showClassroom }) {
     return (
         <div className="week-grid-scroll">
-            {/*
-              刻意不掛 Bootstrap 的 .table：.table>:not(caption)>*>* 的特異度是 (0,1,3)，
-              會蓋掉格子的 padding 和背景色 —— 原本得靠 !important 才壓得過它。
-            */}
             <table className="week-grid">
                 <thead>
                     <tr>

@@ -40,7 +40,6 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
                 aria-label="搜尋課程"
             />
 
-            {/* 篩選條件原本收在 details 裡，收起來之後使用者根本不知道自己還套著什麼 */}
             <div className="filter-chips">
                 {active.map(field => (
                     <button

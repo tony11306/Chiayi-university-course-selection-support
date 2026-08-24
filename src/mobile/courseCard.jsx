@@ -13,10 +13,6 @@ function teacherSearchUrl(teacher) {
     return `https://www.google.com/search?q=${encodeURIComponent(`${teacher} 嘉義大學 dcard | ptt`)}`;
 }
 
-/**
- * 手機版的課程卡。原本是八欄表格，手機只能左右捲；而且「選擇」是 16px 的
- * checkbox，遠低於 44px 的觸控下限，勾了又直接從清單消失，語意也不對。
- */
 export default function CourseCard({
     course,
     variant,

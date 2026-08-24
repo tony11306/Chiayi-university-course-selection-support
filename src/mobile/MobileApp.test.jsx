@@ -48,7 +48,7 @@ beforeEach(() => {
     getCourseDatas.mockResolvedValue({
         data: { semester: '114-1', result: [dataStructure, wednesdayCourse] },
     });
-    // 固定成星期一，讓「跳到那門課的星期」看得出差別
+
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(new Date('2026-08-24T09:00:00'));
 });

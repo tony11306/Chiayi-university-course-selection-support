@@ -1,16 +1,8 @@
 import { useMemo, useState } from "react";
 import { DAYS, PERIODS, courseSlots, totalCredits } from "../lib/schedule";
 
-// 只標幾個節次當作縱向的定位點，14 個全標在這個尺寸下反而看不清
 const PERIOD_MARKERS = { 0: '1', 4: 'F', 5: '5', 9: '9', 12: 'C' };
 
-/**
- * 找課時常駐在清單上方的課表縮圖。
- *
- * 桌機版的課表和清單並排，勾一門課馬上看得到它落在哪；手機改成分頁之後
- * 這條回饋會斷掉，這個縮圖就是把它補回來 —— 加課當下格子會亮起來，
- * 還沒加之前也可以先預覽位置與衝堂。
- */
 export default function MiniTimetable({
     courses,
     occupancy,

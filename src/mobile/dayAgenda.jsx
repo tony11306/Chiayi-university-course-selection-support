@@ -7,10 +7,6 @@ function periodLabel(startIndex, endIndex) {
     return `第 ${start}–${PERIODS[endIndex].code} 節`;
 }
 
-/**
- * 手機版的當日課表：14 節 × 6 天的方格在 390px 下每格只有 50px，中文課名一定爆，
- * 所以手機改成一天一條直式時間軸，反而放得下老師與教室。
- */
 export default function DayAgenda({ courses, day, showTeacher, showClassroom }) {
     const blocks = buildAgenda(courses, day);
 

@@ -1,5 +1,3 @@
-// 校區色票原本在 courseSelectionTable 和 selectedCoursesPanel 各寫一串三元運算，
-// 抽出來一份，順便把 Bootstrap 的 bg-primary/secondary 換成同一組協調的顏色。
 const CAMPUS_VARIANT = {
     '蘭潭校區': 'lantan',
     '民雄校區': 'minhsiung',

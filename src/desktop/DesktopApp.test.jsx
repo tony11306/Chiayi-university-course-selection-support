@@ -76,15 +76,13 @@ test('課表畫出 14 節 × 6 天，已選的格子上綠色', async () => {
 
     expect(screen.getByText('星期一')).toBeInTheDocument();
     expect(screen.getByText('星期六')).toBeInTheDocument();
-    expect(container.querySelectorAll('.curriculum-table tbody tr')).toHaveLength(15); // 表頭列 + 14 節
+    expect(container.querySelectorAll('.curriculum-table tbody tr')).toHaveLength(15);
 
-    // 資料結構在星期一第 2~4 節
     expect(container.querySelectorAll('.used-course-td')).toHaveLength(3);
     expect(screen.getAllByText('【資料結構】')).toHaveLength(3);
 });
 
 test('第 C 節是 20:10 ~ 20:55，不會和第 D 節重疊', () => {
-    // 節次與時間在同一個 td 裡用 <br> 分行，所以看整段文字
     const { container } = renderDesktop();
     expect(container.textContent).toContain('20:10 ~ 20:55');
     expect(container.textContent).toContain('21:00 ~ 21:45');
@@ -110,7 +108,7 @@ test('課程清單是八欄表格，用勾選框加入', async () => {
     const menu = container.querySelector('.course-selection-menu');
     expect(menu.querySelectorAll('th')).toHaveLength(8);
     expect(within(menu).getByText('選擇')).toBeInTheDocument();
-    // 濾掉「是否隱藏衝堂」那個開關，剩下的才是每一列的選課勾選框
+
     const rowCheckboxes = within(menu).getAllByRole('checkbox').filter(box => !box.id);
     expect(rowCheckboxes).toHaveLength(3);
 });
@@ -176,7 +174,7 @@ test('Modal 是 portal 出去的，樣式靠 .desktop-modal 這個 class 掛上'
 
     const dialog = await screen.findByRole('dialog');
     expect(dialog.closest('.desktop-modal')).not.toBeNull();
-    // portal 出去了，所以不在 .view-desktop 裡面
+
     expect(container.querySelector('.view-desktop').contains(dialog)).toBe(false);
 });
 
@@ -185,8 +183,6 @@ test('Modal 保留 fade —— CSS 的滑入 transition 需要一個起始狀態
     await userEvent.click(container.querySelector('.edit-btn'));
     await screen.findByRole('dialog');
 
-    // animation={false} 會讓 react-bootstrap 在掛載的同一瞬間就加上 show，
-    // .modal -> .modal.show 的 transition 就沒有起始狀態可以動
     expect(document.querySelector('.desktop-modal')).toHaveClass('fade');
 });
 

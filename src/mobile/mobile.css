@@ -1,4 +1,3 @@
-/* ---------- 版面骨架 ---------- */
 .view-mobile .app-main {
   display: block;
   padding-bottom: 8px;
@@ -13,7 +12,6 @@
   border-radius: 5px;
 }
 
-/* ---------- 公告 ---------- */
 .view-mobile .announcement {
   background-color: rgba(255, 255, 255, 0.32);
   border: 1px solid var(--line);
@@ -27,7 +25,6 @@
   color: var(--ink-2);
 }
 
-/* ---------- 課表 ---------- */
 .view-mobile .timetable-panel {
   background-color: rgba(221, 215, 215, 0.39);
   padding: 12px;
@@ -60,7 +57,6 @@
   background-color: rgba(117, 117, 117, 0.35);
 }
 
-/* 單日檢視時把週表格移到畫面外，好讓 html2canvas 還能截到它 */
 .view-mobile .timetable-week.is-offscreen {
   position: absolute;
   left: -10000px;
@@ -69,13 +65,6 @@
   pointer-events: none;
 }
 
-/*
-  課表自己畫格線，不吃 Bootstrap 的 .table。
-  .table>:not(caption)>*>* 的特異度是 (0,
-1,
-3)，padding 和 background-color
-  都會蓋過來，原本是靠 !important 硬壓 —— 直接不用它就沒有這場仗。
-*/
 .view-mobile .week-grid-scroll {
   overflow-x: auto;
   display: flex;
@@ -132,7 +121,6 @@
   font-weight: 500;
 }
 
-/* 星期分頁 */
 .view-mobile .day-tabs {
   display: flex;
   gap: 7px;
@@ -175,7 +163,6 @@
   opacity: 0.75;
 }
 
-/* 當日議程 */
 .view-mobile .agenda {
   display: flex;
   flex-direction: column;
@@ -255,7 +242,6 @@
   color: var(--ink);
 }
 
-/* ---------- 迷你課表 ---------- */
 .view-mobile .mini-timetable {
   background-color: rgba(255, 255, 255, 0.46);
   border: 1px solid var(--line);
@@ -372,7 +358,6 @@
   line-height: 1.45;
 }
 
-/* ---------- 找課 ---------- */
 .view-mobile .course-selection-menu {
   background-color: rgba(221, 215, 215, 0.39);
   padding: 15px;
@@ -380,7 +365,7 @@
 
 .view-mobile .search-bar {
   background-color: rgba(255, 255, 255, 0.6);
-  /* 16px 以上，iOS 聚焦時才不會自動放大整頁 */
+
   font-size: 16px;
   min-height: 46px;
   padding: 0 16px;
@@ -471,7 +456,6 @@
 }
 
 .view-mobile .filter-field select {
-  /* 原生 select：手機會叫出系統選擇器，130 多個系所也能首字跳轉 */
   font-size: 16px;
   min-height: 46px;
   padding: 0 12px;
@@ -498,7 +482,6 @@
   grid-template-columns: 1fr;
 }
 
-/* ---------- 課程卡與清單 ---------- */
 .view-mobile .course-results-count {
   font-size: 0.74rem;
   color: var(--ink-2);
@@ -574,7 +557,6 @@
 }
 
 .view-mobile .course-card-action {
-  /* 原本是 16px 的 checkbox，遠低於 44px 的觸控下限 */
   width: 46px;
   height: 46px;
   border-radius: 14px;
@@ -627,14 +609,12 @@
   color: var(--warm);
 }
 
-/* 校區色票：原本用 Bootstrap 的 bg-primary/secondary/success/warning */
 .view-mobile .course-pill-campus[data-campus="lantan"] { background-color: rgba(31, 111, 128, 0.13); color: #155a69; }
 .view-mobile .course-pill-campus[data-campus="minhsiung"] { background-color: rgba(154, 91, 122, 0.15); color: #7e4460; }
 .view-mobile .course-pill-campus[data-campus="xinmin"] { background-color: rgba(79, 122, 63, 0.15); color: #3e6431; }
 .view-mobile .course-pill-campus[data-campus="linsen"] { background-color: rgba(176, 122, 38, 0.16); color: #8a5d14; }
 .view-mobile .course-pill-campus[data-campus="online"] { background-color: rgba(74, 85, 96, 0.14); color: #414b54; }
 
-/* ---------- 已選課程 ---------- */
 .view-mobile .selected-panel {
   background-color: rgba(221, 215, 215, 0.39);
   border-radius: 12px;
@@ -650,7 +630,6 @@
   font-size: 0.92rem;
 }
 
-/* ---------- 底部分頁 ---------- */
 .view-mobile .tab-bar {
   position: fixed;
   left: 0;
@@ -705,7 +684,6 @@
   line-height: 1;
 }
 
-/* 分頁列會蓋住頁尾，留出空間 */
 @media (max-width: 991.98px) {
   body {
     padding-bottom: calc(60px + env(safe-area-inset-bottom));
@@ -718,7 +696,6 @@
   }
 }
 
-/* ---------- Toast ---------- */
 .view-mobile .app-toast {
   position: fixed;
   left: 12px;
@@ -769,7 +746,6 @@
   font-weight: 500;
 }
 
-/* ---------- 通用 ---------- */
 .view-mobile .form-switch .form-check-input:focus {
   border-color: rgba(0, 0, 0, 0.25);
   box-shadow: none;

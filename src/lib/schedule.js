@@ -1,11 +1,3 @@
-/**
- * 課表與衝堂的純邏輯。
- *
- * 抽出來的用意有兩個：一是節次代碼（1 2 3 4 F 5 6 7 8 9 A B C D）的對應表原本
- * 在 timeTable.jsx 和 courseSelectionTable.jsx 各寫一份，容易走鐘；二是衝堂判斷
- * 原本是每一列 render 都跑一次 O(課程數 × 已選數)，改成先建 occupancy 再查表。
- */
-
 export const PERIODS = [
     { code: '1', start: '08:10', end: '09:00' },
     { code: '2', start: '09:10', end: '10:00' },
@@ -19,7 +11,7 @@ export const PERIODS = [
     { code: '9', start: '17:20', end: '18:10' },
     { code: 'A', start: '18:30', end: '19:15' },
     { code: 'B', start: '19:20', end: '20:05' },
-    // 原本寫 21:55，會和第 D 節的 21:00 重疊，是筆誤
+
     { code: 'C', start: '20:10', end: '20:55' },
     { code: 'D', start: '21:00', end: '21:45' },
 ];
@@ -40,7 +32,6 @@ export function courseKey(course) {
     return `${course.開課系號}-${course.開課序號}-${course.永久課號}`;
 }
 
-/** 把一門課的上課時間展開成 `星期-節次索引` 的 slot key 陣列。 */
 export function courseSlots(course) {
     const slots = [];
     for (const classTime of course.上課時間 ?? []) {
@@ -54,7 +45,6 @@ export function courseSlots(course) {
     return slots;
 }
 
-/** slot key 對應到佔用它的課程，衝堂判斷只要查表。 */
 export function buildOccupancy(courses) {
     const occupancy = {};
     for (const course of courses) {
@@ -65,7 +55,6 @@ export function buildOccupancy(courses) {
     return occupancy;
 }
 
-/** 回傳第一門和 course 撞到的課，沒撞到回傳 null。 */
 export function findConflict(course, occupancy) {
     for (const slot of courseSlots(course)) {
         if (occupancy[slot]) return occupancy[slot];
@@ -80,10 +69,6 @@ export function totalCredits(courses) {
     }, 0);
 }
 
-/**
- * 某一天的直式議程：連續的同一門課合併成一個區塊，課與課之間的空堂補 gap 區塊。
- * 第一堂之前和最後一堂之後不補，避免整天被無意義的空堂撐長。
- */
 export function buildAgenda(courses, day) {
     const occupancy = buildOccupancy(courses);
     const slots = PERIODS.map((_, index) => occupancy[`${day}-${index}`] ?? null);

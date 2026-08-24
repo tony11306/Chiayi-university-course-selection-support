@@ -177,7 +177,7 @@ test('加入課程時會清掉預覽', () => {
 
 test('selectedDay 預設是今天，星期日退回星期一', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-08-26T09:00:00')); // 星期三
+    vi.setSystemTime(new Date('2026-08-26T09:00:00'));
     renderStore();
     expect(store.selectedDay).toBe('三');
     vi.useRealTimers();

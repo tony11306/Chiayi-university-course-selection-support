@@ -4,12 +4,10 @@ export const ANY = '不限';
 
 export const CAMPUS = [ANY, '蘭潭校區', '民雄校區', '新民校區', '林森校區', 'ecourse 線上'];
 
-// 原本沒有「不限」，選了學制之後就再也清不掉
 export const EDUCATION_LEVEL = [ANY, '大學部', '碩士班', '碩專班', '博士班', '進學班'];
 
 export const DAY = [ANY, '一', '二', '三', '四', '五', '六', '日'];
 
-// 節次順序只留 schedule.js 一份，避免兩邊走鐘
 export const CLASS_TIME = [ANY, ...PERIODS.map(period => period.code)];
 
 export const GRADE = [ANY, '1', '2', '3', '4', '5'];
@@ -54,7 +52,6 @@ export const DEPARTMENTS = [
     '觀光所碩班', '資管系碩班', '財金系碩班', '觀光所博班', '獸醫臨床碩', '管院碩專班',
 ];
 
-/** 篩選欄位的定義，select 與 chip 都從這裡長出來。 */
 export const FILTER_FIELDS = [
     { key: 'campus', label: '校區', options: CAMPUS },
     { key: 'educationLevel', label: '上課學制', options: EDUCATION_LEVEL },

@@ -1,12 +1,3 @@
-/*
-  兩支畫面共用的骨架而已 —— 頁面背景、index.html 的 navbar 與 footer、
-  以及跨畫面的 focus / reduced-motion。
-
-  桌機的樣式在 src/desktop/desktop.css（scope 在 .view-desktop 底下），
-  手機的在 src/mobile/mobile.css（scope 在 .view-mobile 底下），
-  改一邊不會漏到另一邊。
-*/
-
 html, body {
   margin: 0;
   font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -37,7 +28,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* index.html 的 navbar 掛著這個 class */
 .blur-background {
   backdrop-filter: blur(5px);
 }

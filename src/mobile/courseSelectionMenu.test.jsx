@@ -102,7 +102,7 @@ test('輕觸課程卡會在預覽上標出它的位置', async () => {
     await userEvent.click(await screen.findByText('演算法'));
 
     expect(screen.getByTestId('mini-slot-三-5')).toHaveAttribute('data-state', 'preview');
-    // 課卡一個、預覽圖例一個
+
     expect(screen.getAllByText('演算法')).toHaveLength(2);
 });
 
