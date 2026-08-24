@@ -16,7 +16,6 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   background-image: linear-gradient(to right top, rgb(235, 154, 133), rgb(148, 214, 235));
   background-color: #eeeeee;
-  background-attachment: fixed;
 }
 
 body {

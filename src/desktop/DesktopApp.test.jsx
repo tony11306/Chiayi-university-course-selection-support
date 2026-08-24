@@ -180,6 +180,16 @@ test('Modal 是 portal 出去的，樣式靠 .desktop-modal 這個 class 掛上'
     expect(container.querySelector('.view-desktop').contains(dialog)).toBe(false);
 });
 
+test('Modal 保留 fade —— CSS 的滑入 transition 需要一個起始狀態才跑得起來', async () => {
+    const { container } = renderDesktop({ courses: [dataStructure] });
+    await userEvent.click(container.querySelector('.edit-btn'));
+    await screen.findByRole('dialog');
+
+    // animation={false} 會讓 react-bootstrap 在掛載的同一瞬間就加上 show，
+    // .modal -> .modal.show 的 transition 就沒有起始狀態可以動
+    expect(document.querySelector('.desktop-modal')).toHaveClass('fade');
+});
+
 test('清空仍然會先問一次', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     const { container } = renderDesktop({ courses: [dataStructure] });

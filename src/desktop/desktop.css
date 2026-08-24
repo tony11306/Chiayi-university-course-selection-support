@@ -9,6 +9,15 @@
   而手機版沒有 Modal，不會撞。
 */
 
+/*
+  原本在 App.css 的 .App { text-align: center } —— 桌機的置中構成靠這條。
+  只套 .view-desktop：原版的 Modal 是 portal 到 body、在 .App 外面，
+  本來就沒有被置中。
+*/
+.view-desktop {
+  text-align: center;
+}
+
 :is(.view-desktop, .desktop-modal) .custom-scrollbar {
   position: relative;
   height: 100vh;
