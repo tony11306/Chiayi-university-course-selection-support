@@ -1,4 +1,5 @@
 import CampusBadge from "./campusBadge";
+import { teacherReviewUrl } from "../lib/searchLinks";
 
 const GRADE_TEXT = { '1': '一', '2': '二', '3': '三', '4': '四', '5': '五' };
 
@@ -7,10 +8,6 @@ function classTimeLabel(classTime) {
         ? classTime.開始節次
         : `${classTime.開始節次}~${classTime.結束節次}`;
     return `${classTime.星期} ${range}`;
-}
-
-function teacherSearchUrl(teacher) {
-    return `https://www.google.com/search?q=${encodeURIComponent(`${teacher} 嘉義大學 dcard | ptt`)}`;
 }
 
 export default function CourseCard({
@@ -49,7 +46,7 @@ export default function CourseCard({
                 <div className="course-card-meta">
                     <a
                         className="course-card-teacher"
-                        href={teacherSearchUrl(course.授課老師)}
+                        href={teacherReviewUrl(course.授課老師)}
                         target="_blank"
                         rel="noreferrer"
                     >

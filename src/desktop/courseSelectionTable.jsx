@@ -1,15 +1,16 @@
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
-import { periodIndex } from "../lib/schedule";
+import { courseKey } from "../lib/schedule";
+import { teacherReviewUrl } from "../lib/searchLinks";
 
 export default function CourseSelectionTable({ displaySettings }) {
-    const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
+    const { isSelected, findConflictWith, addCourse } = useGlobalData();
     const { data, isFetching, error } = useCourseDatas();
     const courseDatas = data?.result ?? [];
     const displayedCourses = courseDatas.filter(course => {
-        if (userSelectedCourses.some(userSelectedCourse => userSelectedCourse.開課系號 + userSelectedCourse.開課序號 + userSelectedCourse.永久課號 === course.開課系號 + course.開課序號 + course.永久課號)) {
+        if (isSelected(course)) {
             return false
         }
-        if (displaySettings.isShowedConflictedCourses === false && isOverlapWithUserSelectedCourses(course)) {
+        if (!displaySettings.isShowedConflictedCourses && findConflictWith(course)) {
             return false
         }
         if (displaySettings.keyword !== '' && course.課程名稱.indexOf(displaySettings.keyword) === -1) {
@@ -18,33 +19,6 @@ export default function CourseSelectionTable({ displaySettings }) {
 
         return true
     });
-
-    function isOverlap(course1, course2) {
-        for (let i = 0; i < course1['上課時間'].length; ++i) {
-            for (let j = 0; j < course2['上課時間'].length; ++j) {
-                if (course1['上課時間'][i]['星期'] === course2['上課時間'][j]['星期']) {
-                    if (periodIndex(course1['上課時間'][i]['開始節次']) <= periodIndex(course2['上課時間'][j]['結束節次']) && periodIndex(course2['上課時間'][j]['開始節次']) <= periodIndex(course1['上課時間'][i]['結束節次'])) {
-                        return true
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    function isOverlapWithUserSelectedCourses(course) {
-        for (let i = 0; i < userSelectedCourses.length; ++i) {
-            if (isOverlap(course, userSelectedCourses[i])) {
-                return true
-            }
-        }
-        return false
-    }
-
-    function onSelected(courseData) {
-        setUserSelectedCourses(courses => [...courses, courseData])
-    }
 
     return (
         <div className="table-wrapper-scroll-y custom-scrollbar">
@@ -61,9 +35,9 @@ export default function CourseSelectionTable({ displaySettings }) {
                         <th>選擇</th>
                     </tr>
                     {
-                        !error && displayedCourses.map((courseData, index) => {
+                        !error && displayedCourses.map(courseData => {
                             return (
-                                <CourseSelectionTableRow key={index} courseData={courseData} isDisabled={isOverlapWithUserSelectedCourses(courseData)} onSelected={onSelected}  />
+                                <CourseSelectionTableRow key={courseKey(courseData)} courseData={courseData} isDisabled={Boolean(findConflictWith(courseData))} onSelected={addCourse}  />
                             )
                         })
                     }
@@ -115,7 +89,7 @@ function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
                 {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{"【" + courseData.上課學制 + "】" + courseData.課程名稱}</a> : "【" + courseData.上課學制 + "】" + courseData.課程名稱}
             </td>
             <td>
-                <a className="text-decoration-none" href={"https://www.google.com/search?q="+courseData.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank" rel="noreferrer">
+                <a className="text-decoration-none" href={teacherReviewUrl(courseData.授課老師)} target="_blank" rel="noreferrer">
                     {courseData.授課老師}
                 </a>
             </td>

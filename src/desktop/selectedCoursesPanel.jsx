@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useGlobalData } from "../hooks/useGlobalData";
+import { courseKey } from "../lib/schedule";
+import { teacherReviewUrl } from "../lib/searchLinks";
 
 export default function SelectedCoursesPanel() {
     const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
@@ -65,7 +67,7 @@ export default function SelectedCoursesPanel() {
                                     <th>移除</th>
                                 </tr>
                                 {userSelectedCourses.map(course =>
-                                    <tr key={course.開課系號 + course.開課序號 + course.永久課號 + '2'}>
+                                    <tr key={courseKey(course)}>
                                         <td>
                                             <div className={
                                                 course.校區 === "蘭潭校區" ? "badge rounded-pill bg-primary" :
@@ -93,7 +95,7 @@ export default function SelectedCoursesPanel() {
                                             {course.教學大綱.length !== 0 ? <a className="text-decoration-none" href={course.教學大綱} target="_blank" rel="noreferrer">{course.課程名稱}</a> : course.課程名稱}
                                         </td>
                                         <td>
-                                            <a className="text-decoration-none" href={"https://www.google.com/search?q="+course.授課老師+"+嘉義大學+dcard+%7C+ptt"} target="_blank" rel="noreferrer">
+                                            <a className="text-decoration-none" href={teacherReviewUrl(course.授課老師)} target="_blank" rel="noreferrer">
                                                 {course.授課老師}
                                             </a>
                                         </td>
