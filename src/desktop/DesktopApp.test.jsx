@@ -139,6 +139,7 @@ test('衝堂的列標紅並停用勾選框', async () => {
     const row = (await screen.findByText('【大學部】台灣文學與電影')).closest('tr');
     expect(row).toHaveClass('conflict-warning');
     expect(within(row).getByRole('checkbox')).toBeDisabled();
+    expect(within(row).getByText('和「資料結構」衝堂')).toBeInTheDocument();
 });
 
 test('隱藏衝堂的開關會把衝堂的課濾掉', async () => {

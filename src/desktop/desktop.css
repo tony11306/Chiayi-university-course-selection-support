@@ -75,7 +75,8 @@ display: block;
 }
 
 :is(.view-desktop, .desktop-modal) .conflict-warning {
-  background: rgba(253, 68, 68, 0.747);
+  /* 原本 75% 的大紅底蓋過文字，降成淡紅底，原因另外用文字標出來 */
+  background: rgba(220, 53, 69, 0.22);
 }
 
 :is(.view-desktop, .desktop-modal) .dropdown-menu {
@@ -102,7 +103,6 @@ display: block;
 }
 
 :is(.view-desktop, .desktop-modal) .curriculum-table {
-  opacity: 0.8;
   padding: 5px;
   padding-top: 15px;
   border-spacing: 4px;
@@ -114,13 +114,13 @@ display: block;
 :is(.view-desktop, .desktop-modal) .curriculum-table tbody tr td {
   width: 50px;
   border-radius: 5px;
-  opacity: 0.9;
   text-align: center;
   vertical-align: middle;
 }
 
 :is(.view-desktop, .desktop-modal) .curriculum-table tr:nth-child(even) td:first-child {
   background-color: rgb(113, 113, 113);
+  color: #fff;
 }
 
 :is(.view-desktop, .desktop-modal) .curriculum-table tr:nth-child(odd) td:first-child {

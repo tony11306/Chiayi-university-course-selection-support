@@ -37,7 +37,7 @@ export default function CourseSelectionTable({ displaySettings }) {
                     {
                         !error && displayedCourses.map(courseData => {
                             return (
-                                <CourseSelectionTableRow key={courseKey(courseData)} courseData={courseData} isDisabled={Boolean(findConflictWith(courseData))} onSelected={addCourse}  />
+                                <CourseSelectionTableRow key={courseKey(courseData)} courseData={courseData} conflictWith={findConflictWith(courseData)} onSelected={addCourse}  />
                             )
                         })
                     }
@@ -59,7 +59,8 @@ export default function CourseSelectionTable({ displaySettings }) {
     )
 }
 
-function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
+function CourseSelectionTableRow({ courseData, conflictWith, onSelected }) {
+    const isDisabled = Boolean(conflictWith);
     return (
         <tr className={isDisabled ? "conflict-warning" : ""}>
             <td>
@@ -87,6 +88,9 @@ function CourseSelectionTableRow({ courseData, isDisabled, onSelected }) {
             </td>
             <td>
                 {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{"【" + courseData.上課學制 + "】" + courseData.課程名稱}</a> : "【" + courseData.上課學制 + "】" + courseData.課程名稱}
+                {conflictWith ? (
+                    <div className="small text-danger fw-semibold">和「{conflictWith.課程名稱}」衝堂</div>
+                ) : null}
             </td>
             <td>
                 <a className="text-decoration-none" href={teacherReviewUrl(courseData.授課老師)} target="_blank" rel="noreferrer">
