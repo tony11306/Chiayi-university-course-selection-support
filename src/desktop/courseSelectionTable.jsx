@@ -1,3 +1,4 @@
+import { useDeferredValue } from "react";
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 import { courseKey } from "../lib/schedule";
 import { teacherReviewUrl } from "../lib/searchLinks";
@@ -5,8 +6,10 @@ import { CampusBadge, ClassTimeBadges, departmentText, gradeText } from "./cours
 
 export default function CourseSelectionTable({ displaySettings }) {
     const { isSelected, findConflictWith, addCourse } = useGlobalData();
-    const { data, isFetching, error } = useCourseDatas();
+    const { data, isFetching, error, refetch } = useCourseDatas();
     const courseDatas = data?.result ?? [];
+    // 打字時輸入框先更新，上百列的篩選放到後面慢慢算，不卡鍵盤
+    const keyword = useDeferredValue(displaySettings.keyword);
     const displayedCourses = courseDatas.filter(course => {
         if (isSelected(course)) {
             return false
@@ -14,7 +17,7 @@ export default function CourseSelectionTable({ displaySettings }) {
         if (!displaySettings.isShowedConflictedCourses && findConflictWith(course)) {
             return false
         }
-        if (displaySettings.keyword !== '' && course.課程名稱.indexOf(displaySettings.keyword) === -1) {
+        if (keyword !== '' && course.課程名稱.indexOf(keyword) === -1) {
             return false
         }
 
@@ -54,7 +57,15 @@ export default function CourseSelectionTable({ displaySettings }) {
                     <span className="text-muted">(若載入時間很長，通常代表後端在從休眠到起床)</span>
                 </div>
                 : ""}
-            {error ? <span className="fs-3">發生錯誤</span> : ""}
+            {error ? (
+                <div className="py-3">
+                    <span className="fs-3">發生錯誤</span>
+                    <br />
+                    <button type="button" className="btn btn-outline-dark btn-sm mt-2" onClick={() => refetch()} disabled={isFetching}>
+                        {isFetching ? '重新載入中…' : '重試'}
+                    </button>
+                </div>
+            ) : ""}
             {!error && data !== undefined && !isFetching && displayedCourses.length === 0 ? <span className="fs-3">查無結果</span> : ""}
         </div>
     )

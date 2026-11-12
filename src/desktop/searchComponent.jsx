@@ -49,7 +49,7 @@ export default function SearchComponent({ displaySettings, setDisplaySettings })
         <div>
 
             <div className="mb-1">
-                <input className="search-bar rounded-pill border-0 shadow-sm mt-3 w-75 ml-3" value={displaySettings.keyword} onChange={e => onKeywordChanged(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
+                <input type="search" aria-label="搜尋課程" className="search-bar rounded-pill border-0 shadow-sm mt-3 w-75 ml-3" value={displaySettings.keyword} onChange={e => onKeywordChanged(e.target.value)} placeholder="課程關鍵字、系所、教授、上課學制"></input>
                 <details>
 
                     <summary>

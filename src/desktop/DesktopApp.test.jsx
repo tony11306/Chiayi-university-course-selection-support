@@ -142,6 +142,16 @@ test('衝堂的列標紅並停用勾選框', async () => {
     expect(within(row).getByText('和「資料結構」衝堂')).toBeInTheDocument();
 });
 
+test('載入失敗可以按重試', async () => {
+    getCourseDatas.mockRejectedValueOnce(new Error('sleeping backend'));
+    renderDesktop();
+
+    await userEvent.click(await screen.findByRole('button', { name: '重試' }));
+
+    expect(await screen.findByText('【大學部】演算法')).toBeInTheDocument();
+    expect(screen.queryByText('發生錯誤')).not.toBeInTheDocument();
+});
+
 test('隱藏衝堂的開關會把衝堂的課濾掉', async () => {
     renderDesktop({ courses: [dataStructure] });
     await screen.findByText('【大學部】台灣文學與電影');
