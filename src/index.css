@@ -1,9 +1,12 @@
 html, body {
   margin: 0;
-  font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', 'Heiti TC',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  /* 點擊時 iOS / Android 預設會蓋一層灰藍色，按鈕自己有 :active 回饋 */
+  -webkit-tap-highlight-color: transparent;
   -moz-osx-font-smoothing: grayscale;
   background-image: linear-gradient(to right top, rgb(235, 154, 133), rgb(148, 214, 235));
   background-color: #eeeeee;
@@ -58,6 +61,26 @@ footer {
   margin-top: 30px;
 }
 
+/* 不等雙擊縮放的判定，點下去立刻觸發 */
+button,
+a,
+select,
+label,
+[role="button"],
+[role="tab"] {
+  touch-action: manipulation;
+}
+
+/* 控制元件的字是標籤不是內容：長按不要選取文字或跳出選單。
+   課名、老師這類連結是內容，刻意不放進來。 */
+button,
+[role="button"],
+[role="tab"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 button:focus-visible,
 a:focus-visible,
 select:focus-visible,
@@ -84,7 +107,8 @@ input:focus-visible,
   padding: 16px 14px 20px;
   border-radius: 30px;
   background-image: linear-gradient(to right top, rgb(235, 154, 133), rgb(148, 214, 235));
-  font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   line-height: 1.35;
   color: #1d2429;
