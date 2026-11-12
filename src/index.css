@@ -39,6 +39,17 @@ code {
   background-color: rgba(255, 255, 255, 0.3);
   /* 手機版的搜尋框也是 sticky，疊上去時永遠讓 app title 在上面 */
   z-index: 1031;
+  /* viewport-fit=cover 之後頁面會畫到瀏海與圓角底下，
+     加入主畫面（standalone）時 navbar 要自己讓開狀態列 */
+  padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* 橫向時左右兩側也有瀏海 */
+#root {
+  padding-left: max(calc(var(--bs-gutter-x, 1.5rem) * 0.5), env(safe-area-inset-left, 0px));
+  padding-right: max(calc(var(--bs-gutter-x, 1.5rem) * 0.5), env(safe-area-inset-right, 0px));
 }
 
 footer {
