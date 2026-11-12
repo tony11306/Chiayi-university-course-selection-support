@@ -1,6 +1,7 @@
 import { useGlobalData, useCourseDatas } from "../hooks/useGlobalData";
 import { courseKey } from "../lib/schedule";
 import { teacherReviewUrl } from "../lib/searchLinks";
+import { CampusBadge, ClassTimeBadges, departmentText, gradeText } from "./courseCells";
 
 export default function CourseSelectionTable({ displaySettings }) {
     const { isSelected, findConflictWith, addCourse } = useGlobalData();
@@ -64,28 +65,10 @@ function CourseSelectionTableRow({ courseData, conflictWith, onSelected }) {
     return (
         <tr className={isDisabled ? "conflict-warning" : ""}>
             <td>
-                <div className={
-                    courseData.校區 === "蘭潭校區" ? "badge rounded-pill bg-primary" :
-                    courseData.校區 === "民雄校區" ? "badge rounded-pill bg-secondary" :
-                    courseData.校區 === "新民校區" ? "badge rounded-pill bg-success" :
-                    courseData.校區 === "林森校區" ? "badge rounded-pill bg-warning" :
-                    courseData.校區 === "ecourse 線上" ? "badge rounded-pill badge bg-dark" : ""
-                }>
-                    {courseData.校區}
-                </div>
+                <CampusBadge campus={courseData.校區} />
             </td>
-            <td>
-                {
-                    courseData.適用年級 === "1" ? "一":
-                    courseData.適用年級 === "2" ? "二":
-                    courseData.適用年級 === "3" ? "三":
-                    courseData.適用年級 === "4" ? "四":
-                    "五"
-                }
-            </td>
-            <td>
-                {courseData.上課系所.length !== 1 ? courseData.上課系所 : "不限"}
-            </td>
+            <td>{gradeText(courseData.適用年級)}</td>
+            <td>{departmentText(courseData.上課系所)}</td>
             <td>
                 {courseData.教學大綱.length !== 0 ? <a className="text-decoration-none" href={courseData.教學大綱} target="_blank" rel="noreferrer">{"【" + courseData.上課學制 + "】" + courseData.課程名稱}</a> : "【" + courseData.上課學制 + "】" + courseData.課程名稱}
                 {conflictWith ? (
@@ -98,13 +81,7 @@ function CourseSelectionTableRow({ courseData, conflictWith, onSelected }) {
                 </a>
             </td>
             <td>{courseData.學分數}</td>
-            <td>{courseData.上課時間.map((courseTime, index) => {
-                return (
-                    <div key={"badge " + index} className="badge bg-primary">
-                        {courseTime.星期 + " " + courseTime.開始節次 + '~' + courseTime.結束節次}
-                    </div>
-                )
-            })}</td>
+            <td><ClassTimeBadges classTimes={courseData.上課時間} /></td>
             <td>
                 <input className="form-check-input" type="checkbox" value="" checked={false} onChange={() => onSelected(courseData)} disabled={isDisabled} />
             </td>

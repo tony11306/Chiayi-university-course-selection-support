@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import { useGlobalData } from "../hooks/useGlobalData";
 import { courseKey } from "../lib/schedule";
 import { teacherReviewUrl } from "../lib/searchLinks";
+import { CampusBadge, ClassTimeBadges, departmentText, gradeText } from "./courseCells";
 
 export default function SelectedCoursesPanel() {
     const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
@@ -69,28 +70,10 @@ export default function SelectedCoursesPanel() {
                                 {userSelectedCourses.map(course =>
                                     <tr key={courseKey(course)}>
                                         <td>
-                                            <div className={
-                                                course.校區 === "蘭潭校區" ? "badge rounded-pill bg-primary" :
-                                                course.校區 === "民雄校區" ? "badge rounded-pill bg-secondary" :
-                                                course.校區 === "新民校區" ? "badge rounded-pill bg-success" :
-                                                course.校區 === "林森校區" ? "badge rounded-pill bg-warning" :
-                                                course.校區 === "ecourse 線上" ? "badge rounded-pill badge bg-dark" : ""
-                                            }>
-                                                {course.校區}
-                                            </div>
+                                            <CampusBadge campus={course.校區} />
                                         </td>
-                                        <td>
-                                            {
-                                                course.適用年級 === "1" ? "一":
-                                                course.適用年級 === "2" ? "二":
-                                                course.適用年級 === "3" ? "三":
-                                                course.適用年級 === "4" ? "四":
-                                                "五"
-                                            }
-                                        </td>
-                                        <td>
-                                            {course.上課系所.length !== 1 ? course.上課系所 : "不限"}
-                                        </td>
+                                        <td>{gradeText(course.適用年級)}</td>
+                                        <td>{departmentText(course.上課系所)}</td>
                                         <td>
                                             {course.教學大綱.length !== 0 ? <a className="text-decoration-none" href={course.教學大綱} target="_blank" rel="noreferrer">{course.課程名稱}</a> : course.課程名稱}
                                         </td>
@@ -100,13 +83,7 @@ export default function SelectedCoursesPanel() {
                                             </a>
                                         </td>
                                         <td>{course.學分數}</td>
-                                        <td>{course.上課時間.map((courseTime, index) => {
-                                            return (
-                                                <div key={"badge " + index} className="badge bg-primary">
-                                                    {courseTime.星期 + " " + courseTime.開始節次 + '~' + courseTime.結束節次}
-                                                </div>
-                                            )
-                                        })}</td>
+                                        <td><ClassTimeBadges classTimes={course.上課時間} /></td>
                                         <td>
                                             <input className="form-check-input" type="checkbox" value="" onChange={() => onRemove(course)} />
                                         </td>
