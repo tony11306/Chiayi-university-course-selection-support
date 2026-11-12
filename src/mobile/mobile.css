@@ -98,6 +98,8 @@
 
 .view-mobile .week-grid-scroll {
   overflow-x: auto;
+  /* 左右滑到底不要帶著整個分頁一起晃 */
+  overscroll-behavior-x: contain;
   /* 不能用 flex 置中：表格比容器寬時左側會被切掉而且滑不到，
      改靠 .week-grid 自己的 margin: 0 auto 置中，
      寬度放不下時會退成從最左邊開始、可以正常往右滑 */
@@ -135,7 +137,7 @@
 
 .view-mobile .week-grid .week-grid-period {
   background-color: var(--slot-period);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 500;
   white-space: nowrap;
   padding: 4px 7px;
@@ -191,7 +193,7 @@
 }
 
 .view-mobile .day-tab-count {
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   opacity: 0.75;
 }
 
@@ -223,7 +225,7 @@
 }
 
 .view-mobile .agenda-time {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--ink-3);
   line-height: 1.45;
 }
@@ -364,7 +366,7 @@
   padding: 0 5px;
   background-color: var(--accent);
   color: #fff;
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   display: grid;
   place-items: center;
 }
@@ -637,7 +639,7 @@
 }
 
 .view-mobile .course-pill {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   padding: 2px 8px;
   border-radius: 7px;
   font-weight: 500;
@@ -714,13 +716,13 @@
   top: 5px;
   left: 50%;
   margin-left: 8px;
-  min-width: 17px;
-  height: 17px;
+  min-width: 18px;
+  height: 18px;
   border-radius: 9px;
   padding: 0 4px;
   background-color: var(--warm);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   font-weight: 500;
   display: grid;
   place-items: center;
