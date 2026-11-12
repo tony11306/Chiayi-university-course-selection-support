@@ -8,7 +8,15 @@ import Footer from '../shared/footer';
 import { useGlobalData } from '../hooks/useGlobalData';
 
 export default function DesktopApp() {
-    const { toast, dismissToast } = useGlobalData();
+    const { toast, dismissToast, addCourse, restoreCourses } = useGlobalData();
+
+    function onToastAction(action) {
+        if (action.type === 'undo') {
+            addCourse(action.course);
+        } else if (action.type === 'undoClear') {
+            restoreCourses(action.courses);
+        }
+    }
 
     return (
         <div className="view-desktop">
@@ -23,7 +31,7 @@ export default function DesktopApp() {
             </div>
             <SelectedCoursesPanel />
             <Footer />
-            <Toast toast={toast} onDismiss={dismissToast} onAction={() => {}} />
+            <Toast toast={toast} onDismiss={dismissToast} onAction={onToastAction} />
         </div>
     );
 }

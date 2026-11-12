@@ -6,25 +6,33 @@ import { teacherReviewUrl } from "../lib/searchLinks";
 import { CampusBadge, ClassTimeBadges, departmentText, gradeText } from "./courseCells";
 
 export default function SelectedCoursesPanel() {
-    const { userSelectedCourses, setUserSelectedCourses } = useGlobalData();
+    const { userSelectedCourses, removeCourse, clearCourses, showToast } = useGlobalData();
     const [isModalShown, setIsModalShown] = useState(false);
     const totalCredit = userSelectedCourses.reduce((prev, current) => prev + parseInt(current.學分數, 10), 0)
 
-    function onRemove(courseData) {
-        setUserSelectedCourses(courses => courses.filter(course => course !== courseData))
+    function onRemove(course) {
+        removeCourse(course);
+        showToast({
+            title: `已移除 ${course.課程名稱}`,
+            action: { type: 'undo', course },
+        });
     }
 
     function onRemoveAll() {
         const isConfirmed = window.confirm('確定清空所有課程？');
         if (isConfirmed) {
-            setUserSelectedCourses([]);
+            const cleared = clearCourses();
+            showToast({
+                title: `已清空 ${cleared.length} 門課`,
+                action: { type: 'undoClear', courses: cleared },
+            });
         }
     }
 
     return (
         <>
             <div className='relative-wrapper'>
-                <button className='btn edit-btn blur-background shadow-none' onClick={() => setIsModalShown(true)}>
+                <button type="button" className='btn edit-btn blur-background shadow-none' aria-label={`已選擇的課程（${userSelectedCourses.length} 堂，${totalCredit} 學分）`} title={`已選 ${userSelectedCourses.length} 堂 · ${totalCredit} 學分`} onClick={() => setIsModalShown(true)}>
                     <div className='cnt-div'>
                         {userSelectedCourses.length}
                     </div>
@@ -85,7 +93,7 @@ export default function SelectedCoursesPanel() {
                                         <td>{course.學分數}</td>
                                         <td><ClassTimeBadges classTimes={course.上課時間} /></td>
                                         <td>
-                                            <input className="form-check-input" type="checkbox" value="" onChange={() => onRemove(course)} />
+                                            <input className="form-check-input" type="checkbox" value="" aria-label={`移除 ${course.課程名稱}`} onChange={() => onRemove(course)} />
                                         </td>
                                     </tr>
                                 )}

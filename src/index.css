@@ -191,7 +191,8 @@ input:focus-visible,
   left: 12px;
   right: 12px;
   bottom: 20px;
-  z-index: 1040;
+  /* 要蓋過 Bootstrap Modal（1055），桌機在已選課程視窗裡移除時才看得到「復原」 */
+  z-index: 1060;
   max-width: 520px;
   margin: 0 auto;
   background-color: #1d2429;

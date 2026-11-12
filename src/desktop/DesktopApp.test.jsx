@@ -217,6 +217,31 @@ test('清空仍然會先問一次', async () => {
     expect(confirmSpy).toHaveBeenCalledWith('確定清空所有課程？');
 });
 
+test('在已選課程裡移除後可以復原', async () => {
+    const { container } = renderDesktop({ courses: [dataStructure, algorithms] });
+    await userEvent.click(container.querySelector('.edit-btn'));
+    const dialog = await screen.findByRole('dialog');
+
+    await userEvent.click(within(dialog).getByRole('checkbox', { name: '移除 演算法' }));
+    expect(within(dialog).getByText(/已選擇 1 堂課/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: '復原' }));
+    expect(within(dialog).getByText(/已選擇 2 堂課/)).toBeInTheDocument();
+});
+
+test('清空後可以復原', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const { container } = renderDesktop({ courses: [dataStructure, algorithms] });
+    await userEvent.click(container.querySelector('.edit-btn'));
+    const dialog = await screen.findByRole('dialog');
+
+    await userEvent.click(within(dialog).getByRole('button', { name: /清空/ }));
+    expect(await screen.findByText('已清空 2 門課')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: '復原' }));
+    expect(within(dialog).getByText(/已選擇 2 堂課/)).toBeInTheDocument();
+});
+
 test('匯出 PNG 截的是共用的匯出課表，畫面上的課表不動', async () => {
     html2canvas.mockResolvedValue({ toBlob: callback => callback(new Blob(['png'], { type: 'image/png' })) });
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
